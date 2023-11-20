@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/RamboProg/Help-Desk#readme",
   "dependencies": {
+    "create-react-app": "^1.2.1",
     "express": "^4.18.2"
   }
 }
