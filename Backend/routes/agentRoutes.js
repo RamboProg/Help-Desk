@@ -11,7 +11,7 @@ app.post("/api/v1/agent/tickets/close/:ticketId", async (req, res) => {
         // Find and update the ticket by its ID
         const updatedTicket = await Ticket.findByIdAndUpdate(
             ticketId,
-            { $set: { status, resolutionDetails } },
+            { $set: { Status: status, Resolution_Details: resolutionDetails } },
             { new: true } // Return the updated document
         );
 
