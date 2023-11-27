@@ -6,10 +6,11 @@ const clientSchema = new mongoose.Schema({
     Password: { type: String, ref: 'User', required: true },
     Username: { type: String, ref: 'User', required: true },
     PhoneNumber: { type: String, ref: 'User' },
-    RoleID: { type: Number, default: 4 },
+    RoleID: 4,
     MFA_Enabled: { type: Boolean, ref: 'User' },
-    Is_Enabled: { type: Boolean, ref: 'User' }
+    Is_Enabled: { type: Boolean, ref: 'User' },
+    Salt: { type: String, ref: 'User' }
   });
 
 module.exports = mongoose.model('Client', clientSchema);
-model.exports.Schema = clientSchema;
+module.exports.Schema = clientSchema;

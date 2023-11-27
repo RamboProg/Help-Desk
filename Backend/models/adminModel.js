@@ -7,10 +7,11 @@ const adminSchema = new mongoose.Schema({
     Password: { type: String, ref: 'User', required: true },
     Username: { type: String, ref: 'User', required: true },
     PhoneNumber: { type: String, ref: 'User' },
-    RoleID: { type: Number, default: 1 },
+    RoleID: 1,
     MFA_Enabled: { type: Boolean, ref: 'User' },
-    Is_Enabled: { type: Boolean, ref: 'User' }
+    Is_Enabled: { type: Boolean, ref: 'User' },
+    Salt: { type: String, ref: 'User' }
   });
 
 module.exports = mongoose.model('Admin', adminSchema);
-model.exports.Schema = adminSchema;
+module.exports.Schema = adminSchema;

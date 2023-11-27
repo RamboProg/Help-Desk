@@ -10,8 +10,11 @@ const ticketSchema = new mongoose.Schema({
     Priority: { type: String },
     Resolution_Details: { type: String },
     Rating: { type: Number },
-    Runtime: { type: Date }
+    Start_Date : {type: Date},
+    End_Date : {type: Date},
+    Sub_Issue_Type: { type: String, required: true },
+    //Subscribers: [{ type: 'Number', ref:'Client' }, { type: 'Number', ref:'Support_Agent' }]
   });
 
 module.exports = mongoose.model('Ticket', ticketSchema);
-model.exports.Schema = ticketSchema;
+module.exports.Schema = ticketSchema;
