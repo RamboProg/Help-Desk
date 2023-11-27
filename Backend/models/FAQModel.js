@@ -9,4 +9,4 @@ const faqSchema = new mongoose.Schema({
   });
 
 module.exports = mongoose.model('FAQ', faqSchema);
-model.exports.Schema = faqSchema;
+module.exports.Schema = faqSchema;
