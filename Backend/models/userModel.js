@@ -8,9 +8,9 @@ const userSchema = new mongoose.Schema({
     PhoneNumber: { type: String },
     RoleID: { type: Number },
     MFA_Enabled: { type: Boolean },
-    Is_Enabled: { type: Boolean }
+    Is_Enabled: { type: Boolean },
+    salt :{type: String}
   });
 
 module.exports = mongoose.model('User', userSchema);
-model.exports.Schema = userSchema;
- 
+module.exports.Schema = userSchema; 
