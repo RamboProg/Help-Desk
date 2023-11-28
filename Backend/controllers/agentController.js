@@ -1,5 +1,5 @@
 //import ticket model from separate file
-const Ticket = require('./models/ticketModel');
+const Ticket = require('../models/ticketModel');
 
 exports.closeTicket = async (req, res) => {
   try {

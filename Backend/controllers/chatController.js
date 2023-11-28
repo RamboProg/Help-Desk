@@ -1,4 +1,4 @@
-const Chat = require('./models/chatModel'); 
+const Chat = require('../models/chatModel'); 
 
 exports.chat = async (req, res) => { //TODO chat endpoint 
 
