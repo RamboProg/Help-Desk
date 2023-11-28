@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const logger = require('../loggerController');
 const workflowController = require('../controllers/workflowController');
 
 // Get Custom_Workflow based on Issue
