@@ -26,6 +26,16 @@ app.post("/api/v1/agent/tickets/close/:ticketId", async (req, res) => {
     }
 });
 
+const express = require('express');
+const router = express.Router();
+const agentController = require('../controllers/agentController');
+
+// // Get Custom_Workflow based on Issue
+// router.get('/api/v1/workflows/:issuesid', workflowController.getWorkflow);
+// router.post('/api/v1/workflows/:issuesid', workflowController.createWorkflow);
+// router.put('/api/v1/workflows/:issuesid', workflowController.updateWorkflow);
+
+// module.exports = router;
 
 
 
