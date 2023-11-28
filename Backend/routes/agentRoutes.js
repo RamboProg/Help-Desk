@@ -1,5 +1,5 @@
 //import ticket model from separate file
-const Ticket = require('./ticketModel');
+const Ticket = require('./models/ticketModel');
 
 //close ticket
 app.post("/api/v1/agent/tickets/close/:ticketId", async (req, res) => {
