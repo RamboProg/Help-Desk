@@ -32,3 +32,5 @@ const saveChat = async (message, fromId, toId) => { //function for saving chats
   
   
   
+//const user = await getUser(req)
+// const { user_id } = await getUser(req)
