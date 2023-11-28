@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, viewUserProfile, updateUserProfile } = require('../controllers/userController');
+const { registerUser, loginUser, viewUserProfile, updateUserProfile, resetPassword } = require('../controllers/userController');
 const { authenticateUser } = require('../middleware/authMiddleware');
 
 router.get('/api/v1/profile', authenticateUser, viewUserProfile); //View user profile
