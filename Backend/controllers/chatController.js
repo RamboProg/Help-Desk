@@ -1,7 +1,9 @@
 const Chat = require('../models/chatModel'); 
 
-exports.chat = async (req, res) => { //TODO chat endpoint 
+exports.chat = async (req, res) => { 
 
+//TODO chat endpoint 
+//take 
 }
 
 const saveChat = async (message, fromId, toId) => { //function for saving chats
