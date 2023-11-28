@@ -99,7 +99,9 @@ app.post("/tickets", async function (req, res) { //needs to be rechecked CHECK A
     if (!agent) {
       return res.status(404).json({ error: 'Agent not found' });
     }
+    //increasing the ticket count in the agent table
     agent.Ticket_Count = agent.Ticket_Count++;
+    agent.Active_TicketsTickets = agent.Active_Tickets++;
     // save ticket.. recheck this part atleast 7 times
     const savedTicket = await newTicket.save();
     res.status(201).json(savedTicket);
@@ -129,7 +131,8 @@ app.post("/api/v1/rateAgent", async function (req, res) {
     const updatedTicket = await ticket.save();
 
     //update the agent's avg rating
-    agent.Average_Rating = (req.body.rating + (agent.Average_Rating * (agent.Ticket_Count -1))) / agent.Ticket_Count
+    //the ticket count is updated the creation of the ticket function 
+    agent.Average_Rating = (req.body.rating + (agent.Average_Rating * (agent.Ticket_Count - 1))) / agent.Ticket_Count
     await agent.save();
     res.json(updatedTicket);
 
