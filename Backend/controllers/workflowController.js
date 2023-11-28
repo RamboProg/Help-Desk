@@ -17,3 +17,23 @@ exports.getWorkflow = async (req, res) => {
       res.status(500).json({ message: "Internal Server Error; Try Again :(" });
     }
 };
+
+exports.createWorkflow = async (req, res) => {
+    const { Issue, Custom_Workflow } = req.body;
+    try {
+      const workflow = await Workflow.create({ Issue, Custom_Workflow });
+      res.status(201).json({ workflow });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error; Try Again :(" });
+    }
+}
+
+exports.updateWorkflow = async (req, res) => {
+    const { Issue, Custom_Workflow } = req.body;
+    try {
+      const workflow = await Workflow.findOneAndUpdate({ Issue }, { Custom_Workflow });
+      res.status(201).json({ workflow });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error; Try Again :(" });
+    }
+}
