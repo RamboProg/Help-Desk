@@ -8,9 +8,15 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+package.json
+package-lock.json
 dist
 dist-ssr
 *.local
+
+/backend/package-lock.json
+/backend/package.json
+/backend/node_modules
 
 # Editor directories and files
 .vscode/*
