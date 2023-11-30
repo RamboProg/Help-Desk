@@ -1,25 +1,26 @@
 const Chat = require('../models/chatModel.js'); 
 
 
-const saveMessage = async (message, ticketid, supportAgentId) => {
+//call saveMessage within chat endpoint
+const saveMessage = async (message, ticketId, supportAgentId) => {
   try {
     
-    let chat = await Chat.findOne({ Ticket_ID: ticketid, Support_AgentID: supportAgentId }); //check if the chat already exists based on ticketid and supportAgentId
+    let chat = await Chat.findOne({ TicketID: ticketId, Support_AgentID: supportAgentId });
 
     if (!chat) {
       //if the chat doesn't exist, create a new one
       chat = new Chat({
-        Ticket_ID: ticketid,
         Support_AgentID: supportAgentId,
+        TicketID: ticketId,
         Messages: message,
-        Start_Time: new Date(),
-        End_Time: new Date(),
+        Chat_Start_Time: new Date(),
+        Final_Message_Time: new Date(),
         Message_Count: 1, // set initial message count
       });
     } else {
       //if the chat already exists, update the existing document
       chat.Messages += `\n${message}`; //append the new message to string of messages
-      chat.End_Time = new Date(); //update end time
+      chat.Final_Message_Time = new Date(); //update end time
       chat.Message_Count += 1; // increment message count
     }
 
@@ -32,7 +33,3 @@ const saveMessage = async (message, ticketid, supportAgentId) => {
   }
 };
 
-module.exports = saveMessage;
-
-//const user = await getUser(req)
-// const { user_id } = await getUser(req)
