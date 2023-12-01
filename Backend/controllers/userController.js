@@ -1,13 +1,12 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+
 const authenticator = require('otplib');
 const securityKey = authenticator.generateSecret();
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
-
 
 const userController = {
     // Register user
@@ -36,7 +35,7 @@ const userController = {
     },
     // Login user
     loginUser: async (req, res) => {
-        try {
+
             const { email, password, code } = req.body;
 
             // Find the user by email
@@ -54,7 +53,7 @@ const userController = {
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
-            }
+
             if(!user.MFA_Enabled){
                 const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
 
@@ -166,7 +165,6 @@ const userController = {
        } 
     },
     
-
 };
 
 function generateSalt() {
@@ -176,8 +174,6 @@ function generateSalt() {
         return buf;
     });
 }
-
-
 module.exports = userController;
 
 // Path: Backend/controllers/userController.js
