@@ -1,5 +1,10 @@
-// Import required modules
+const http = require('http');
 const express = require('express');
+const socketIo = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
@@ -44,50 +49,3 @@ const io = new Server(server);
 
 io.on('connection', (socket) => {
   console.log('A user connected');
-
-  // Listen for a new chat message
-  socket.on('chat_message', (msg) => {
-    console.log(`Message: ${msg}`);
-    socket.join(msg.chatId);
-  });
-});
-
-// Define a route
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
-
-// Start the server
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-/*                     Rambo's Code                    */
-// Middleware
-app.use(bodyParser.json());
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Use the workflow router
-app.use('/', workflowRouter);
-
-
-
-// Logo/Image upload
-app.post('/api/v1/images', upload.single('image'), async (req, res) => {
-    try {
-        const image = new Image({ imagePath: req.file.path });
-        await image.save();
-        res.status(201).json({ image });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-// Error handling middleware
-app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  res.status(500).send('Something went wrong!');
-});
