@@ -1,12 +1,12 @@
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import multer from 'multer';
-import path from 'path';
-import dotenv from 'dotenv';
-import workflowRouter from './routes/workflowRoute';
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const dotenv = require('dotenv');
+const workflowRouter = require('./routes/workflowRoute');
 
 dotenv.config();
 
