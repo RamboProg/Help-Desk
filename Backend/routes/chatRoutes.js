@@ -1,9 +1,10 @@
 // routes/chatRoute.js
-const express = require('express');
-const router = express.Router();
-const chatController = require('../controllers/chatController');
+import { Router } from 'express';
+const router = Router();
+import { chatController } from '../controllers/chatController';
 
 // Define the chat endpoint
-router.post('/chat', chatController.chat);
+router.post('/api/v1/chat', chatController.startNewChat);
+router.put('/api/v1/chat/:chatId', chatController.send_message);
 
-module.exports = router;
+export default router;
