@@ -46,6 +46,6 @@ const logger = createLogger({
     logger.error('Uncaught Exception:', error);
   });
   
-module.exports = logger;
+  module.exports = logger;
 
 

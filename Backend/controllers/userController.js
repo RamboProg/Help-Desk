@@ -35,7 +35,7 @@ const userController = {
     },
     // Login user
     loginUser: async (req, res) => {
-
+        try {
             const { email, password, code } = req.body;
 
             // Find the user by email
@@ -53,18 +53,19 @@ const userController = {
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
+            }
 
-            if(!user.MFA_Enabled){
+            if (!user.MFA_Enabled) {
                 const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
-
                 return res.status(200).json({ token });
             }
-            const verified = authenticator.check(code, user.secret);
-            if(!verified){
-                return res.status(401).json({message:"Invalid Code"});
-            }
-            
 
+            const verified = authenticator.check(code, user.secret);
+            if (!verified) {
+                return res.status(401).json({ message: "Invalid Code" });
+            }
+
+            res.status(200).json({ token });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -131,40 +132,39 @@ const userController = {
         }
     },
     //Get QR Code
-    getQRImage : async (req,res) => {
-        try{
-            const {id} = req.cookies;
-            const user =await userModel.findById(req.user.userId);
-            const uri  =authenticator.keyuri(id, "Help Desk",securityKey);
+    getQRImage: async (req, res) => {
+        try {
+            const { id } = req.cookies;
+            const user = await userModel.findById(req.user.userId);
+            const uri = authenticator.keyuri(id, "Help Desk", securityKey);
             const image = await qrcode.toDataURL(uri);
             user.temp_secret = securityKey;
             await user.save();
-            return res.status(200).json({image});
-        }catch(error){
+            return res.status(200).json({ image });
+        } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
-    //Set MFA get rqeust
-    setMFA : async (req,res) =>{
-       try{
-            const {id} = req.cookies;
-            const {code} = req.query;
-            const user =await userModel.findById({_id:id}); 
-            const {temp_secret} = user.temp_secret;
+    //Set MFA get request
+    setMFA: async (req, res) => {
+        try {
+            const { id } = req.cookies;
+            const { code } = req.query;
+            const user = await userModel.findById({ _id: id });
+            const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);
-            if(!verified){
-                return res.status(401).json({message:"Invalid Code"});
+            if (!verified) {
+                return res.status(401).json({ message: "Invalid Code" });
             }
-           user.secret =temp_secret;
-           user.MFA_Enabled = true;
-           await user.save();
-            return res.status(200).json({message:"MFA Enabled"});
-       }catch (error){
-              res.status(500).json({ message: error.message });
-       } 
+            user.secret = temp_secret;
+            user.MFA_Enabled = true;
+            await user.save();
+            return res.status(200).json({ message: "MFA Enabled" });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     },
-    
 };
 
 function generateSalt() {
