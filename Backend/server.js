@@ -1,41 +1,26 @@
-// Import required modules
 const express = require('express');
-// Create an instance of Express
+const http = require('http');
+const { Server } = require('socket.io');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const dotenv = require('dotenv');
+const workflowRouter = require('./routes/workflowRoute');
+
+dotenv.config();
+
 const app = express();
-
-const express = require('express');
-const logger = require('./loggerController'); 
-const Image = mongoose.model('Image', { imagePath: String });
-const upload = multer({ storage: storage });
-
-
-
-// Define a route
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
-
-// Start the server
-const port = 3000;    
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-
-/*                     Rambo's Code                    */
-// Middleware
-app.use(bodyParser.json());
+const server = http.createServer(app);
+const io = new Server(server);
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://<username>:<password>@helpdesk.3m5jos8.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect(process.env.MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useFindAndModify: false,
+// });
 
-// Use the workflow router
-app.use('/', workflowRouter);
-
-//theme router
-app.use('/themes', themeRoutes);
-
-//Logo/Image upload
 // Multer storage setup
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -59,9 +44,25 @@ app.post('/predict-agent', async (req, res) => {
 });
 
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  res.status(500).send('Something went wrong!');
+const upload = multer({ storage: storage });
+
+// Add middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Import routes
+app.use('/workflow', workflowRouter);
+
+//const loggerController = require('./controllers/loggerController');
+const Image = mongoose.model('Image', { imagePath: String });
+
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
 });
 
+// Start the server
+const PORT = process.env.PORT;
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
