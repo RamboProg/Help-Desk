@@ -13,6 +13,8 @@ package-lock.json
 dist
 dist-ssr
 *.local
+package.json
+package-lock.json
 
 /backend/package-lock.json
 /backend/package.json
