@@ -14,7 +14,6 @@ const supportAgentSchema = new mongoose.Schema({
     Ticket_Count: { type: Number },
     Active_Tickets: { type: Number },
     Salt : {type: String, ref: 'User'}
-  });
 
 module.exports = mongoose.model('SupportAgent', supportAgentSchema);
 module.exports.Schema = supportAgentSchema;

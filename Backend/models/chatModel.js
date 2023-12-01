@@ -1,14 +1,13 @@
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const chatSchema = new mongoose.Schema({
+const chatSchema = new Schema({
     _id: { type: Number, required: true },
     Support_AgentID: { type: Number, ref: 'Support_Agent', required: true },
-    Messages: { type: String },
-    Start_Time: { type: Date },
-    End_Time: { type: Date },
-    Message_Count: { type: Number },
-    TicketID: { type: String, ref: 'Ticket' }
+    TicketID: { type: Number, ref: 'Ticket', required: true },
+    Chat_Start_Time: { type: Date },
+    Final_Message_Time: { type: Date },
+    Message_Count: { type: Number }
   });
 
-module.exports = mongoose.model('Chat', chatSchema);
-module.exports.Schema = chatSchema;
+export default model('Chat', chatSchema);
+export const Schema = chatSchema;
