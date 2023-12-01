@@ -32,6 +32,18 @@ const storage = multer.diskStorage({
     }
 });
 
+// Route for ML model prediction
+app.post('/predict-agent', async (req, res) => {
+  try {
+      const response = await axios.post('http://localhost:3000/predict', req.body);
+      res.json(response.data);
+  } catch (error) {
+      console.error('Error calling Flask service:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+
 const upload = multer({ storage: storage });
 
 // Add middleware
@@ -44,12 +56,13 @@ app.use('/workflow', workflowRouter);
 //const loggerController = require('./controllers/loggerController');
 const Image = mongoose.model('Image', { imagePath: String });
 
+
 io.on('connection', (socket) => {
     console.log('A user connected');
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
