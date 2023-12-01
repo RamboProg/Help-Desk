@@ -9,30 +9,6 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 
 const userController = {
-    // Register user
-    registerUser: async (req, res) => {
-        try {
-            const { email, password, username, phoneNumber } = req.body;
-
-            const userExists = await userModel.findOne({ Email: email });
-            if (userExists) {
-                res.status(400).json({ message: "User already exists" });
-            } else {
-                const salt = generateSalt();
-                const hash = bcrypt.hashSync(password, salt);
-                const user = await userModel.create({
-                    Email: email,
-                    Password: hash,
-                    Username: username,
-                    PhoneNumber: phoneNumber,
-                    Salt: salt,
-                });
-                res.status(201).json(user);
-            }
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
     // Login user
     loginUser: async (req, res) => {
         try {
@@ -53,7 +29,6 @@ const userController = {
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
-            }
 
             if (!user.MFA_Enabled) {
                 const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
@@ -150,7 +125,6 @@ const userController = {
         try {
             const { id } = req.cookies;
             const { code } = req.query;
-            const user = await userModel.findById({ _id: id });
             const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);
@@ -164,7 +138,6 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    },
 };
 
 function generateSalt() {
