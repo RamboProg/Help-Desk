@@ -1,6 +1,6 @@
-const userModel = require('../models/userModel');
-const jwt = require('jsonwebtoken');
+import User from '../models/userModel.js';
 
+<<<<<<< HEAD
 const authenticator = require('otplib');
 const securityKey = authenticator.generateSecret();
 const bcrypt = require('bcryptjs');
@@ -19,16 +19,23 @@ function generateSalt() {
       });
     });
   }
+=======
+export const userController = {
+  getUser: async (req, res) => {
+    const User = require('./models/userModel');
+    const Admin = require('./models/adminModel');
+    const Manager = require('./models/managerModel');
+    const Agent = require('./models/agentModel');
+    const Client = require('./models/clientModel');
+>>>>>>> 842a9ac77024a92a5f5c4d60f3c6653124dec6eb
 
-const userController = {
-    // Login user
-    loginUser: async (req, res) => {
-        try {
-            const { email, password, code } = req.body;
+    const userId = req.params.userId;
 
-            // Find the user by email
-            const user = await userModel.findOne({ Email: email });
+    try {
+      //assuming all users of different role types are also saved in the users table
+      const user = await User.findById({ _id: userId });
 
+<<<<<<< HEAD
             if (!user) {
                 return res.status(401).json({ message: "Invalid credentials" });
             }
@@ -172,5 +179,51 @@ async function generateSalt() {
 }
 
 module.exports = userController;
+=======
+      switch (user.RoleID) {
+        case 1:
+          return await Admin.findById(userId);
+        case 2:
+          return await Manager.findById(userId);
+        case 3:
+          return await Agent.findById(userId);
+        case 4:
+          return await Client.findById(userId);
+        default:
+          return null; // user is not in tables
+      }
+    } catch (error) {
+      console.error('Error could not get user', error);
+      throw error;
+    }
+  }
+};
 
-// Path: Backend/controllers/userController.js
+// async function getUser(userId) {
+//     const User = require('./models/userModel');
+//     const Admin = require('./models/adminModel');
+//     const Manager = require('./models/managerModel');
+//     const Agent = require('./models/agentModel');
+//     const Client = require('./models/clientModel');
+//     try {
+//       const user = await User.findById({ _id: userId }); //assuming all users of different role types are also saved in the users table
+>>>>>>> 842a9ac77024a92a5f5c4d60f3c6653124dec6eb
+
+//       switch (user.RoleID) {
+//         case 1:
+//           return await Admin.findById(userId);
+//         case 2:
+//           return await Manager.findById(userId);
+//         case 3:
+//           return await Agent.findById(userId);
+//         case 4:
+//           return await Client.findById(userId);
+//         default:
+//           return null; // user is not in tables
+//       }
+
+//     } catch (error) {
+//       console.error('Error could not get user', error)
+//       throw error;
+//     }
+//   }
