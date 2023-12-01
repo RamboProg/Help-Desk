@@ -1,12 +1,27 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-
+require('dotenv').config();
 const authenticator = require('otplib');
 const securityKey = authenticator.generateSecret();
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
+const authentication = require('../middleware/authenticationMiddleware');
+
+
+// Function to generate salt
+async function generateSalt() {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(256, (err, buf) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(buf);
+            }
+        });
+    });
+}
 
 const userController = {
     // Login user
@@ -22,13 +37,12 @@ const userController = {
             }
 
             const salt = user.Salt;
-
             const hash = bcrypt.hashSync(password, salt);
-
             const isPasswordValid = bcrypt.compareSync(hash, user.Password);
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
+            }
 
             if (!user.MFA_Enabled) {
                 const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
@@ -39,8 +53,6 @@ const userController = {
             if (!verified) {
                 return res.status(401).json({ message: "Invalid Code" });
             }
-
-            res.status(200).json({ token });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -85,17 +97,19 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Reset password
+
+    // Reset password
     resetPassword: async (req, res) => {
         try {
             const userEmail = req.body.email;
             const password = req.body.password;
             const user = await userModel.findOne({ Email: userEmail });
+
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const salt = generateSalt();
+            const salt = await generateSalt();
             const hash = bcrypt.hashSync(password, salt);
             user.Password = hash;
             user.Salt = salt;
@@ -106,7 +120,8 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Get QR Code
+
+    // Get QR Code
     getQRImage: async (req, res) => {
         try {
             const { id } = req.cookies;
@@ -120,17 +135,20 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Set MFA get request
+
+    // Set MFA get request
     setMFA: async (req, res) => {
         try {
             const { id } = req.cookies;
             const { code } = req.query;
+            const user = await userModel.findById(req.user.userId);
             const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);
             if (!verified) {
                 return res.status(401).json({ message: "Invalid Code" });
             }
+
             user.secret = temp_secret;
             user.MFA_Enabled = true;
             await user.save();
@@ -138,15 +156,47 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
+    }
 };
 
-function generateSalt() {
-    //return Math.round((new Date().valueOf() * Math.random())) + '';
-    Crypto.randomBytes('256', function (err, buf) {
-        if (err) throw err;
-        return buf;
-    });
+// Function to get user based on role
+async function getUser(req, res) {
+    try {
+        const Token = req.header('Authorization');
+        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
+        
+    } catch (error) {
+        console.error('Error could not get user', error);
+        throw error;
+    }
 }
-module.exports = userController;
 
-// Path: Backend/controllers/userController.js
+export { userController, getUser };
+
+// async function getUser(userId) {
+//     const User = require('./models/userModel');
+//     const Admin = require('./models/adminModel');
+//     const Manager = require('./models/managerModel');
+//     const Agent = require('./models/agentModel');
+//     const Client = require('./models/clientModel');
+//     try {
+//       const user = await User.findById({ _id: userId }); //assuming all users of different role types are also saved in the users table
+
+//       switch (user.RoleID) {
+//         case 1:
+//           return await Admin.findById(userId);
+//         case 2:
+//           return await Manager.findById(userId);
+//         case 3:
+//           return await Agent.findById(userId);
+//         case 4:
+//           return await Client.findById(userId);
+//         default:
+//           return null; // user is not in tables
+//       }
+
+//     } catch (error) {
+//       console.error('Error could not get user', error)
+//       throw error;
+//     }
+//   }

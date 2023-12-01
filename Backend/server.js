@@ -33,6 +33,8 @@ app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
 
+app.get('/getUser')
+
 // Start the server
 const port = 3000;
 app.listen(port, () => {

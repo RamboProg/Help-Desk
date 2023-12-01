@@ -15,4 +15,5 @@ router.get('/api/v1/auth/QrImage', getQRImage);
 
 router.get('/api/v1/auth/setMFA', setMFA);
 
+
 module.exports = router;
