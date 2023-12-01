@@ -7,6 +7,18 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
+const Crypto = require('crypto');
+function generateSalt() {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(256, (err, buf) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(buf);
+        }
+      });
+    });
+  }
 
 const userController = {
     // Login user
@@ -29,7 +41,7 @@ const userController = {
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
-
+            }
             if (!user.MFA_Enabled) {
                 const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
                 return res.status(200).json({ token });
@@ -85,17 +97,18 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Reset password
+    // Reset password
     resetPassword: async (req, res) => {
         try {
             const userEmail = req.body.email;
             const password = req.body.password;
             const user = await userModel.findOne({ Email: userEmail });
+
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const salt = generateSalt();
+            const salt = await generateSalt(); // Use await to get the result from the promise
             const hash = bcrypt.hashSync(password, salt);
             user.Password = hash;
             user.Salt = salt;
@@ -106,7 +119,8 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Get QR Code
+
+    // Get QR Code
     getQRImage: async (req, res) => {
         try {
             const { id } = req.cookies;
@@ -120,17 +134,20 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Set MFA get request
+
+    // Set MFA get request
     setMFA: async (req, res) => {
         try {
             const { id } = req.cookies;
             const { code } = req.query;
+            const user = await userModel.findById(req.user.userId); // Fetch user from the database
             const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);
             if (!verified) {
                 return res.status(401).json({ message: "Invalid Code" });
             }
+
             user.secret = temp_secret;
             user.MFA_Enabled = true;
             await user.save();
@@ -138,15 +155,22 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
+    }
 };
 
-function generateSalt() {
-    //return Math.round((new Date().valueOf() * Math.random())) + '';
-    Crypto.randomBytes('256', function (err, buf) {
-        if (err) throw err;
-        return buf;
+// Move the generateSalt function outside the userController object
+async function generateSalt() {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(256, (err, buf) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(buf);
+            }
+        });
     });
 }
+
 module.exports = userController;
 
 // Path: Backend/controllers/userController.js
