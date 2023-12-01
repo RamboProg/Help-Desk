@@ -4,12 +4,13 @@ import io from 'socket.io';
 export const chatController = {
   send_message: async (req, res) => {
     try {
-      const chatId = req.params.chatId;
-      const { message, sender_id } = req.body;
+      const { chatId } = req.params;
+      const { Username } = await getUser(req);
+      const { message } = req.body;
 
       // Save the message to the database
       const chat = await Chat.findById(chatId);
-      chat.Messages.push({ message, sender_id });
+      chat.Messages.push({ message, Username });
       await chat.save();
 
       // Update the final message time and message count
@@ -18,7 +19,7 @@ export const chatController = {
       await chat.save();
 
       // Emit the message to all connected clients in the chat room
-      io.emit(`chat_${chatId}`, { message, senderType });
+      io.emit(`chat_${chatId}`, { message, Username });
 
       res.status(200).json({ success: true });
     } catch (error) {
