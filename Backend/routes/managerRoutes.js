@@ -1,10 +1,6 @@
-
+// routes/manager.js
 const express = require('express');
 const router = express.Router();
 const managerController = require('../controllers/managerController');
-
-// Update closed ticket and generate reports
-//router.put('/auth/manager/tickets/:ticketId', managerController.updateClosedTicket);
-
-
+router.get('/api/v1/auth/manager/tickets/:ticketId', managerController.getTicketStatus,managerController.getResolutionTime,managerController.getAgentPerformance);
 module.exports = router;

@@ -1,54 +1,35 @@
-import { useState } from "react"; // Import React and useState
-import "./styles.css"; // Corrected import statement
+// App.jsx
+import { useState } from 'react';
+import { createRoot } from 'react-dom';
+import { ThemeProvider } from 'styled-components';
+import themes from './config/themeConfig';
+import ThemedComponent from './components/ThemedComponent';
 
-function App() {
-  const [newItem, setNewItem] = useState(""); // Corrected typo: useSatte -> useState
-  const [todos, setTodos] = useState([]); // Corrected typo: settodos -> setTodos
+const App = () => {
+  const [selectedTheme, setSelectedTheme] = useState('default');
 
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    setTodos((currentTodos) => [
-      ...currentTodos,
-      {
-        id: crypto.randomUUID(),
-        title: newItem,
-        complete: false,
-      },
-    ]);
-
-    // Reset newItem after submission
-    setNewItem("");
-  }
+  const changeTheme = (theme) => {
+    setSelectedTheme(theme);
+  };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="new-item-form">
-        <div className="form-row">
-          <label htmlFor="item">New Item</label>
-          <input
-            type="text"
-            id="item"
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-          />
+    <ThemeProvider theme={themes[selectedTheme]}>
+      <div>
+        <ThemedComponent>
+          This is a themed component.
+        </ThemedComponent>
+        
+        <div>
+          <button onClick={() => changeTheme('default')}>Default Theme</button>
+          <button onClick={() => changeTheme('dark')}>Dark Theme</button>
+          <button onClick={() => changeTheme('light')}>Light Theme</button>
         </div>
-        <button type="submit" className="btn">
-          Add
-        </button>
-      </form>
-      <h1 className="header">Todo List</h1>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            <input type="checkbox" checked={todo.complete} />
-            <label>{todo.title}</label>
-            <button className="btn btn-danger">Delete</button>
-          </li>
-        ))}
-      </ul>
-    </>
+      </div>
+    </ThemeProvider>
   );
-}
+};
 
-export default App;
+const root = document.getElementById('root');
+const reactRoot = createRoot(root);
+reactRoot.render(<App />);
+export default App; // Export the component
