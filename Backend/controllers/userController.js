@@ -1,13 +1,12 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+
 const authenticator = require('otplib');
 const securityKey = authenticator.generateSecret();
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
-
 
 const userController = {
     // Login user
@@ -30,18 +29,18 @@ const userController = {
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
-            }
+
             if (!user.MFA_Enabled) {
                 const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
-
                 return res.status(200).json({ token });
             }
+
             const verified = authenticator.check(code, user.secret);
             if (!verified) {
                 return res.status(401).json({ message: "Invalid Code" });
             }
 
-
+            res.status(200).json({ token });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -121,13 +120,12 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-    //Set MFA get rqeust
+    //Set MFA get request
     setMFA: async (req, res) => {
         try {
             const { id } = req.cookies;
             const { code } = req.query;
-            const user = await userModel.findById({ _id: id });
-            const { temp_secret } = user.temp_secret;
+            const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);
             if (!verified) {
@@ -140,9 +138,6 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    },
-
-
 };
 
 function generateSalt() {
@@ -152,8 +147,6 @@ function generateSalt() {
         return buf;
     });
 }
-
-
 module.exports = userController;
 
 // Path: Backend/controllers/userController.js

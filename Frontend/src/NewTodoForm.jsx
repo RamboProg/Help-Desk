@@ -1,27 +1,31 @@
+// App.jsx
 import { useState } from 'react';
+import { ThemeProvider } from 'styled-components';
+import themes from './themeConfig';
+import ThemedComponent from './ThemedComponent';
 
-export function NewTodoForm() {
-  const [newItem, setNewItem] = useState('');
+const App = () => {
+  const [selectedTheme, setSelectedTheme] = useState('default');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted!: ", newItem);
+  const changeTheme = (theme) => {
+    setSelectedTheme(theme);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="new-item-form">
-      <div className="form-row">
-        <label htmlFor="item">New Item</label>
-        <input
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          type="text"
-          id="item"
-        />
+    <ThemeProvider theme={themes[selectedTheme]}>
+      <div>
+        <ThemedComponent>
+          This is a themed component.
+        </ThemedComponent>
+        
+        <div>
+          <button onClick={() => changeTheme('default')}>Default Theme</button>
+          <button onClick={() => changeTheme('dark')}>Dark Theme</button>
+          <button onClick={() => changeTheme('light')}>Light Theme</button>
+        </div>
       </div>
-      <button type="submit" className="btn">
-        Add
-      </button>
-    </form>
+    </ThemeProvider>
   );
-}
+};
+
+export default App;

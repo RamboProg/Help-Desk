@@ -44,5 +44,3 @@ function generateSalt() {
 
 
 module.exports = userController;
-
-// Path: Backend/controllers/userController.js
