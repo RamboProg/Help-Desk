@@ -1,8 +1,12 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-const securityKey = "S12k4r4,.;lp";
+
+const authenticator = require('otplib');
+const securityKey = authenticator.generateSecret();
 const bcrypt = require('bcryptjs');
+const express = require('express');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
 
 const userController = {
     // Register user
@@ -31,8 +35,8 @@ const userController = {
     },
     // Login user
     loginUser: async (req, res) => {
-        try {
-            const { email, password } = req.body;
+
+            const { email, password, code } = req.body;
 
             // Find the user by email
             const user = await userModel.findOne({ Email: email });
@@ -49,11 +53,17 @@ const userController = {
 
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid credentials" });
+
+            if(!user.MFA_Enabled){
+                const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
+
+                return res.status(200).json({ token });
             }
-
-            const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
-
-            res.status(200).json({ token });
+            const verified = authenticator.check(code, user.secret);
+            if(!verified){
+                return res.status(401).json({message:"Invalid Code"});
+            }
+            
 
         } catch (error) {
             res.status(500).json({ message: error.message });
@@ -120,6 +130,41 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
+    //Get QR Code
+    getQRImage : async (req,res) => {
+        try{
+            const {id} = req.cookies;
+            const user =await userModel.findById(req.user.userId);
+            const uri  =authenticator.keyuri(id, "Help Desk",securityKey);
+            const image = await qrcode.toDataURL(uri);
+            user.temp_secret = securityKey;
+            await user.save();
+            return res.status(200).json({image});
+        }catch(error){
+            res.status(500).json({ message: error.message });
+        }
+    },
+    //Set MFA get rqeust
+    setMFA : async (req,res) =>{
+       try{
+            const {id} = req.cookies;
+            const {code} = req.query;
+            const user =await userModel.findById({_id:id}); 
+            const {temp_secret} = user.temp_secret;
+
+            const verified = authenticator.check(code, temp_secret);
+            if(!verified){
+                return res.status(401).json({message:"Invalid Code"});
+            }
+           user.secret =temp_secret;
+           user.MFA_Enabled = true;
+           await user.save();
+            return res.status(200).json({message:"MFA Enabled"});
+       }catch (error){
+              res.status(500).json({ message: error.message });
+       } 
+    },
+    
 };
 
 function generateSalt() {
@@ -129,7 +174,6 @@ function generateSalt() {
         return buf;
     });
 }
-
 module.exports = userController;
 
 // Path: Backend/controllers/userController.js
