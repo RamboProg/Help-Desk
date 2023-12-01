@@ -11,7 +11,7 @@ const supportAgentSchema = new mongoose.Schema({
     Is_Enabled: { type: Boolean, ref: 'User' },
     Pref_Type: { type: String },
     Average_Rating: { type: Number },
-    Ticket_Count: { type: Number }
+    Ticket_Count: { type: Number },
     Active_Tickets: { type: Number },
     Salt : {type: String, ref: 'User'}
   });
