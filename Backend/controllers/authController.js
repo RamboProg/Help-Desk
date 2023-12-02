@@ -115,12 +115,11 @@ refresh: async (req, res, next) => {
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
-            {expiresIn: '10s'}
-        )
+            {expiresIn: '10s'} //make it 15 min after deployement it's 10s for testing purposes
+            )
 
+            return res.status(200).json({ accessToken });
 
-
-        next();
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
             return res.status(403).json({ message: 'Token expired' });
@@ -132,6 +131,10 @@ refresh: async (req, res, next) => {
 
 
     logout: async (req, res) => {
+        const cookies = req.cookies;
+        if (!cookies?.jwt) return res.status(204)
+        res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true })
+        return res.status(200).json({message: 'Cookie cleared'});
 
     }
 }
