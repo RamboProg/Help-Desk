@@ -32,3 +32,6 @@ package-lock.json
 *.sw?
 
 .env
+.venv
+package.json
+package-lock.json
