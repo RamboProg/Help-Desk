@@ -16,3 +16,4 @@ const ticketSchema = new Schema({
 
 export default model('Ticket', ticketSchema);
 export const Schema = ticketSchema;
+
