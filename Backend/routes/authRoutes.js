@@ -4,8 +4,10 @@ const authController = require('../controllers/authController');
 
 //router.route('/').post()
 
-router.route('/refresh').get(authController.refresh)
+router.post('/api/v1/auth/login', loginUser); //Login user
 
-router.route('/logout').post(authController.logout)
+router.get('/refresh', refresh)
+
+router.post('/logout' , logout)
 
 module.exports = router
