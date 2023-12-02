@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { loginUser, viewUserProfile, updateUserProfile, resetPassword, getQRImage, setMFA } = require('../controllers/userController');
 const { authenticateUser } = require('../middleware/authMiddleware');
+const verifyJWT = require('../middleware/verifyJWT')
+
+router.use(verifyJWT)
 
 router.get('/api/v1/profile', authenticateUser, viewUserProfile); //View user profile
 
