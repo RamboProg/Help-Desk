@@ -52,6 +52,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Import routes
 app.use('/workflow', workflowRouter);
+app.use('/auth', require('../routes/authRoutes'));
+
 
 //const loggerController = require('./controllers/loggerController');
 const Image = mongoose.model('Image', { imagePath: String });
