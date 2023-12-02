@@ -20,40 +20,40 @@ async function generateSalt() {
 
 const userController = {
     // Login user
-    loginUser: async (req, res) => {
-        try {
-            const { email, password, code } = req.body;
+    // loginUser: async (req, res) => {
+    //     try {
+    //         const { email, password, code } = req.body;
 
-            // Find the user by email
-            const user = await userModel.findOne({ Email: email });
+    //         // Find the user by email
+    //         const user = await userModel.findOne({ Email: email });
 
-            if (!user) {
-                return res.status(401).json({ message: "Invalid credentials" });
-            }
+    //         if (!user) {
+    //             return res.status(401).json({ message: "Invalid credentials" });
+    //         }
 
-            const salt = user.Salt;
-            const hash = bcrypt.hashSync(password, salt);
-            const isPasswordValid = bcrypt.compareSync(hash, user.Password);
+    //         const salt = user.Salt;
+    //         const hash = bcrypt.hashSync(password, salt);
+    //         const isPasswordValid = bcrypt.compareSync(hash, user.Password);
 
-            if (!isPasswordValid) {
-                return res.status(401).json({ message: "Invalid credentials" });
-            }
+    //         if (!isPasswordValid) {
+    //             return res.status(401).json({ message: "Invalid credentials" });
+    //         }
 
-            if (!user.MFA_Enabled) {
-                const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
-                return res.status(200).json({ token });
-            }
+    //         if (!user.MFA_Enabled) {
+    //             const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
+    //             return res.status(200).json({ token });
+    //         }
 
-            const verified = authenticator.check(code, user.secret);
-            if (!verified) {
-                return res.status(401).json({ message: "Invalid Code" });
-            }
+    //         const verified = authenticator.check(code, user.secret);
+    //         if (!verified) {
+    //             return res.status(401).json({ message: "Invalid Code" });
+    //         }
 
-            res.status(200).json({ token });
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
+    //         res.status(200).json({ token });
+    //     } catch (error) {
+    //         res.status(500).json({ message: error.message });
+    //     }
+    // },
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -136,9 +136,9 @@ const userController = {
     // Set MFA get request
     setMFA: async (req, res) => {
         try {
-            const { id } = req.cookies;
+            const { Username } = req.cookies;
             const { code } = req.query;
-            const user = await userModel.findById(req.user.userId);
+            const user = await userModel.findById(Username);
             const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);
@@ -158,27 +158,12 @@ const userController = {
 
 // Function to get user based on role
 async function getUser(req, res) {
-    try {
-        const User = require('./models/userModel');
-        const Admin = require('./models/adminModel');
-        const Manager = require('./models/managerModel');
-        const Agent = require('./models/agentModel');
-        const Client = require('./models/clientModel');
-        const userId = req.params.userId;
+    try 
+    {
+        
 
-        switch (user.RoleID) {
-            case 1:
-                return await Admin.findById(userId);
-            case 2:
-                return await Manager.findById(userId);
-            case 3:
-                return await Agent.findById(userId);
-            case 4:
-                return await Client.findById(userId);
-            default:
-                return null; // user is not in tables
-        }
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error could not get user', error);
         throw error;
     }

@@ -4,10 +4,10 @@ const authController = require('../controllers/authController');
 const verifyJWT = require('../middleware/verifyJWT')
 
 router.use(verifyJWT)
-router.post('/api/v1/auth/login', loginUser); //Login user
+router.post('/api/v1/auth/login', authController.loginUser); //Login user
 
-router.get('/refresh', refresh)
+router.get('/refresh', authController.refresh);
 
-router.post('/logout' , logout)
+router.post('/logout' , authController.logout);
 
-module.exports = router
+module.exports = router;
