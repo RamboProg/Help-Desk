@@ -4,6 +4,11 @@ import bcrypt from 'bcryptjs';
 import qrcode from 'qrcode';
 import crypto from 'crypto';
 import userModel from '../models/userModel.js';
+import adminModel from '../models/adminModel.js';
+import managerModel from '../models/managerModel.js';
+import agentModel from '../models/agentModel.js';
+import clientModel from '../models/clientModel.js';
+const jwt = require("jsonwebtoken");
 
 // Function to generate salt
 async function generateSalt() {
@@ -160,7 +165,24 @@ const userController = {
 async function getUser(req, res) {
     try 
     {
-        
+        const token  = req.cookies.token;
+        // add tje security key
+        const verified = jwt.verify(token, securityKey, (err, decoded) => {
+            if(err) {
+                return res.status(403).json({message: "Invalid token"});
+            }
+            req.user = decoded.user;
+
+        });
+        if(!verified) return res.status(401).json({message: "Unauthorized"});
+        const userName = verified.user.UserInfo.Username;
+        const RoleId = verified.user.UserInfo.RoleId;
+        const User = userModel.findById(userName);
+        if(RoleId ===1)return await adminModel.findById(userName);
+        else if(RoleId ===2)return await managerModel.findById(userName);
+        else if(RoleId ===3)return await agentModel.findById(userName);
+        else if(RoleId ===4)return await clientModel.findById(userName);
+        else return null;
 
     }
     catch (error) {

@@ -13,7 +13,7 @@ const supportAgentSchema = new mongoose.Schema({
     Average_Rating: { type: Number },
     Ticket_Count: { type: Number },
     Active_Tickets: { type: Number },
-    Salt : {type: String, ref: 'User'}
-
+    Salt : {type: String, ref: 'User'},
+});
 module.exports = mongoose.model('SupportAgent', supportAgentSchema);
 module.exports.Schema = supportAgentSchema;
