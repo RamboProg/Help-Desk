@@ -37,16 +37,16 @@ const authController = {
             },
           },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "10s" } //make it 15 min after deployement it's 10s for testing purposes
+          { expiresIn: "1h" } //make it 15 min after deployement it's 10s for testing purposes
         );
         //create secure cookie with refresh token
         res.cookie("jwt", accessToken, {
           httpOnly: true,
-          secure: true,
+          //secure: true,
           sameSite: "None",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        return res.status(200).json({ accessToken });
+        return res.status(200).json({ message: "Logged in " });
       }
 
       const verified = authenticator.check(code, user.secret);
