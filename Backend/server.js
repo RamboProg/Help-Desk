@@ -1,24 +1,25 @@
-const http = require('http');
 const express = require('express');
-const socketIo = require('socket.io');
+const http = require('http');
+const { Server } = require('socket.io');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const dotenv = require('dotenv');
+const workflowRouter = require('./routes/workflowRoute');
+
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
-const bodyParser = require('body-parser'); // Add this line for bodyParser
-const mongoose = require('mongoose');
-const multer = require('multer'); // Move multer import to here
-const path = require('path'); // Add this line for path
-require('dotenv').config();
+const io = new Server(server);
 
-// Import routes
-const workflowRouter = require('./routes/workflowRoute');
-
-// Create an instance of Express
-const app = express();
-
-//const loggerController = require('./controllers/loggerController');
-const Image = mongoose.model('Image', { imagePath: String });
+// Connect to MongoDB
+// mongoose.connect(process.env.MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useFindAndModify: false,
+// });
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -31,21 +32,37 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }); // Now you can use multer
+// Route for ML model prediction
+app.post('/predict-agent', async (req, res) => {
+  try {
+      const response = await axios.post('http://localhost:3000/predict', req.body);
+      res.json(response.data);
+  } catch (error) {
+      console.error('Error calling Flask service:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
 
-import http from 'http';
-import { Server } from 'socket.io';
 
-// Create an instance of Express
-const server = http.createServer(app);
-const io = new Server(server);
+const upload = multer({ storage: storage });
 
-// Connect to MongoDB
-// mongoose.connect(process.env.MONGODB_URI, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   useFindAndModify: false,
-// });
+// Add middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Import routes
+app.use('/workflow', workflowRouter);
+
+//const loggerController = require('./controllers/loggerController');
+const Image = mongoose.model('Image', { imagePath: String });
+
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
+    console.log('A user connected');
+});
+
+// Start the server
+const PORT = process.env.PORT;
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
