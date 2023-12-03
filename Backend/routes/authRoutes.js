@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const verifyJWT = require('../middleware/verifyJWT')
+const {loginUser} = require('../controllers/authController');
+const verifyJWT = require('../middleware/verifyJWT');
 
-router.use(verifyJWT)
-router.post('/api/v1/auth/login', authController.loginUser); //Login user
+
+
+//router.use(verifyJWT);
+router.post('/api/v1/auth/login',loginUser); //Login user
 
 router.get('/refresh', authController.refresh);
 

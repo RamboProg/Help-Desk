@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { schema, model } from 'mongoose';
 
-const ticketSchema = new Schema({
+const ticketSchema = new schema({
     _id: { type: Number, required: true },
     Status: { type: String },
     Assigned_AgentID: { type: Number, ref: 'Support_Agent', required: true },

@@ -7,6 +7,8 @@ const multer = require('multer');
 const path = require('path');
 const dotenv = require('dotenv');
 const workflowRouter = require('./routes/workflowRoute');
+const axios = require('axios');
+const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
 
@@ -14,12 +16,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Connect to MongoDB
-// mongoose.connect(process.env.MONGODB_URI, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   useFindAndModify: false,
-// });
+//Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+});
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -52,7 +54,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Import routes
 app.use('/workflow', workflowRouter);
-app.use('/auth', require('../routes/authRoutes'));
+app.use('/auth', require('./routes/authRoutes'));
 
 
 //const loggerController = require('./controllers/loggerController');
