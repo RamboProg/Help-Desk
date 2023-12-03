@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
 const {loginUser} = require('../controllers/authController');
+const {refresh} = require('../controllers/authController');
+const {logout} = require('../controllers/authController');
 const verifyJWT = require('../middleware/verifyJWT');
 
 
@@ -9,8 +10,8 @@ const verifyJWT = require('../middleware/verifyJWT');
 //router.use(verifyJWT);
 router.post('/api/v1/auth/login',loginUser); //Login user
 
-router.get('/refresh', authController.refresh);
+router.get('/api/v1/auth/refresh', refresh);
 
-router.post('/logout' , authController.logout);
+router.post('/api/v1/auth/logout' ,logout);
 
 module.exports = router;

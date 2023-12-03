@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const authenticator = require('otplib');
 const bcrypt = require('bcryptjs');
+const admin = require("../models/adminModel");
 //const qrcode = require('qrcode');
 //const crypto = require('crypto');
 
