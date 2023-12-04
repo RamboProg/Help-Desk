@@ -8,20 +8,19 @@ const path = require('path');
 const dotenv = require('dotenv');
 const workflowRouter = require('./routes/workflowRoute');
 const axios = require('axios');
-const authRoutes = require('./routes/authRoutes');
+const authRouter = require('./routes/authRoutes');
+const cookieParser = require('cookie-parser');
+const authernicationMiddleware = require('./middleware/authenticationMiddleware');
+const cors = require('cors');
+const connectDB = require('./config/db');
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+connectDB();
 
-//Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-});
 
 // Multer storage setup
 const storage = multer.diskStorage({
