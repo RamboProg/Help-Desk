@@ -14,7 +14,13 @@ app.post('/new-ticket', async (req, res) => {
     // Enqueue the ticket based on its priority
     if (priority === 'high') {
         highPriorityQueue.enqueue(newTicket);
-    }    // ... handle for medium and low priorities
+    }
+    if (priority === 'medium') {
+        mediumPriorityQueue.enqueue(newTicket);
+    }
+    if (priority === 'low') {
+        lowPriorityQueue.enqueue(newTicket);
+    }  
 
     // Try to assign the ticket
     await assignTicket();
