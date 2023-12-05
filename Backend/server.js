@@ -46,7 +46,7 @@ app.listen(port, () => {
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
 
 // Use the workflow router
 app.use('/', workflowRouter);
