@@ -123,5 +123,4 @@ module.exports = {
   logout,
   loginUser,
   refresh,
-
 };

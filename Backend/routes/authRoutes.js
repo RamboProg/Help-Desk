@@ -8,7 +8,7 @@ const verifyJWT = require('../middleware/verifyJWT');
 
 
 //router.use(verifyJWT);
-router.post('/api/v1/auth/login',loginUser); //Login user
+router.post('/login',loginUser); //Login user
 
 router.get('/api/v1/auth/refresh', refresh);
 

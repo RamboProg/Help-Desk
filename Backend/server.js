@@ -1,26 +1,20 @@
+// Import required modules
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
-const multer = require('multer');
-const path = require('path');
-const dotenv = require('dotenv');
+const multer = require('multer'); // Move multer import to here
+const path = require('path'); // Add this line for path
+require('dotenv').config();
+
+// Import routes
 const workflowRouter = require('./routes/workflowRoute');
-const axios = require('axios');
-const authRouter = require('./routes/authRoutes');
-const cookieParser = require('cookie-parser');
-const authernicationMiddleware = require('./middleware/authenticationMiddleware');
-const cors = require('cors');
-const connectDB = require('./config/db');
+const login= require("./routes/authRoutes");
 
-dotenv.config();
-
+// Create an instance of Express
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-connectDB();
 
+//const loggerController = require('./controllers/loggerController');
+const Image = mongoose.model('Image', { imagePath: String });
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -33,39 +27,49 @@ const storage = multer.diskStorage({
     }
 });
 
-// Route for ML model prediction
-app.post('/predict-agent', async (req, res) => {
-  try {
-      const response = await axios.post('http://localhost:3000/predict', req.body);
-      res.json(response.data);
-  } catch (error) {
-      console.error('Error calling Flask service:', error);
-      res.status(500).send('Internal Server Error');
-  }
+const upload = multer({ storage: storage }); // Now you can use multer
+
+// Define a route
+app.get('/', (req, res) => {
+  res.send('Hello, world!');
 });
 
-
-const upload = multer({ storage: storage });
-
-// Add middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Import routes
-app.use('/workflow', workflowRouter);
-app.use('/auth', require('./routes/authRoutes'));
-
-
-//const loggerController = require('./controllers/loggerController');
-const Image = mongoose.model('Image', { imagePath: String });
-
-
-io.on('connection', (socket) => {
-    console.log('A user connected');
-});
+app.get('/getUser')
 
 // Start the server
-const PORT = process.env.PORT;
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+/*                     Rambo's Code                    */
+// Middleware
+app.use(bodyParser.json());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
+
+app.use('/api/v1/auth', login);
+// Use the workflow router
+app.use('/', workflowRouter);
+
+// Use the login router
+
+
+
+
+// Logo/Image upload
+app.post('/api/v1/images', upload.single('image'), async (req, res) => {
+    try {
+        const image = new Image({ imagePath: req.file.path });
+        await image.save();
+        res.status(201).json({ image });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+// Error handling middleware
+app.use((err, req, res, next) => {
+  logger.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
