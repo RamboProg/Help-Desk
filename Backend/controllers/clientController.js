@@ -90,6 +90,7 @@ export const clientController = {
       if (requestedSubIssueType.toLowerCase() == 'other') {
         newChat = new Chat({
           _id: new mongoose.Types.ObjectId(),
+          Client_ID: _id,
           Support_AgentID: null, //needs a function
           Messages: null,
           Start_Time: currentDate.getTime(),
@@ -147,6 +148,7 @@ export const clientController = {
       if (req.body.rating <= 1) {
         newChat = new Chat({
           _id: new mongoose.Types.ObjectId(),
+          Client_ID: _id,
           Support_AgentID: null, //needs a function
           Messages: null,
           Start_Time: currentDate.getTime(),
