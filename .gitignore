@@ -33,3 +33,6 @@ package-lock.json
 
 .env
 .venv
+packages.json
+package-lock.json
+
