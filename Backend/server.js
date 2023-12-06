@@ -10,7 +10,9 @@ const path = require('path'); // Add this line for path
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
 
-// Create an instance of Express
+
+dotenv.config();
+
 const app = express();
 
 //const loggerController = require('./controllers/loggerController');
@@ -27,14 +29,21 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }); // Now you can use multer
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-// Define a route
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
+const upload = multer({ storage: storage });
+
+// Add middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Import routes
+app.use('/workflow', workflowRouter);
+
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
 });
-
-app.get('/getUser')
 
 // Start the server
 const port = 3000;

@@ -13,7 +13,12 @@ const supportAgentSchema = new mongoose.Schema({
     Average_Rating: { type: Number },
     Ticket_Count: { type: Number },
     Active_Tickets: { type: Number },
+<<<<<<< HEAD
     Salt : {type: String, ref: 'User'},
 });
+=======
+    Salt : {type: String, ref: 'User'}});
+
+>>>>>>> 1b072bed3ccae64f238b0b3fd4c1e62a6e961b26
 module.exports = mongoose.model('SupportAgent', supportAgentSchema);
 module.exports.Schema = supportAgentSchema;
