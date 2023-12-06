@@ -13,7 +13,7 @@ const logger = createLogger({
       new transports.File({ filename: 'error.log', level: 'error' }),
       new winstonMongoDB.MongoDB({
         level: 'error', // Log only errors to MongoDB
-        db: process.env.MONGODB_URI,
+        db: process.env.MONGO_URI,
         options: {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -26,7 +26,7 @@ const logger = createLogger({
       new transports.File({ filename: 'exceptions.log' }),
       new winstonMongoDB.MongoDB({
         level: 'exception', // Log only exceptions to MongoDB
-        db: process.env.MONGODB_URI,
+        db: process.env.MONGO_URI,
         options: {
           useNewUrlParser: true,
           useUnifiedTopology: true,
