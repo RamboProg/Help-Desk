@@ -9,11 +9,15 @@ const path = require('path'); // Add this line for path
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
+const ticketRoutes = require('./routes/ticketRoutes');  // Import the ticketRoutes module
 
 
-dotenv.config();
 
 const app = express();
+
+//use the ticket route
+app.use(ticketRoutes);
+
 
 //const loggerController = require('./controllers/loggerController');
 const Image = mongoose.model('Image', { imagePath: String });
