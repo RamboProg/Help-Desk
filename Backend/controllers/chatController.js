@@ -1,5 +1,7 @@
-import io from 'socket.io';
-import Chat from '../models/chatModel.js';
+// import io from 'socket.io';
+// import Chat from '../models/chatModel.js';
+const io = require('socket.io')(server);
+const Chat = require('../models/chatModel');
 const jwt = require('jsonwebtoken');
 
 // const saveChat = async (message, fromId, toId) => { //function for saving chats

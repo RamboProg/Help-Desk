@@ -1,6 +1,7 @@
 // Import required modules
 require('dotenv').config();
 const express = require('express');
+const http = require('http');
 const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
@@ -9,14 +10,17 @@ const path = require('path'); // Add this line for path
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
-const ticketRoutes = require('./routes/ticketRoutes');  // Import the ticketRoutes module
-
-
+const ticketRoutes = require('./routes/ticketRoutes');
 
 const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+
+
 
 //use the ticket route
 app.use(ticketRoutes);
+
 
 
 //const loggerController = require('./controllers/loggerController');
