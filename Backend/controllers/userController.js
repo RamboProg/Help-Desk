@@ -1,4 +1,6 @@
-const express = require('express');
+const userModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const authenticator = require('otplib');
 const bcrypt = require('bcryptjs');
 const qrcode = require('qrcode');
@@ -8,7 +10,21 @@ const adminModel = require('../models/adminModel.js');
 const managerModel = require('../models/managerModel.js');
 const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
-const jwt = require("jsonwebtoken");
+
+
+// Function to generate salt
+async function generateSalt() {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(256, (err, buf) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(buf);
+            }
+        });
+    });
+}
+const authentication = require('../middleware/authenticationMiddleware');
 
 
 // Function to generate salt
@@ -37,13 +53,9 @@ const userController = {
     //             return res.status(401).json({ message: "Invalid credentials" });
     //         }
 
-    //         const salt = user.Salt;
-    //         const hash = bcrypt.hashSync(password, salt);
-    //         const isPasswordValid = bcrypt.compareSync(hash, user.Password);
-
-    //         if (!isPasswordValid) {
-    //             return res.status(401).json({ message: "Invalid credentials" });
-    //         }
+            // if (!isPasswordValid) {
+            //     return res.status(401).json({ message: "Invalid credentials" });
+            // }
 
     //         if (!user.MFA_Enabled) {
     //             const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
@@ -144,7 +156,7 @@ const userController = {
         try {
             const { Username } = req.cookies;
             const { code } = req.query;
-            const user = await userModel.findById(Username);
+            const user = await userModel.findById(req.user.userId);
             const temp_secret = user.temp_secret;
 
             const verified = authenticator.check(code, temp_secret);

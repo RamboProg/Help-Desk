@@ -53,6 +53,8 @@ io.on('connection', (socket) => {
     console.log('A user connected');
 });
 
+app.get('/getUser')
+
 // Start the server
 const port = 3000;
 app.listen(port, () => {

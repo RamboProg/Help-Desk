@@ -20,4 +20,5 @@ router.get('/api/v1/profile', viewUserProfile); //View user profile
 
 router.put('/api/v1/profile/update',  updateUserProfile); //Update user profile
 
+
 module.exports = router;
