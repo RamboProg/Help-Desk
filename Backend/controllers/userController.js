@@ -41,37 +41,62 @@ async function generateSalt() {
 }
 
 const userController = {
+    registerUser: async (req, res) => {
+        try {
+            const { email, password, username, phoneNumber } = req.body;
+
+            const userExists = await userModel.findOne({ Email: email });
+            if (userExists) {
+                res.status(400).json({ message: "User already exists" });
+            } else {
+                const salt = generateSalt();
+                const hash = bcrypt.hashSync(password, salt);
+                const user = await userModel.create({
+                    Email: email,
+                    Password: hash,
+                    Username: username,
+                    PhoneNumber: phoneNumber,
+                    Salt: salt,
+                });
+                res.status(201).json(user);
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
     // Login user
-    // loginUser: async (req, res) => {
-    //     try {
-    //         const { email, password, code } = req.body;
+    loginUser: async (req, res) => {
+        try {
+            const { email, password, code } = req.body;
 
-    //         // Find the user by email
-    //         const user = await userModel.findOne({ Email: email });
+            // Find the user by email
+            const user = await userModel.findOne({ Email: email });
 
-    //         if (!user) {
-    //             return res.status(401).json({ message: "Invalid credentials" });
-    //         }
+            if (!user) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
 
-            // if (!isPasswordValid) {
-            //     return res.status(401).json({ message: "Invalid credentials" });
-            // }
+            const salt = user.Salt;
+            const hash = bcrypt.hashSync(password, salt);
+            const isPasswordValid = bcrypt.compareSync(hash, user.Password);
 
-    //         if (!user.MFA_Enabled) {
-    //             const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
-    //             return res.status(200).json({ token });
-    //         }
+            if (!isPasswordValid) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
 
-    //         const verified = authenticator.check(code, user.secret);
-    //         if (!verified) {
-    //             return res.status(401).json({ message: "Invalid Code" });
-    //         }
+            if (!user.MFA_Enabled) {
+                const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
+                return res.status(200).json({ token });
+            }
 
-    //         res.status(200).json({ token });
-    //     } catch (error) {
-    //         res.status(500).json({ message: error.message });
-    //     }
-    // },
+            const verified = authenticator.check(code, user.secret);
+            if (!verified) {
+                return res.status(401).json({ message: "Invalid Code" });
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -154,7 +179,7 @@ const userController = {
     // Set MFA get request
     setMFA: async (req, res) => {
         try {
-            const { Username } = req.cookies;
+            const { id } = req.cookies;
             const { code } = req.query;
             const user = await userModel.findById(req.user.userId);
             const temp_secret = user.temp_secret;
@@ -176,30 +201,11 @@ const userController = {
 
 // Function to get user based on role
 async function getUser(req, res) {
-    try 
-    {
-        const token = req.cookies.jwt;
-        console.log(token);
-        // add tje security key
-        const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-            if(err) {
-                return res.status(403).json({message: "Invalid token"});
-            }
-            req.user = decoded.user;
-
-        });
-        if(!verified) return res.status(401).json({message: "Unauthorized"});
-        const userId = verified.user.UserInfo.UserId;
-        const RoleId = verified.user.UserInfo.RoleId;
-        const User = userModel.findById(userId);
-        if(RoleId ===1)return await adminModel.findById(userId);
-        else if(RoleId ===2)return await managerModel.findById(userId);
-        else if(RoleId ===3)return await agentModel.findById(userId);
-        else if(RoleId ===4)return await clientModel.findById(userId);
-        else return null;
-
-    }
-    catch (error) {
+    try {
+        const Token = req.header('Authorization');
+        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
+        
+    } catch (error) {
         console.error('Error could not get user', error);
         throw error;
     }

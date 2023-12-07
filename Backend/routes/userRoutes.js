@@ -5,6 +5,7 @@ const {loginUser} = require('../controllers/authController');
 const { authenticateUser } = require('../middleware/authenticationMiddleware');
 const verifyJWT = require('../middleware/verifyJWT')
 
+router.post('/api/v1/users', registerUser); //Register user
 
 router.post('/api/v1/auth/login', loginUser); //Login user
 
