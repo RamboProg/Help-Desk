@@ -1,6 +1,7 @@
-import { schema, model } from 'mongoose';
+const { Schema, model } = require('mongoose');
 
-const ticketSchema = new schema({
+
+const ticketSchema = new Schema({
     _id: { type: Number, required: true },
     Status: { type: String },
     Assigned_AgentID: { type: Number, ref: 'Support_Agent', required: true },
@@ -14,6 +15,6 @@ const ticketSchema = new schema({
     Sub_Issue_Type: { type: String, required: true }
   });
 
-export default model('Ticket', ticketSchema);
-export const Schema = ticketSchema;
+  const Ticket = model('Ticket', ticketSchema);
+  module.exports = Ticket;
 

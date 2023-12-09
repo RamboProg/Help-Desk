@@ -1,17 +1,27 @@
 // Import required modules
+require('dotenv').config();
 const express = require('express');
+const http = require('http');
 const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
 const path = require('path'); // Add this line for path
-require('dotenv').config();
 
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
+const ticketRoutes = require('./routes/ticketRoutes');
 
-// Create an instance of Express
 const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+
+
+
+//use the ticket route
+app.use(ticketRoutes);
+
+
 
 //const loggerController = require('./controllers/loggerController');
 const Image = mongoose.model('Image', { imagePath: String });
@@ -27,11 +37,20 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }); // Now you can use multer
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-// Define a route
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
+const upload = multer({ storage: storage });
+
+// Add middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Import routes
+app.use('/workflow', workflowRouter);
+
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
 });
 
 app.get('/getUser')
@@ -47,7 +66,7 @@ app.listen(port, () => {
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
 
 app.use('/api/v1/auth', login);
 // Use the workflow router

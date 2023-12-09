@@ -5,6 +5,7 @@ const {loginUser} = require('../controllers/authController');
 const { authenticateUser } = require('../middleware/authenticationMiddleware');
 const verifyJWT = require('../middleware/verifyJWT')
 
+router.post('/api/v1/users', registerUser); //Register user
 
 router.post('/api/v1/auth/login', loginUser); //Login user
 
@@ -19,5 +20,6 @@ router.use(verifyJWT)
 router.get('/api/v1/profile', viewUserProfile); //View user profile
 
 router.put('/api/v1/profile/update',  updateUserProfile); //Update user profile
+
 
 module.exports = router;

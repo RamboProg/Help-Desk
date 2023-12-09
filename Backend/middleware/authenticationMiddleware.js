@@ -1,30 +1,27 @@
 const jwt  = require("jsonwebtoken");
-const secretKey = "S12k4r4,.;lp";
+const User = require('../models/User');
+const authenticator = require('otplib');
+const secretKey = authenticator.generateSecret();
 
-module.exports = function authenticationMiddleware(req, res, next) {
-   const cookie = req.cookies;
 
-   // For Testing
-   // console.log("Cookie: ", cookie);
-   // console.log(req.headers);
-    
-   if (!cookie)
-   {
-        return res.status(401).json({ message: "No cookie found" });
-   }
-   const token = cookie.token;
-   if (!token)
-   {
-        return res.status(405).json({ message: "No token found" });
-   }
-   const user =jwt.verify(token, secretKey, (err, decoded) => {
-        if (err)
-        {
-            return res.status(403).json ({ message: "Invalid token" });
-        }
-        req.user =decoded.user;
-        
-    });
-    res.locals.user =user;
-     next();
-}
+module.exports = async function authenticationMiddleware(req, res, next){
+     const token = req.header('Authorization');
+
+     if (!token) {
+       return res.status(401).json({ message: 'Access denied. No token provided.' });
+     }
+   
+     try {
+       // Verify the token and decode 
+       const decoded = jwt.verify(token, secretKey);
+
+       const user = await User.findById(decoded.userId);
+        // Attach the decoded user information to the request object
+       if(!user) return res.status(401).json({ message: 'Invalid token. User not Found.' });
+          req.user = user;
+       next();
+     } catch (error) {
+       res.status(401).json({ message: 'Invalid token.' });
+     }
+};
+
