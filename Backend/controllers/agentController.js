@@ -10,7 +10,7 @@ exports.closeTicket = async (req, res) => {
     const resolutionDetails = req.body.resolutionDetails;
 
     // Find and update the ticket by its ID
-    const updatedTicket = await Ticket.findByIdAndUpdate(
+    const updatedTicket = await ticket.findByIdAndUpdate(
       ticketId,
       { $set: { Status: status, Resolution_Details: resolutionDetails } },
       { new: true } // Return the updated document

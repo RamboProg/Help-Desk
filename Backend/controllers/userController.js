@@ -1,9 +1,31 @@
-import express from 'express';
-import authenticator from 'otplib';
-import bcrypt from 'bcryptjs';
-import qrcode from 'qrcode';
-import crypto from 'crypto';
-import userModel from '../models/userModel.js';
+const userModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const authenticator = require('otplib');
+const bcrypt = require('bcryptjs');
+const qrcode = require('qrcode');
+const crypto = require('crypto');
+const userModel = require('../models/userModel.js');
+const adminModel = require('../models/adminModel.js');
+const managerModel = require('../models/managerModel.js');
+const agentModel = require('../models/agentModel.js');
+const clientModel = require('../models/clientModel.js');
+
+
+// Function to generate salt
+async function generateSalt() {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(256, (err, buf) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(buf);
+            }
+        });
+    });
+}
+const authentication = require('../middleware/authenticationMiddleware');
+
 
 // Function to generate salt
 async function generateSalt() {
@@ -19,6 +41,29 @@ async function generateSalt() {
 }
 
 const userController = {
+    registerUser: async (req, res) => {
+        try {
+            const { email, password, username, phoneNumber } = req.body;
+
+            const userExists = await userModel.findOne({ Email: email });
+            if (userExists) {
+                res.status(400).json({ message: "User already exists" });
+            } else {
+                const salt = generateSalt();
+                const hash = bcrypt.hashSync(password, salt);
+                const user = await userModel.create({
+                    Email: email,
+                    Password: hash,
+                    Username: username,
+                    PhoneNumber: phoneNumber,
+                    Salt: salt,
+                });
+                res.status(201).json(user);
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
     // Login user
     loginUser: async (req, res) => {
         try {
@@ -48,8 +93,6 @@ const userController = {
             if (!verified) {
                 return res.status(401).json({ message: "Invalid Code" });
             }
-
-            res.status(200).json({ token });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -159,25 +202,9 @@ const userController = {
 // Function to get user based on role
 async function getUser(req, res) {
     try {
-        const User = require('./models/userModel');
-        const Admin = require('./models/adminModel');
-        const Manager = require('./models/managerModel');
-        const Agent = require('./models/agentModel');
-        const Client = require('./models/clientModel');
-        const userId = req.params.userId;
-
-        switch (user.RoleID) {
-            case 1:
-                return await Admin.findById(userId);
-            case 2:
-                return await Manager.findById(userId);
-            case 3:
-                return await Agent.findById(userId);
-            case 4:
-                return await Client.findById(userId);
-            default:
-                return null; // user is not in tables
-        }
+        const Token = req.header('Authorization');
+        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
+        
     } catch (error) {
         console.error('Error could not get user', error);
         throw error;
