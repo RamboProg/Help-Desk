@@ -3,7 +3,6 @@ require('dotenv').config(); // Load environment variables from .env file
 const { createLogger, format, transports } = require('winston');
 const winstonMongoDB = require('winston-mongodb');
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
 
 const logger = createLogger({
     format: format.combine(
