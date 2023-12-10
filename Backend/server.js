@@ -1,22 +1,25 @@
-const mongoose = require('mongoose');
+// Import required modules
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
-const bodyParser = require('body-parser');
-const multer = require('multer');
-const path = require('path');
-const dotenv = require('dotenv');
-const Winston = require('winston');
-const WinstonMongoDB = require('winston-mongodb');
-const workflowRouter = require('./routes/workflowRoute');
-const axios = require('axios');
-const authRouter = require('./routes/authRoutes');
-const cookieParser = require('cookie-parser');
-const authernicationMiddleware = require('./middleware/authenticationMiddleware');
-const cors = require('cors');
-const connectDB = require('./config/db');
+const bodyParser = require('body-parser'); // Add this line for bodyParser
+const mongoose = require('mongoose');
+const multer = require('multer'); // Move multer import to here
+const path = require('path'); // Add this line for path
 
-dotenv.config();
+// Import routes
+const workflowRouter = require('./routes/workflowRoute');
+const login= require("./routes/authRoutes");
+const ticketRoutes = require('./routes/ticketRoutes');
+
+const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+
+
+
+//use the ticket route
+app.use(ticketRoutes);
 
 // Configure Winston with MongoDB Transport
 const logger = Winston.createLogger({
@@ -78,6 +81,25 @@ app.post('/predict-agent', async (req, res) => {
 });
 
 const upload = multer({ storage: storage });
+app.use('/api/tickets', require('./routes/ticketRoutes'));
+
+const upload = multer({ storage: storage });
+
+// Add middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+});
+
+app.get('/getUser')
+
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 // Add middleware
 app.use(bodyParser.json());
@@ -86,6 +108,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Import routes
 app.use('/workflow', workflowRouter);
 app.use('/auth', require('./routes/authRoutes'));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
+
+app.use('/api/v1/auth', login);
+// Use the workflow router
+app.use('/', workflowRouter);
 
 const Image = mongoose.model('Image', { imagePath: String });
 

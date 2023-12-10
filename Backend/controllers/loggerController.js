@@ -1,7 +1,9 @@
 // logger.js
-const { createLogger, format, transports } = require('winston');
 require('dotenv').config(); // Load environment variables from .env file
+const { createLogger, format, transports } = require('winston');
 const winstonMongoDB = require('winston-mongodb');
+
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
 
 const logger = createLogger({
     format: format.combine(
@@ -12,27 +14,21 @@ const logger = createLogger({
       new transports.Console(),
       new transports.File({ filename: 'error.log', level: 'error' }),
       new winstonMongoDB.MongoDB({
-        level: 'error', // Log only errors to MongoDB
-        db: process.env.MONGODB_URI,
-        options: {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        },
-        collection: 'logsModel', // Name of the collection in MongoDB database
+        level: 'error',
+        db: process.env.MONGODB_URI, // Directly use the connection string
+        collection: 'logsModel',
       }),
+      
     ],
     exceptionHandlers: [
       new transports.Console(),
       new transports.File({ filename: 'exceptions.log' }),
       new winstonMongoDB.MongoDB({
-        level: 'exception', // Log only exceptions to MongoDB
-        db: process.env.MONGODB_URI,
-        options: {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        },
-        collection: 'logsModel', // Name of the collection in MongoDB database
+        level: 'exception',
+        db: process.env.MONGODB_URI, // Directly use the connection string
+        collection: 'logsModel',
       }),
+      
     ],
   });
   

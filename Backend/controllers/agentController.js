@@ -1,6 +1,33 @@
+//import ticket model from separate file
 const ticket = require("../models/ticketModel");
 const client = require("../models/clientModel");
 const nodemailer = require(" nodemailer");
+
+exports.closeTicket = async (req, res) => {
+  try {
+    const ticketId = parseInt(req.params.ticketId);
+    const status = req.body.status;
+    const resolutionDetails = req.body.resolutionDetails;
+
+    // Find and update the ticket by its ID
+    const updatedTicket = await ticket.findByIdAndUpdate(
+      ticketId,
+      { $set: { Status: status, Resolution_Details: resolutionDetails } },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedTicket) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+
+    return res.status(201).json(updatedTicket);
+  } catch (e) {
+    console.log("Could not close ticket", e.message);
+    return res.status(400).send(e.message);
+  }
+
+}
+
 const agentController = {
   updateTicket: async (req, res) => {
     try {

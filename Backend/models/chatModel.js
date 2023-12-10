@@ -1,3 +1,4 @@
+// models/chatModel.js
 const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema({
@@ -10,6 +11,4 @@ const chatSchema = new mongoose.Schema({
     Message_Count: { type: Number },
     TicketID: { type: String, ref: 'Ticket' }
   });
-
 module.exports = mongoose.model('Chat', chatSchema);
-module.exports.Schema = chatSchema;
