@@ -1,10 +1,6 @@
 // routes/manager.js
-const express = require('express');
-const router = express.Router();
-const managerController = require('../controllers/managerController');
+import { Router } from 'express';
+const router = Router();
+import { managerController } from '../controllers/managerController.js';
 
-router.get('/tickets/:ticketId/status', managerController.getTicketStatus);
-router.get('/tickets/:ticketId/resolution-time', managerController.getResolutionTime);
-router.get('/tickets/:ticketId/agent-performance', managerController.getAgentPerformance);
-
-module.exports = router;
+router.get('/api/v1/reports/tickets', managerController.getAllTickets);

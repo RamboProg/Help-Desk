@@ -2,12 +2,14 @@ const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const authenticator = require('otplib');
-const securityKey = authenticator.generateSecret();
 const bcrypt = require('bcryptjs');
-const express = require('express');
-const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
-const authentication = require('../middleware/authenticationMiddleware');
+const crypto = require('crypto');
+const userModel = require('../models/userModel.js');
+const adminModel = require('../models/adminModel.js');
+const managerModel = require('../models/managerModel.js');
+const agentModel = require('../models/agentModel.js');
+const clientModel = require('../models/clientModel.js');
 
 
 // Function to generate salt
@@ -22,6 +24,8 @@ async function generateSalt() {
         });
     });
 }
+const authentication = require('../middleware/authenticationMiddleware');
+
 
 const userController = {
     // Login user
@@ -164,7 +168,7 @@ async function getUser(req, res) {
     try {
         const Token = req.header('Authorization');
         const decoded = jwt.verify(Token, process.env.SECRET_KEY);
-        
+
     } catch (error) {
         console.error('Error could not get user', error);
         throw error;
