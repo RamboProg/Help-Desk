@@ -1,7 +1,7 @@
 //import ticket model from separate file
 const ticket = require("../models/ticketModel");
 const client = require("../models/clientModel");
-const nodemailer = require(" nodemailer");
+const nodemailer = require("nodemailer");
 
 exports.closeTicket = async (req, res) => {
   try {
