@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const ticketSchema = new mongoose.Schema({
+
+const ticketSchema = new Schema({
     _id: { type: Number, required: true },
     Status: { type: String },
     Assigned_AgentID: { type: Number, ref: 'Support_Agent', required: true },
@@ -9,12 +10,11 @@ const ticketSchema = new mongoose.Schema({
     Description: { type: String },
     Priority: { type: String },
     Resolution_Details: { type: String },
-    Rating: { type: Number },
     Start_Date : {type: Date},
     End_Date : {type: Date},
-    Sub_Issue_Type: { type: String, required: true },
-    //Subscribers: [{ type: 'Number', ref:'Client' }, { type: 'Number', ref:'Support_Agent' }]
+    Sub_Issue_Type: { type: String, required: true }
   });
 
-module.exports = mongoose.model('Ticket', ticketSchema);
-module.exports.Schema = ticketSchema;
+  const Ticket = model('Ticket', ticketSchema);
+  module.exports = Ticket;
+
