@@ -27,43 +27,7 @@ async function generateSalt() {
 const authentication = require('../middleware/authenticationMiddleware');
 
 
-// Function to generate salt
-async function generateSalt() {
-    return new Promise((resolve, reject) => {
-        crypto.randomBytes(256, (err, buf) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(buf);
-            }
-        });
-    });
-}
-
 const userController = {
-    registerUser: async (req, res) => {
-        try {
-            const { email, password, username, phoneNumber } = req.body;
-
-            const userExists = await userModel.findOne({ Email: email });
-            if (userExists) {
-                res.status(400).json({ message: "User already exists" });
-            } else {
-                const salt = generateSalt();
-                const hash = bcrypt.hashSync(password, salt);
-                const user = await userModel.create({
-                    Email: email,
-                    Password: hash,
-                    Username: username,
-                    PhoneNumber: phoneNumber,
-                    Salt: salt,
-                });
-                res.status(201).json(user);
-            }
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
     // Login user
     loginUser: async (req, res) => {
         try {
@@ -204,7 +168,7 @@ async function getUser(req, res) {
     try {
         const Token = req.header('Authorization');
         const decoded = jwt.verify(Token, process.env.SECRET_KEY);
-        
+
     } catch (error) {
         console.error('Error could not get user', error);
         throw error;
