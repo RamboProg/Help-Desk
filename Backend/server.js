@@ -11,6 +11,8 @@ const path = require('path'); // Add this line for path
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
 const ticketRoutes = require('./routes/ticketRoutes');
+const agentRoutes = require('./routes/agentRoutes');
+
 
 const app = express();
 const server = http.createServer(app);
@@ -18,8 +20,10 @@ const io = require('socket.io')(server);
 
 
 
-//use the ticket route
+//use the routes
 app.use(ticketRoutes);
+app.use(agentRoutes);
+
 
 // Configure Winston with MongoDB Transport
 const logger = Winston.createLogger({
