@@ -1,13 +1,18 @@
-import { highPriorityQueue, assignTicket } from '../controllers/ticketController';
-import Ticket from '../models/Ticket';
+const ticketController = require('../controllers/ticketController');
+const assignTicket = ticketController.assignTicket;
+const highPriorityQueue = ticketController.highPriorityQueue;
+const mediumPriorityQueue = ticketController.mediumPriorityQueue;
+const lowPriorityQueue = ticketController.lowPriorityQueue;
+const Ticket = require('../models/ticketModel');
 
-import express from 'express';
+
+const express = require('express');
 const router = express.Router();
 
-app.post('/new-ticket', async (req, res) => {
+router.post('/api/v1/newTicket', async (req, res) => {
     const { priority, type, issueType, description } = req.body;
     const newTicket = new Ticket({ Priority: priority, Type: type, Issue_Type: issueType, Description: description });
-    
+
     // Save the new ticket to the database
     await newTicket.save();
 
@@ -20,7 +25,7 @@ app.post('/new-ticket', async (req, res) => {
     }
     if (priority === 'low') {
         lowPriorityQueue.enqueue(newTicket);
-    }  
+    }
 
     // Try to assign the ticket
     await assignTicket();
@@ -28,5 +33,4 @@ app.post('/new-ticket', async (req, res) => {
     res.status(200).send('Ticket created and queued.');
 });
 
-export default router;
-
+module.exports = router;

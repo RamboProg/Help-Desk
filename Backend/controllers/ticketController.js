@@ -1,7 +1,7 @@
-import axios from 'axios';
-import Ticket from '../models/Ticket';
-import SupportAgent from '../models/SupportAgent';
-import { PriorityQueue } from '../utils/PriorityQueue';
+const axios = require('axios');
+const Ticket = require('../models/ticketModel');
+const SupportAgent = require('../models/agentModel');
+const { PriorityQueue } = require('../utils/PriorityQueue');
 
 const highPriorityQueue = new PriorityQueue();
 const mediumPriorityQueue = new PriorityQueue();

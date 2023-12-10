@@ -15,7 +15,7 @@ const userController = {
             if (userExists) {
                 res.status(400).json({ message: "User already exists" });
             } else {
-                const salt = generateSalt();
+                const salt = await generateSalt();
                 const hash = bcrypt.hashSync(password, salt);
                 // Create a new user with roles
                 const user = await userModel.create({
@@ -43,4 +43,4 @@ function generateSalt() {
 }
 
 
-module.exports = userController;
+module.exports = adminController;

@@ -7,7 +7,7 @@ const adminSchema = new mongoose.Schema({
     Password: { type: String, ref: 'User', required: true },
     Username: { type: String, ref: 'User', required: true },
     PhoneNumber: { type: String, ref: 'User' },
-    RoleID: 1,
+    RoleID: {type:Number, default:1},
     MFA_Enabled: { type: Boolean, ref: 'User' },
     Is_Enabled: { type: Boolean, ref: 'User' },
     Salt: { type: String, ref: 'User' }
