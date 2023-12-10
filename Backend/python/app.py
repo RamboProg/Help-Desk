@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Load dataset
 def load_data(): 
-    df = pd.read_csv('Backend/python/generatedDataset.csv')
+    df = pd.read_csv('../python/agentData')
     return df
 
 # Initialize and train model
@@ -53,15 +53,23 @@ rf_classifier, priority_encoder, type_encoder, agent_encoder = load_model_and_en
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
-    priority_encoded = priority_encoder.transform([data['Priority']])
-    type_encoded = type_encoder.transform([data['Type']])
+    try:
+        priority_encoded = priority_encoder.transform([data['Priority']])
+        type_encoded = type_encoder.transform([data['Type']])
+    except KeyError as e:
+        return jsonify({'error': f'Missing data for {e}'}), 400
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
-    prediction_encoded = rf_classifier.predict([[priority_encoded[0], type_encoded[0]]])
-    predicted_agent = agent_encoder.inverse_transform(prediction_encoded)
-    return jsonify({'agent': predicted_agent[0]})
+    # Predict probabilities
+    probabilities = rf_classifier.predict_proba([[priority_encoded[0], type_encoded[0]]])[0]
+    # Map probabilities to agent names
+    agent_probabilities = dict(zip(agent_encoder.classes_, probabilities))
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    return jsonify({'agent_probabilities': agent_probabilities})
+
+if _name_ == '_main_':
+    app.run(debug=True, port=3000)
 
     
 
