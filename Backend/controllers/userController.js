@@ -1,9 +1,16 @@
-import express from 'express';
-import authenticator from 'otplib';
-import bcrypt from 'bcryptjs';
-import qrcode from 'qrcode';
-import crypto from 'crypto';
-import userModel from '../models/userModel.js';
+const userModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const authenticator = require('otplib');
+const bcrypt = require('bcryptjs');
+const qrcode = require('qrcode');
+const crypto = require('crypto');
+const userModel = require('../models/userModel.js');
+const adminModel = require('../models/adminModel.js');
+const managerModel = require('../models/managerModel.js');
+const agentModel = require('../models/agentModel.js');
+const clientModel = require('../models/clientModel.js');
+
 
 // Function to generate salt
 async function generateSalt() {
@@ -17,6 +24,8 @@ async function generateSalt() {
         });
     });
 }
+const authentication = require('../middleware/authenticationMiddleware');
+
 
 const userController = {
     // Login user
@@ -48,8 +57,6 @@ const userController = {
             if (!verified) {
                 return res.status(401).json({ message: "Invalid Code" });
             }
-
-            res.status(200).json({ token });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -159,25 +166,9 @@ const userController = {
 // Function to get user based on role
 async function getUser(req, res) {
     try {
-        const User = require('./models/userModel');
-        const Admin = require('./models/adminModel');
-        const Manager = require('./models/managerModel');
-        const Agent = require('./models/agentModel');
-        const Client = require('./models/clientModel');
-        const userId = req.params.userId;
+        const Token = req.header('Authorization');
+        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
 
-        switch (user.RoleID) {
-            case 1:
-                return await Admin.findById(userId);
-            case 2:
-                return await Manager.findById(userId);
-            case 3:
-                return await Agent.findById(userId);
-            case 4:
-                return await Client.findById(userId);
-            default:
-                return null; // user is not in tables
-        }
     } catch (error) {
         console.error('Error could not get user', error);
         throw error;
