@@ -53,10 +53,7 @@ const logger = Winston.createLogger({
   ],
 });
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-connectDB();
+
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -83,7 +80,7 @@ app.post('/predict-agent', async (req, res) => {
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-const upload = multer({ storage: storage });
+
 
 // Add middleware
 app.use(bodyParser.json());
