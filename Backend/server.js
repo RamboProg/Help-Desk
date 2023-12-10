@@ -98,16 +98,6 @@ io.on('connection', (socket) => {
 
 app.get('/getUser')
 
-// Start the server
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-// Add middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // Import routes
 app.use('/workflow', workflowRouter);
 app.use('/auth', require('./routes/authRoutes'));
