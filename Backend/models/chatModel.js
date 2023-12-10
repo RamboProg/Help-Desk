@@ -2,13 +2,13 @@
 const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema({
-  _id: { type: Number, required: true },
-  Support_AgentID: { type: Number, ref: 'Support_Agent', required: true },
-  TicketID: { type: Number, ref: 'Ticket', required: true },
-  Messages: { type: String },
-  Chat_Start_Time: { type: Date },
-  Final_Message_Time: { type: Date },
-  Message_Count: { type: Number }
-});
-
+    _id: { type: Number, required: true },
+    Client_ID: { type: Number, ref: 'Client', required: true},
+    Support_AgentID: { type: Number, ref: 'Support_Agent', required: true },
+    Messages: { type: String },
+    Start_Time: { type: Date },
+    End_Time: { type: Date },
+    Message_Count: { type: Number },
+    TicketID: { type: String, ref: 'Ticket' }
+  });
 module.exports = mongoose.model('Chat', chatSchema);
