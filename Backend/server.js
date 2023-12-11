@@ -19,7 +19,7 @@ const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 // const authFile = require('./routes/auth'); //commented because of error
 // const authRoutes = require('./routes/authRoutes');
-const chatRoutes = require('./routes/chatRoutes');
+// const chatRoutes = require('./routes/chatRoutes'); //commented because of error
 const clientRoutes = require('./routes/clientRoutes');
 const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
@@ -107,7 +107,7 @@ app.use(ticketRoutes);
 app.use(agentRoutes);
 app.use(adminRoutes);
 // app.use(authFile);
-app.use(chatRoutes);
+// app.use(chatRoutes); //commented because of errors
 app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
