@@ -1,4 +1,3 @@
-const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const authenticator = require('otplib');
@@ -175,7 +174,7 @@ async function getUser(req, res) {
     }
 }
 
-export { userController, getUser };
+module.exports = { userController, getUser };
 
 // async function getUser(userId) {
 //     const User = require('./models/userModel');
