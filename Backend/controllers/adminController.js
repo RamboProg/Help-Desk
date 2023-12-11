@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 
 
-const userController = {
+const adminController = {
     createNewUser: async (req, res) => {
         try {
             const { email, password, username, phoneNumber, role } = req.body;
