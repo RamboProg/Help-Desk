@@ -78,7 +78,7 @@ const { getUser } = require('../controllers/userController');
         Status: 'Open',
         Assigned_AgentID: null, //needs a function
         Ticket_Owner: _id,
-        Issue_Type: req.body.issueType,
+        Issue_Type: req.body.Issue_Type,
         Description: req.body.description,
         Priority: priority,
         Resolution_Details: null,
@@ -102,7 +102,7 @@ const { getUser } = require('../controllers/userController');
         })
       }
 
-      const agent = await Agent.findById(agentId); //also needs function to retrieve agent id
+      const agent = await Agent.findById(newChat.Support_AgentID); //also needs function to retrieve agent id
       if (!agent) {
         return res.status(404).json({ error: 'Agent not found' });
       }
@@ -111,7 +111,7 @@ const { getUser } = require('../controllers/userController');
       agent.Active_Tickets = agent.Active_Tickets++;
 
       const savedTicket = await newTicket.save();
-      res.status(201).json({ ticket: newTicket, chat: createChat ? newChat : null }); //check this condition
+      res.status(201).json({ ticket: newTicket, chat: newChat}); //check this condition
 
 
     } catch (error) {
