@@ -19,7 +19,7 @@ const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 // const authFile = require('./routes/auth'); //commented because of error
 // const authRoutes = require('./routes/authRoutes');
-// const chatRoutes = require('./routes/chatRoutes'); //commented because of error
+const chatRoutes = require('./routes/chatRoutes'); //commented because of error
 const clientRoutes = require('./routes/clientRoutes');
 const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
@@ -108,7 +108,7 @@ app.use(agentRoutes);
 app.use(adminRoutes);
 // app.use(authFile);
 // app.use(authRoutes);
-// app.use(chatRoutes); //commented because of errors
+app.use(chatRoutes); //commented because of errors
 app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
@@ -127,7 +127,7 @@ app.get('/getUser')
 app.use('/workflow', workflowRouter);
 app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
+mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
 
 app.use('/api/v1/auth', login);
 // Use the workflow router
