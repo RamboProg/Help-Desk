@@ -9,6 +9,8 @@ const path = require('path'); // Add this line for path
 const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb'); // Add this line for Winston MongoDB transport
 
+
+
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
@@ -21,10 +23,6 @@ const server = http.createServer(app);
 const io = require('socket.io')(server);
 
 
-
-//use the routes
-app.use(ticketRoutes);
-app.use(agentRoutes);
 
 
 // Configure Winston with MongoDB Transport
@@ -83,14 +81,21 @@ app.post('/predict-agent', async (req, res) => {
   }
 });
 
-const upload = multer({ storage: storage });
-app.use('/api/tickets', require('./routes/ticketRoutes'));
+
 
 
 
 // Add middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+//use the routes
+app.use(ticketRoutes);
+app.use(agentRoutes);
+
+const upload = multer({ storage: storage });
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
 io.on('connection', (socket) => {
     console.log('A user connected');

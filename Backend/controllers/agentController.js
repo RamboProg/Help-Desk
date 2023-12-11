@@ -32,6 +32,11 @@ const agentController = {
 
   closeTicket: async (req, res) => {
     try {
+
+      if (!req.body || !req.body.status || !req.body.resolutionDetails) {
+        return res.status(400).json({ message: 'Invalid request body' });
+      }
+
       const ticketId = parseInt(req.params.ticketId);
       const status = req.body.status;
       const resolutionDetails = req.body.resolutionDetails;
