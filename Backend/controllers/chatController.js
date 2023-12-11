@@ -26,7 +26,7 @@ const jwt = require('jsonwebtoken');
 //   }
 // };
 
-export const chatController = {
+ const chatController = {
   // Controller function to start a new chat
   startNewChat: async (req, res) => {
     try {
@@ -84,7 +84,7 @@ export const chatController = {
   // Additional controller functions for handling Socket.IO connections, disconnections, etc., can be added here
 };
 
-
+module.exports = chatController;
 // import chatModel from '../models/chatModel.js';
 // import { Socket } from 'socket.io';
 
