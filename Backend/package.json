@@ -40,7 +40,10 @@
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "winston": "^3.11.0",
-    "winston-mongodb": "^5.1.1"
+    "winston-mongodb": "^5.1.1",
+    "@babel/core": "^7.16.0",  
+    "@babel/preset-env": "^7.16.0",  
+    "@babel/node": "^7.16.0" 
   },
   "description": ""
 }
