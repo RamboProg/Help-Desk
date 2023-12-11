@@ -16,6 +16,18 @@ const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const authFile = require('./routes/auth');
+// const authRoutes = require('./routes/authRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const clientRoutes = require('./routes/clientRoutes');
+const customizationRoute = require('./routes/customizationRoute');
+const imageRoute = require('./routes/imageRoute');
+const managerRoutes = require('./routes/managerRoutes');
+
+
+
+
 
 
 const app = express();
@@ -93,6 +105,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //use the routes
 app.use(ticketRoutes);
 app.use(agentRoutes);
+app.use(adminRoutes);
+app.use(authFile);
+app.use(chatRoutes);
+app.use(clientRoutes);
+app.use(customizationRoute);
+app.use(imageRoute);
+app.use(managerRoutes);
 
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
