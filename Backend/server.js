@@ -107,6 +107,7 @@ app.use(ticketRoutes);
 app.use(agentRoutes);
 app.use(adminRoutes);
 // app.use(authFile);
+// app.use(authRoutes);
 // app.use(chatRoutes); //commented because of errors
 app.use(clientRoutes);
 app.use(customizationRoute);
