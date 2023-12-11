@@ -1,4 +1,4 @@
-import Ticket from '../models/ticketModel.js';
+const Ticket = require('../models/ticketModel.js');
 
 const managerController = {
   // Get all tickets
@@ -256,4 +256,4 @@ const managerController = {
   }
 };
 
-export default managerController;
+module.exports =  managerController;
