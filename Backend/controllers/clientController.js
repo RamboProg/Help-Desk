@@ -1,8 +1,10 @@
-import Client from '../models/clientModel.js';
-import Ticket from '../models/ticketModel.js';
-import Agent from '../models/agentModel.js';
-
-export const clientController = {
+const mongoose = require('mongoose');
+const Client = require('../models/clientModel');
+const Ticket = require('../models/ticketModel');
+const Agent = require('../models/agentModel');
+const Chat = require('../models/chatModel');
+const { getUser } = require('../controllers/userController');
+ const clientController = {
 
   getMyTickets: async (req, res) => {
     try {
@@ -167,3 +169,5 @@ export const clientController = {
     }
   },
 };
+
+module.exports = clientController;
