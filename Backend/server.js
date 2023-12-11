@@ -17,7 +17,7 @@ const login= require("./routes/authRoutes");
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const authFile = require('./routes/auth');
+// const authFile = require('./routes/auth'); //commented because of error
 // const authRoutes = require('./routes/authRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const clientRoutes = require('./routes/clientRoutes');
@@ -106,7 +106,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(ticketRoutes);
 app.use(agentRoutes);
 app.use(adminRoutes);
-app.use(authFile);
+// app.use(authFile);
 app.use(chatRoutes);
 app.use(clientRoutes);
 app.use(customizationRoute);
