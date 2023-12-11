@@ -6,11 +6,29 @@ const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
 const path = require('path'); // Add this line for path
+const Winston = require('winston'); // Add this line for Winston
+const WinstonMongoDB = require('winston-mongodb'); // Add this line for Winston MongoDB transport
+
+
 
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
 const login= require("./routes/authRoutes");
 const ticketRoutes = require('./routes/ticketRoutes');
+const agentRoutes = require('./routes/agentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+// const authFile = require('./routes/auth'); //commented because of error
+// const authRoutes = require('./routes/authRoutes');
+// const chatRoutes = require('./routes/chatRoutes'); //commented because of error
+const clientRoutes = require('./routes/clientRoutes');
+const customizationRoute = require('./routes/customizationRoute');
+const imageRoute = require('./routes/imageRoute');
+const managerRoutes = require('./routes/managerRoutes');
+
+
+
+
+
 
 const app = express();
 const server = http.createServer(app);
@@ -18,8 +36,6 @@ const io = require('socket.io')(server);
 
 
 
-//use the ticket route
-app.use(ticketRoutes);
 
 // Configure Winston with MongoDB Transport
 const logger = Winston.createLogger({
@@ -53,10 +69,7 @@ const logger = Winston.createLogger({
   ],
 });
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-connectDB();
+
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -80,30 +93,35 @@ app.post('/predict-agent', async (req, res) => {
   }
 });
 
-const upload = multer({ storage: storage });
-app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-const upload = multer({ storage: storage });
+
+
 
 // Add middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+//use the routes
+app.use(ticketRoutes);
+app.use(agentRoutes);
+app.use(adminRoutes);
+// app.use(authFile);
+// app.use(authRoutes);
+// app.use(chatRoutes); //commented because of errors
+app.use(clientRoutes);
+app.use(customizationRoute);
+app.use(imageRoute);
+app.use(managerRoutes);
+
+const upload = multer({ storage: storage });
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
 io.on('connection', (socket) => {
     console.log('A user connected');
 });
 
 app.get('/getUser')
-
-// Start the server
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-// Add middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // Import routes
 app.use('/workflow', workflowRouter);
