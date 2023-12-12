@@ -37,14 +37,82 @@ const seedData = async () => {
     await TicketModel.deleteMany({});
     await ChatModel.deleteMany({});
 
-    // Seed issue data
-    const issueTypes = [
-  { Issue: 'Software', Sub_Issue_Type: 'Operating system, Application software, Custom software, Integration issues' },
-  { Issue: 'Hardware', Sub_Issue_Type: 'Desktops, Laptops, Printers, Servers, Networking equipment' },
-  { Issue: 'Network', Sub_Issue_Type: 'Email issues, Internet connection problems, Website errors' },
+// Seed issue data
+const issueTypes = [
+  {
+    Issue: 'Software',
+    Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Operating system',
+  },
+  {
+    Issue: 'Software',
+    Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Application software',
+  },
+  {
+    Issue: 'Software',
+    Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Custom software',
+  },
+  {
+    Issue: 'Software',
+    Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Integration issues',
+  },
+  {
+    Issue: 'Hardware',
+    Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Desktops',
+  },
+  {
+    Issue: 'Hardware',
+    Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Laptops',
+  },
+  {
+    Issue: 'Hardware',
+    Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Printers',
+  },
+  {
+    Issue: 'Hardware',
+    Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Servers',
+  },
+  {
+    Issue: 'Hardware',
+    Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Networking equipment',
+  },
+  {
+    Issue: 'Network',
+    Custom_Workflow: 'Network_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Email issues',
+  },
+  {
+    Issue: 'Network',
+    Custom_Workflow: 'Network_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Internet connection problems',
+  },
+  {
+    Issue: 'Network',
+    Custom_Workflow: 'Network_Workflow_Value', // Provide a value if needed
+    Sub_Issue_Type: 'Website errors',
+  },
 ];
 
-const issuesData = await Promise.all(issueTypes.map((issue) => new IssueModel(issue).save()));
+
+const issuesData = await Promise.all(issueTypes.map(async (issue) => {
+  const newIssue = new IssueModel({
+    Issue: issue.Issue,
+    Custom_Workflow: issue.Custom_Workflow,
+    Sub_Issue_Type: issue.Sub_Issue_Type,
+  });
+
+  await newIssue.save();
+  return newIssue;
+}));
+
 
    // Function to generate salt
    async function generateSalt() {
@@ -189,10 +257,11 @@ for (let i = 0; i < 30; i++) {
         Resolution_Details: `Resolution details ${i + 1}`,
         Start_Date: new Date(), // Current date as the start date
         End_Date: new Date(), // Current date as the end date
-        Sub_Issue_Type: issuesData[i % 3].Sub_Issue_Type[i % 4], // Assign sub-issue types in a loop
+        Sub_Issue_Type: issuesData[i % 3].Sub_Issue_Type, // Assign sub-issue types
       });
       tickets.push(ticket.save());
     }
+
 
     // Seed chat data
     const chats = [];
