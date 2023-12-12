@@ -10,6 +10,8 @@ const LogModel = require('./models/logsModel.js');
 const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
+const crypto = require('crypto');
+
 console.log('MongoDB URI:', process.env.MONGODB_URI);
 
 mongoose
@@ -44,9 +46,24 @@ const seedData = async () => {
 
 const issuesData = await Promise.all(issueTypes.map((issue) => new IssueModel(issue).save()));
 
+   // Function to generate salt
+   async function generateSalt() {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(256, (err, buf) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(buf);
+            }
+        });
+    });
+  }
+  
 // Seed user data
 const users = [];
 for (let i = 0; i < 30; i++) {
+  let mysalt = await generateSalt();
+ 
   const randomRoleID = i % 4 + 1; // Alternating role IDs
   const user = new UserModel({
     _id: i + 1,
@@ -59,7 +76,7 @@ for (let i = 0; i < 30; i++) {
     Is_Enabled: true,
     theme: 'light', // Default theme is light
     logoPath: 'https://placekitten.com/200/200', // Placeholder image
-    salt: 'somesaltvalue',
+    salt: mysalt,
   });
 
   // Save user data based on role ID
