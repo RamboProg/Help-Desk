@@ -7,7 +7,7 @@ from joblib import dump, load
 import os
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "your_jwt_secret_key"  # Replace with your secret key
+app.config["JWT_SECRET_KEY"] = "f063b61446d91de0f6cbad48d4d9868183fed7ed7aa11a2d28adc0f839f4ee01df602b85530327ce2b8c1e857c590d8496bd4a2c82cf39679fec02014bd7ed53"  # Replace with your secret key
 jwt = JWTManager(app)
 
 # Load dataset
