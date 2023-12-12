@@ -2,4 +2,6 @@ flask
 pandas
 scikit-learn
 joblib
+flask_jwt_extended
+python-dotenv
 
