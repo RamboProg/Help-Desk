@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/RamboProg/Help-Desk#readme",
   "dependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -30,7 +33,7 @@
     "jsonwebtoken": "^9.0.2",
     "kuler": "^2.0.0",
     "mongodb": "^6.3.0",
-    "mongoose": "^8.0.2",
+    "mongoose": "^8.0.3",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.2",
@@ -40,10 +43,7 @@
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "winston": "^3.11.0",
-    "winston-mongodb": "^5.1.1",
-    "@babel/core": "^7.16.0",  
-    "@babel/preset-env": "^7.16.0",  
-    "@babel/node": "^7.16.0" 
+    "winston-mongodb": "^5.1.1"
   },
   "description": ""
 }
