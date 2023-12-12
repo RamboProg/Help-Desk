@@ -263,19 +263,26 @@ for (let i = 0; i < 30; i++) {
     }
 
 
-    // Seed chat data
+      // Seed chat data
     const chats = [];
+    const existingClients = await ClientModel.find({}, '_id'); // Get existing client IDs
+    const existingSupportAgents = await SupportAgentModel.find({}, '_id'); // Get existing support agent IDs
+
     for (let i = 0; i < 5; i++) {
+      const randomClientIndex = i % existingClients.length;
+      const randomSupportAgentIndex = i % existingSupportAgents.length;
+
       const chat = new ChatModel({
         _id: i + 1,
-        Client_ID: (i % 10) + 1, // Assign clients in a loop
-        Support_AgentID: i % 5 + 1, // Assign support agents in a loop
+        Client_ID: existingClients[randomClientIndex]._id, // Use existing client ID
+        Support_AgentID: existingSupportAgents[randomSupportAgentIndex]._id, // Use existing support agent ID
         Messages: `Chat message ${i + 1}`,
         Start_Time: new Date(), // Current date as the start time
         End_Time: new Date(), // Current date as the end time
         Message_Count: i + 1, // Increment message count
         TicketID: (i % 5) + 1, // Assign tickets in a loop
       });
+
       chats.push(chat.save());
     }
 
