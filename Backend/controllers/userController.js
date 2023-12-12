@@ -28,38 +28,38 @@ const authentication = require('../middleware/authenticationMiddleware');
 
 const userController = {
     // Login user
-    loginUser: async (req, res) => {
-        try {
-            const { email, password, code } = req.body;
+    // loginUser: async (req, res) => {
+    //     try {
+    //         const { email, password, code } = req.body;
 
-            // Find the user by email
-            const user = await userModel.findOne({ Email: email });
+    //         // Find the user by email
+    //         const user = await userModel.findOne({ Email: email });
 
-            if (!user) {
-                return res.status(401).json({ message: "Invalid credentials" });
-            }
+    //         if (!user) {
+    //             return res.status(401).json({ message: "Invalid credentials" });
+    //         }
 
-            const salt = user.Salt;
-            const hash = bcrypt.hashSync(password, salt);
-            const isPasswordValid = bcrypt.compareSync(hash, user.Password);
+    //         const salt = user.Salt;
+    //         const hash = bcrypt.hashSync(password, salt);
+    //         const isPasswordValid = bcrypt.compareSync(hash, user.Password);
 
-            if (!isPasswordValid) {
-                return res.status(401).json({ message: "Invalid credentials" });
-            }
+    //         if (!isPasswordValid) {
+    //             return res.status(401).json({ message: "Invalid credentials" });
+    //         }
 
-            if (!user.MFA_Enabled) {
-                const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
-                return res.status(200).json({ token });
-            }
+    //         if (!user.MFA_Enabled) {
+    //             const token = jwt.sign({ userId: user._id }, securityKey, { expiresIn: '1h' });
+    //             return res.status(200).json({ token });
+    //         }
 
-            const verified = authenticator.check(code, user.secret);
-            if (!verified) {
-                return res.status(401).json({ message: "Invalid Code" });
-            }
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
+    //         const verified = authenticator.check(code, user.secret);
+    //         if (!verified) {
+    //             return res.status(401).json({ message: "Invalid Code" });
+    //         }
+    //     } catch (error) {
+    //         res.status(500).json({ message: error.message });
+    //     }
+    // },
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -129,9 +129,9 @@ const userController = {
         try {
             const { id } = req.cookies;
             const user = await userModel.findById(req.user.userId);
-            const uri = authenticator.keyuri(id, "Help Desk", securityKey);
+            const uri = authenticator.keyuri(id, "Help Desk", process.env.QRCODE_SECRET);
             const image = await qrcode.toDataURL(uri);
-            user.temp_secret = securityKey;
+            user.temp_secret = process.env.QRCODE_SECRET;
             await user.save();
             return res.status(200).json({ image });
         } catch (error) {
