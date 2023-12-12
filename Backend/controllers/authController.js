@@ -100,7 +100,7 @@ const refresh = async (req, res, next) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "10s" } //make it 15 min after deployement it's 10s for testing purposes
+      { expiresIn: "15m" } //make it 15 min after deployement it's 10s for testing purposes
     );
 
     return res.status(200).json({ accessToken });

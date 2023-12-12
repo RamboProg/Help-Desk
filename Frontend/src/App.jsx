@@ -15,9 +15,9 @@ const App = () => {
   return (
     <ThemeProvider theme={themes[selectedTheme]}>
       <div>
-        <ThemedComponent>
-          This is a themed component.
-        </ThemedComponent>
+      <ThemeProvider>
+        <ThemedComponent />
+      </ThemeProvider>
         
         <div>
           <button onClick={() => changeTheme('default')}>Default Theme</button>

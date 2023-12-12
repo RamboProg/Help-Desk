@@ -1,11 +1,16 @@
 // ThemedComponent.jsx
-import styled from 'styled-components';
+//import styled from 'styled-components';
+import { useTheme } from './ThemeProvider';
 
-const ThemedComponent = styled.div`
-  background-color: ${props => props.theme.colors.primary};
-  color: ${props => props.theme.colors.secondary};
-  font-family: ${props => props.theme.fonts.main};
-  // ... other styles
-`;
+
+const ThemedComponent = () => {
+  const { theme } = useTheme();
+
+  return (
+    <div className={`bg-${theme}-background text-${theme}-text`}>
+      {/* Your component content */}
+    </div>
+  );
+};
 
 export default ThemedComponent;
