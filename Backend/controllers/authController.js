@@ -114,7 +114,8 @@ const refresh = async (req, res, next) => {
 }
 const logout=  async (req, res) => {
   const cookies = req.cookies;
-  if (!cookies?.jwt) return res.status(204);
+  if (!cookies?.jwt)
+    return res.status(204);
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None" });
   return res.status(200).json({ message: "Cookie cleared" });
 }
