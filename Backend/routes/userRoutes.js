@@ -10,9 +10,9 @@ router.post('/api/v1/auth/login', loginUser); //Login user
 
 router.get('/api/v1/profile', viewUserProfile); //View user profile
 
-router.put('//api/v1/users/:userId', updateUserProfile); //Update user profile
+router.put('/api/v1/users/:userId', updateUserProfile); //Update user profile
 
-router.post('/api/v1/auth/reset-password/request', resetPassword); //Reset password request
+router.put('/api/v1/auth/reset-password/request', resetPassword); //Reset password request
 
 router.get('/api/v1/auth/QrImage', getQRImage);
 
