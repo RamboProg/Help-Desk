@@ -1,6 +1,4 @@
 
-
-
 const db = require('../connectors/db');
 const roles = require('../constants/roles');
 const { getSessionToken } = require('../utils/session');
