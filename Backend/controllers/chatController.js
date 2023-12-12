@@ -1,6 +1,6 @@
 // import io from 'socket.io';
 // import Chat from '../models/chatModel.js';
-const io = require('socket.io')(server);
+const io = require('socket.io');
 const Chat = require('../models/chatModel');
 const jwt = require('jsonwebtoken');
 

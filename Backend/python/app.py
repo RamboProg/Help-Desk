@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -6,6 +7,8 @@ from joblib import dump, load
 import os
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "your_jwt_secret_key"  # Replace with your secret key
+jwt = JWTManager(app)
 
 # Load dataset
 def load_data(): 
@@ -51,6 +54,8 @@ def load_model_and_encoders():
 rf_classifier, priority_encoder, type_encoder, agent_encoder = load_model_and_encoders()
 
 @app.route('/predict', methods=['POST'])
+@jwt_required()
+
 def predict():
     data = request.get_json()
     try:
