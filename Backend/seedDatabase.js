@@ -10,7 +10,9 @@ const LogModel = require('./models/logsModel.js');
 const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
+const crypto = require('crypto');
 
+console.log('MongoDB URI:', process.env.MONGODB_URI);
 
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -37,93 +39,118 @@ const seedData = async () => {
 
     // Seed issue data
     const issueTypes = [
-      { Issue: 'Software', Sub_Issue_Type: ['Operating system', 'Application software', 'Custom software', 'Integration issues'] },
-      { Issue: 'Hardware', Sub_Issue_Type: ['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment'] },
-      { Issue: 'Network', Sub_Issue_Type: ['Email issues', 'Internet connection problems', 'Website errors'] },
-    ];
+  { Issue: 'Software', Sub_Issue_Type: 'Operating system, Application software, Custom software, Integration issues' },
+  { Issue: 'Hardware', Sub_Issue_Type: 'Desktops, Laptops, Printers, Servers, Networking equipment' },
+  { Issue: 'Network', Sub_Issue_Type: 'Email issues, Internet connection problems, Website errors' },
+];
 
-    const issuesData = await Promise.all(issueTypes.map((issue) => new IssueModel(issue).save()));
+const issuesData = await Promise.all(issueTypes.map((issue) => new IssueModel(issue).save()));
 
-    // Seed user data
-    const users = [];
-    for (let i = 0; i < 30; i++) {
-      const randomRoleID = i % 4 + 1; // Alternating role IDs
-      const user = new UserModel({
-        _id: i + 1,
-        Email: `user${i + 1}@example.com`,
-        Password: 'password123',
-        Username: `user${i + 1}`,
-        PhoneNumber: '123-456-7890',
-        RoleID: randomRoleID,
-        MFA_Enabled: i % 2 === 0, // Every other user has MFA enabled
-        Is_Enabled: true,
-        theme: 'light', // Default theme is light
-        logoPath: 'https://placekitten.com/200/200', // Placeholder image
-        salt: 'somesaltvalue',
+   // Function to generate salt
+   async function generateSalt() {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(256, (err, buf) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(buf);
+            }
+        });
+    });
+  }
+  
+// Seed user data
+const users = [];
+for (let i = 0; i < 30; i++) {
+  let mysalt = await generateSalt();
+ 
+  const randomRoleID = i % 4 + 1; // Alternating role IDs
+  const user = new UserModel({
+    _id: i + 1,
+    Email: `user${i + 1}@example.com`,
+    Password: 'password123',
+    Username: `user${i + 1}`,
+    PhoneNumber: '123-456-7890',
+    RoleID: randomRoleID,
+    MFA_Enabled: i % 2 === 0, // Every other user has MFA enabled
+    Is_Enabled: true,
+    theme: 'light', // Default theme is light
+    logoPath: 'https://placekitten.com/200/200', // Placeholder image
+    salt: mysalt,
+  });
+
+  // Save user data based on role ID
+  switch (user.RoleID) {
+    case 1: // Admin
+      const admin = new AdminModel({
+        _id: user._id,
+        Email: user.Email,
+        Password: user.Password,
+        Username: user.Username,
+        PhoneNumber: user.PhoneNumber,
+        RoleID: user.RoleID,
+        MFA_Enabled: user.MFA_Enabled,
+        Is_Enabled: user.Is_Enabled,
+        Salt: user.salt,
       });
+      await admin.save();
+      user.adminId = admin._id; // Link to AdminModel
+      break;
+    case 2: // Manager
+      const manager = new ManagerModel({
+        _id: user._id,
+        Email: user.Email,
+        Password: user.Password,
+        Username: user.Username,
+        PhoneNumber: user.PhoneNumber,
+        RoleID: user.RoleID,
+        MFA_Enabled: user.MFA_Enabled,
+        Is_Enabled: user.Is_Enabled,
+        Salt: user.salt,
+      });
+      await manager.save();
+      user.managerId = manager._id; // Link to ManagerModel
+      break;
+    case 3: // Support Agent
+      const supportAgent = new SupportAgentModel({
+        _id: user._id,
+        Email: user.Email,
+        Password: user.Password,
+        Username: user.Username,
+        PhoneNumber: user.PhoneNumber,
+        RoleID: user.RoleID,
+        MFA_Enabled: user.MFA_Enabled,
+        Is_Enabled: user.Is_Enabled,
+        Pref_Type: 'email', // Default preference type
+        Average_Rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
+        Ticket_Count: Math.floor(Math.random() * 10), // Random ticket count
+        Active_Tickets: Math.floor(Math.random() * 5), // Random active ticket count
+        Salt: user.salt,
+      });
+      await supportAgent.save();
+      user.supportAgentId = supportAgent._id; // Link to SupportAgentModel
+      break;
+    case 4: // Client
+      const client = new ClientModel({
+        _id: user._id,
+        Email: user.Email,
+        Password: user.Password,
+        Username: user.Username,
+        PhoneNumber: user.PhoneNumber,
+        RoleID: user.RoleID,
+        MFA_Enabled: user.MFA_Enabled,
+        Is_Enabled: user.Is_Enabled,
+        Salt: user.salt,
+      });
+      await client.save();
+      user.clientId = client._id; // Link to ClientModel
+      break;
+    default:
+      break;
+  }
 
-      // Save user data based on role ID
-      switch (user.RoleID) {
-        case 1: // Admin
-          await new AdminModel({
-            _id: user._id,
-            Email: user.Email,
-            Password: user.Password,
-            Username: user.Username,
-            PhoneNumber: user.PhoneNumber,
-            RoleID: user.RoleID,
-            MFA_Enabled: user.MFA_Enabled,
-            Is_Enabled: user.Is_Enabled,
-            Salt: user.salt,
-          }).save();
-          break;
-        case 2: // Manager
-          await new ManagerModel({
-            _id: user._id,
-            Email: user.Email,
-            Password: user.Password,
-            Username: user.Username,
-            PhoneNumber: user.PhoneNumber,
-            RoleID: user.RoleID,
-            MFA_Enabled: user.MFA_Enabled,
-            Is_Enabled: user.Is_Enabled,
-            Salt: user.salt,
-          }).save();
-          break;
-        case 3: // Support Agent
-          await new SupportAgentModel({
-            _id: user._id,
-            Email: user.Email,
-            Password: user.Password,
-            Username: user.Username,
-            PhoneNumber: user.PhoneNumber,
-            RoleID: user.RoleID,
-            MFA_Enabled: user.MFA_Enabled,
-            Is_Enabled: user.Is_Enabled,
-            Pref_Type: 'email', // Default preference type
-            Average_Rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
-            Ticket_Count: Math.floor(Math.random() * 10), // Random ticket count
-            Active_Tickets: Math.floor(Math.random() * 5), // Random active ticket count
-            Salt: user.salt,
-          }).save();
-          break;
-        case 4: // Client
-          await new ClientModel({
-            _id: user._id,
-            Email: user.Email,
-            Password: user.Password,
-            Username: user.Username,
-            PhoneNumber: user.PhoneNumber,
-            RoleID: user.RoleID,
-            MFA_Enabled: user.MFA_Enabled,
-            Is_Enabled: user.Is_Enabled,
-            Salt: user.salt,
-          }).save();
-          break;
-        default:
-          break;
-      }
-    }
+  await user.save(); // Save UserModel
+}
 
     // Seed FAQ data
     const faqs = [];
