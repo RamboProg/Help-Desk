@@ -37,6 +37,8 @@ const seedData = async () => {
     await ManagerModel.deleteMany({});
     await TicketModel.deleteMany({});
     await ChatModel.deleteMany({});
+    await CustomizationModel.deleteMany({});
+
 
 // Seed issue data
 const issueTypes = [
