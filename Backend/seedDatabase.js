@@ -10,6 +10,7 @@ const LogModel = require('./models/logsModel.js');
 const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
+const CustomizationModel = require('./models/customizationModel.js');
 const crypto = require('crypto');
 
 console.log('MongoDB URI:', process.env.MONGODB_URI);
@@ -286,7 +287,25 @@ for (let i = 0; i < 30; i++) {
       chats.push(chat.save());
     }
 
-    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats]);
+
+    // Seed customization data for Tailwind themes
+    const customizations = [];
+    const tailwindThemes = ['light', 'dark', 'cyan', 'purple', 'green']; // Add your desired Tailwind themes
+
+    for (let i = 1; i <= 30; i++) { // Assuming 30 users have been created
+      const theme = tailwindThemes[i % tailwindThemes.length];
+      const logoPath = `https://placekitten.com/200/200?random=${i}`; // Placeholder image with unique path
+
+      const customization = new CustomizationModel({
+        userId: i,
+        theme,
+        logoPath,
+      });
+
+      customizations.push(customization.save());
+    }
+
+    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
 
     console.log('Database seeded successfully!');
   } catch (error) {
