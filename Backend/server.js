@@ -83,7 +83,7 @@ const storage = multer.diskStorage({
 });
 
 // Route for ML model prediction
-app.post('/predict-agent', async (req, res) => {
+app.post('/predict', async (req, res) => {
   try {
     const response = await axios.post('http://localhost:3000/predict', req.body);
     res.json(response.data);
@@ -92,9 +92,6 @@ app.post('/predict-agent', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
-
-
 
 
 // Add middleware
