@@ -1,10 +1,10 @@
 // routes/chatRoute.js
 const { Router } = require('express');
 const router = Router();
-const { chatController } = require('../controllers/chatController');
+const { startNewChat, send_message } = require('../controllers/chatController');
 
 // Define the chat endpoint
-router.post('/api/v1/chat', chatController.startNewChat);
-router.put('/api/v1/chat/:chatId', chatController.send_message);
+router.post('/api/v1/chat', startNewChat);
+router.put('/api/v1/chat/:chatId', send_message);
 
 module.exports = router;
