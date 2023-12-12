@@ -36,3 +36,5 @@ package-lock.json
 packages.json
 package-lock.json
 
+Backend/package-lock.json
+Backend/package.json
