@@ -9,6 +9,7 @@ const adminModel = require('../models/adminModel.js');
 const managerModel = require('../models/managerModel.js');
 const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
+const Customization = require('../models/customizationModel'); 
 
 
 // Function to generate salt
@@ -159,7 +160,28 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
+    },
+    updateUserCustomization: async (req, res) => {
+        try {
+            const userId = req.params._id;
+            const { theme, logoPath } = req.body;
+      
+            // Update or create customization settings for the user
+            await Customization.findOneAndUpdate(
+              { userId },
+              { $set: { theme, logoPath } },
+              { upsert: true, new: true }
+            );
+      
+            // Update the user's theme in the user model
+            await userModel.findOneAndUpdate({ _id: userId }, { $set: { theme } }); // Update this line
+      
+            res.status(200).json({ message: 'Customization updated successfully' });
+          } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+          }
+    },
 };
 
 // Function to get user based on role
