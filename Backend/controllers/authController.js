@@ -9,7 +9,7 @@ const admin = require("../models/adminModel");
 
 const loginUser =  async (req, res) => {
   try {
-    const { email, password, code } = req.body;
+    const { email, password,code } = req.body;
     if (!email || !password) {
       return res
         .status(400)
@@ -19,11 +19,11 @@ const loginUser =  async (req, res) => {
     const user = await User.findOne({ Email: email });
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "User not found" });
     }
     const salt = user.Salt;
     const hash = bcrypt.hashSync(password, salt);
-    const isPasswordValid = bcrypt.compareSync(hash, user.Password);
+    const isPasswordValid = bcrypt.compareSync(hash, user.Passsword);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials" });

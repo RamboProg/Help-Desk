@@ -61,6 +61,33 @@ const userController = {
     //         res.status(500).json({ message: error.message });
     //     }
     // },
+    Register: async (req, res) => {
+        try {
+            const { email, password, username, phoneNumber } = req.body;
+
+            // Check if user already exists
+            const userExists = await userModel.findOne({ Email: email });
+            if (userExists) {
+                res.status(400).json({ message: "User already exists" });
+            } else {
+                const salt = await generateSalt();
+                const hash = bcrypt.hashSync(password, salt);
+                // Create a new user with roles
+                const user = await userModel.create({
+                    Email: email,
+                    Password: hash,
+                    Username: username,
+                    PhoneNumber: phoneNumber,
+                    Salt: salt,
+                    Roles: 4, // Assuming Roles is an array field in your userModel
+                });
+                res.status(201).json(user);
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    
 
     // View user profile
     viewUserProfile: async (req, res) => {
