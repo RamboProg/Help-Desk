@@ -14,16 +14,17 @@ const Customization = require('../models/customizationModel');
 
 // Function to generate salt
 async function generateSalt() {
-    return new Promise((resolve, reject) => {
-        crypto.randomBytes(256, (err, buf) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(buf);
-            }
-        });
-    });
-}
+    return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+  }
+  async function hashPassword(password, salt) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, salt);
+      return hashedPassword;
+    } catch (error) {
+      throw error;
+    }
+  } 
+
 const authentication = require('../middleware/authenticationMiddleware');
 
 
@@ -61,6 +62,33 @@ const userController = {
     //         res.status(500).json({ message: error.message });
     //     }
     // },
+    Register: async (req, res) => {
+        try {
+            const { email, password, username, phoneNumber } = req.body;
+
+            // Check if user already exists
+            const userExists = await userModel.findOne({ Email: email });
+            if (userExists) {
+                res.status(400).json({ message: "User already exists" });
+            } else {
+                const salt = await generateSalt();
+                const hash = await hashPassword(password, salt);
+                // Create a new user with roles
+                const user = await userModel.create({
+                    Email: email,
+                    Password: hash,
+                    Username: username,
+                    PhoneNumber: phoneNumber,
+                    Salt: salt,
+                    Roles: 4, // Assuming Roles is an array field in your userModel
+                });
+                res.status(201).json(user);
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    
 
     // View user profile
     viewUserProfile: async (req, res) => {
