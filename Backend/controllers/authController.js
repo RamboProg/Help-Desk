@@ -22,7 +22,7 @@ const loginUser =  async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
     const salt = user.Salt;
-    const hash = bcrypt.hashSync(password, salt);
+    const hash = bcrypt.hash(password, salt);
     const isPasswordValid = bcrypt.compareSync(hash, user.Password);
 
     if (!isPasswordValid) {

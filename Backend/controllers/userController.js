@@ -14,16 +14,17 @@ const Customization = require('../models/customizationModel');
 
 // Function to generate salt
 async function generateSalt() {
-    return new Promise((resolve, reject) => {
-        crypto.randomBytes(256, (err, buf) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(buf);
-            }
-        });
-    });
-}
+    return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+  }
+  async function hashPassword(password, salt) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, salt);
+      return hashedPassword;
+    } catch (error) {
+      throw error;
+    }
+  } 
+  
 const authentication = require('../middleware/authenticationMiddleware');
 
 
