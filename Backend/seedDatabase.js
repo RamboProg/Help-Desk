@@ -13,8 +13,6 @@ const ChatModel = require('./models/chatModel.js');
 const CustomizationModel = require('./models/customizationModel.js');
 const crypto = require('crypto');
 
-console.log('MongoDB URI:', process.env.MONGODB_URI);
-
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
