@@ -14,6 +14,10 @@ const CustomizationModel = require('./models/customizationModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
+console.log('MongoDB URI:', process.env.MONGODB_URI);
+
+
+
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -135,13 +139,14 @@ async function hashPassword(password, salt) {
 // Seed user data
 const users = [];
 for (let i = 0; i < 30; i++) {
-  let mysalt = await generateSalt();
-  const hashedPassword = await hashPassword('password123', mysalt); // Hash the password
+
+  let mysalt = generateSalt();
+  let hash = bcrypt.hashSync('password123', mysalt).toString();
   const randomRoleID = i % 4 + 1; // Alternating role IDs
   const user = new UserModel({
     _id: i + 1,
     Email: `user${i + 1}@example.com`,
-    Password: hashedPassword,
+    Password: hash,
     Username: `user${i + 1}`,
     PhoneNumber: '123-456-7890',
     RoleID: randomRoleID,
