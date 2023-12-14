@@ -14,6 +14,8 @@ const CustomizationModel = require('./models/customizationModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
+console.log('MongoDB URI:', process.env.MONGODB_URI);
+
 
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
