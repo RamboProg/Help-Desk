@@ -12,8 +12,10 @@ const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
 const CustomizationModel = require('./models/customizationModel.js');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 console.log('MongoDB URI:', process.env.MONGODB_URI);
+
 
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -134,12 +136,12 @@ const issuesData = await Promise.all(issueTypes.map(async (issue) => {
 const users = [];
 for (let i = 0; i < 30; i++) {
   let mysalt = await generateSalt();
- 
+  let hash = bcrypt.hashSync('password123', mysalt);
   const randomRoleID = i % 4 + 1; // Alternating role IDs
   const user = new UserModel({
     _id: i + 1,
     Email: `user${i + 1}@example.com`,
-    Password: 'password123',
+    Password: hash,
     Username: `user${i + 1}`,
     PhoneNumber: '123-456-7890',
     RoleID: randomRoleID,
