@@ -16,10 +16,9 @@ router.get('/api/v1/editAppearance/:theme', async (req, res) => {
 });
 
 // Update customization settings for a specific organization
-router.post('/api/v1/editAppearance/:theme/:orgID', async (req, res) => {
+router.post('/api/v1/editAppearance/:theme', async (req, res) => {
   try {
     const themeString = req.params.theme;
-    const orgID = req.params.orgID;
     const updatedCustomization = req.body; // Assuming the request body contains the updated customization
     
     // Assuming that you want to update customization based on both theme and orgID
