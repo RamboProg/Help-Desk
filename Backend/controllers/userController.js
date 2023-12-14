@@ -14,16 +14,17 @@ const Customization = require('../models/customizationModel');
 
 // Function to generate salt
 async function generateSalt() {
-    return new Promise((resolve, reject) => {
-        crypto.randomBytes(256, (err, buf) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(buf);
-            }
-        });
-    });
-}
+    return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+  }
+  async function hashPassword(password, salt) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, salt);
+      return hashedPassword;
+    } catch (error) {
+      throw error;
+    }
+  } 
+
 const authentication = require('../middleware/authenticationMiddleware');
 
 
@@ -71,7 +72,7 @@ const userController = {
                 res.status(400).json({ message: "User already exists" });
             } else {
                 const salt = await generateSalt();
-                const hash = bcrypt.hashSync(password, salt);
+                const hash = await hashPassword(password, salt);
                 // Create a new user with roles
                 const user = await userModel.create({
                     Email: email,
