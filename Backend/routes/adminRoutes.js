@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { createNewUser } = require('../controllers/adminController');
+const { AssignRole } = require('../controllers/adminController');
 
-router.post('/api/v1/users' , createNewUser);
+router.post('/api/v1/admin/assignRole' , AssignRole);
 
 module.exports = router;
