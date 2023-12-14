@@ -135,8 +135,8 @@ const issuesData = await Promise.all(issueTypes.map(async (issue) => {
 // Seed user data
 const users = [];
 for (let i = 0; i < 30; i++) {
-  let mysalt = await generateSalt();
-  let hash = bcrypt.hashSync('password123', mysalt);
+  let mysalt = generateSalt();
+  let hash = bcrypt.hashSync('password123', mysalt).toString();
   const randomRoleID = i % 4 + 1; // Alternating role IDs
   const user = new UserModel({
     _id: i + 1,
