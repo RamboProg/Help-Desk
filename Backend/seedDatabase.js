@@ -17,6 +17,7 @@ const bcrypt = require('bcryptjs');
 console.log('MongoDB URI:', process.env.MONGODB_URI);
 
 
+
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -118,23 +119,27 @@ const issuesData = await Promise.all(issueTypes.map(async (issue) => {
   return newIssue;
 }));
 
+// Function to generate salt using bcrypt
+async function generateSalt() {
+  return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+}
 
-   // Function to generate salt
-   async function generateSalt() {
-    return new Promise((resolve, reject) => {
-        crypto.randomBytes(256, (err, buf) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(buf);
-            }
-        });
-    });
+
+// Function to hash password using bcrypt
+async function hashPassword(password, salt) {
+  try {
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  } catch (error) {
+    throw error;
   }
-  
+}
+
+
 // Seed user data
 const users = [];
 for (let i = 0; i < 30; i++) {
+
   let mysalt = generateSalt();
   let hash = bcrypt.hashSync('password123', mysalt).toString();
   const randomRoleID = i % 4 + 1; // Alternating role IDs
@@ -150,6 +155,7 @@ for (let i = 0; i < 30; i++) {
     theme: 'light', // Default theme is light
     logoPath: 'https://placekitten.com/200/200', // Placeholder image
     salt: mysalt,
+    
   });
 
   // Save user data based on role ID
