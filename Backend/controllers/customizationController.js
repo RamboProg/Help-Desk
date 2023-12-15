@@ -4,11 +4,13 @@ const User = require('../models/userModel');
 
 exports.getAllUniqueCustomizations = async (req, res) => {
   try {
-    const uniqueCustomizations = await User.distinct('theme', 'logoPath');
+    const uniqueThemes = await User.distinct('theme');
+    const uniqueLogoPaths = await User.distinct('logoPath');
 
-    if (!uniqueCustomizations || uniqueCustomizations.length === 0) {
-      return res.status(404).json({ message: 'Unique customizations not found for any user' });
-    }
+    const uniqueCustomizations = {
+      uniqueThemes,
+      uniqueLogoPaths
+    };
 
     res.status(200).json(uniqueCustomizations);
   } catch (error) {
