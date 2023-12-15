@@ -25,6 +25,8 @@ const clientRoutes = require('./routes/clientRoutes');
 const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
 const managerRoutes = require('./routes/managerRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 
 
 
@@ -111,6 +113,8 @@ app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
+app.use(userRoutes);
+
 
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
