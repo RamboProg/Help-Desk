@@ -2,20 +2,20 @@
 const Customization = require('../models/customizationModel');
 const User = require('../models/userModel');
 
-  exports.getAllUniqueCustomizations = async (req, res) => {
-    try {
-      const uniqueCustomizations = await Customization.distinct('theme');
-  
-      if (!uniqueCustomizations || uniqueCustomizations.length === 0) {
-        return res.status(404).json({ message: 'Unique customizations not found for any user' });
-      }
-  
-      res.status(200).json(uniqueCustomizations);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+exports.getAllUniqueCustomizations = async (req, res) => {
+  try {
+    const uniqueCustomizations = await User.distinct('theme', 'logoPath');
+
+    if (!uniqueCustomizations || uniqueCustomizations.length === 0) {
+      return res.status(404).json({ message: 'Unique customizations not found for any user' });
     }
-  };
+
+    res.status(200).json(uniqueCustomizations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 exports.updateAllUsersCustomization = async (req, res) => {
   try {
