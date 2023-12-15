@@ -6,8 +6,8 @@ const admin = require("../models/adminModel");
 //const qrcode = require('qrcode');
 //const crypto = require('crypto');
 
-
-const loginUser =  async (req, res) => {
+const authController = {
+ loginUser:  async (req, res) => {
   try {
     const { email, password,code } = req.body;
     if (!email || !password) {
@@ -77,8 +77,8 @@ const loginUser =  async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
-const refresh = async (req, res, next) => {
+},
+ refresh: async (req, res, next) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
 
@@ -111,17 +111,14 @@ const refresh = async (req, res, next) => {
       return res.status(403).json({ message: "Forbidden" });
     }
   }
-}
-const logout=  async (req, res) => {
+},
+ logout:  async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.jwt)
     return res.status(204);
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None" });
   return res.status(200).json({ message: "Cookie cleared" });
 }
+}
 
-module.exports = {
-  logout,
-  loginUser,
-  refresh,
-};
+module.exports = authController;
