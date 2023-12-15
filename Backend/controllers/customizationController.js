@@ -28,6 +28,8 @@ exports.updateAllUsersCustomization = async (req, res) => {
 
     // Update the theme in all user models
     await User.updateMany({}, { $set: { theme } });
+    await User.updateMany({}, { $set: { logoPath } });
+
 
     res.status(200).json({ message: 'Customization updated successfully for all users' });
   } catch (error) {
