@@ -26,7 +26,17 @@ async function generateSalt() {
   } 
 
 const authentication = require('../middleware/authenticationMiddleware');
+ // Function to get user based on role
+ async function getUser(req, res) {
+    try {
+        const Token = req.header('Authorization');
+        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
 
+    } catch (error) {
+        console.error('Error could not get user', error);
+        throw error;
+    }
+}
 
 const userController = {
     // Login user
@@ -212,19 +222,10 @@ const userController = {
     },
 };
 
-// Function to get user based on role
-async function getUser(req, res) {
-    try {
-        const Token = req.header('Authorization');
-        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
 
-    } catch (error) {
-        console.error('Error could not get user', error);
-        throw error;
-    }
-}
 
-module.exports = { userController, getUser };
+// module.exports = { userController, getUser };
+module.exports = userController;
 
 // async function getUser(userId) {
 //     const User = require('./models/userModel');
