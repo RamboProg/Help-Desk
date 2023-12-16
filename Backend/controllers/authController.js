@@ -51,36 +51,14 @@ const authController = {
       console.log(accessToken);
       return res.status(200).json({ message: "Logged in " },accessToken);
     }
-
-        console.log("Logged in successfully:", user.Username);
-        return res.status(200).json({ message: "Logged in" },accessToken);
-      }
-
       const verified = await authenticator.check(code, user.secret);
       if (!verified) {
         console.log("Invalid code for user:", user.Username);
         return res.status(401).json({ message: "Invalid Code" });
       }
-
-      const accessToken = jwt.sign(
-        {
-          UserInfo: {
-            Username: user.Username,
-            RoleID: user.RoleID,
-          },
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
-      );
-
-      res.cookie("jwt", accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      console.log("Logged in successfully with MFA:", user.Username);
+      const accessToken = generateToken(user._id);
+      console.long(accessToken);
+      console.log("Logged in successfully with MFA:", accessToken);
       return res.status(200).json({ message: "Logged in" });
     } catch (error) {
       console.error("Error in login:", error.message);
