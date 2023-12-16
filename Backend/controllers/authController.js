@@ -3,11 +3,13 @@ const jwt = require("jsonwebtoken");
 const authenticator = require('otplib');
 const bcrypt = require('bcryptjs');
 const admin = require("../models/adminModel");
+//const qrcode = require('qrcode');
+//const crypto = require('crypto');
 
 async function generateToken(id){
-  return jwt.sign({id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:"15m"})
-  
+return jwt.sign({id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:"15m"})
 }
+
 const authController = {
   loginUser: async (req, res) => {
     try {
@@ -38,38 +40,6 @@ const authController = {
       console.log("User authenticated successfully:", email);
 
       if (!user.MFA_Enabled) {
-        const accessToken = jwt.sign(
-          {
-            UserInfo: {
-              UserId: user._id,
-              Username: user.Username,
-              RoleID: user.RoleID,
-            },
-          },
-          process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "1h" }
-        );
-
-        res.cookie("jwt", accessToken, {
-          httpOnly: true,
-          sameSite: "None",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
-        console.log("Logged in successfully:", user.Username);
-        return res.status(200).json({ message: "Logged in" },accessToken);
-      }
-
-      const verified = await authenticator.check(code, user.secret);
-      if (!verified) {
-        console.log("Invalid code for user:", user.Username);
-        return res.status(401).json({ message: "Invalid Code" });
-      }
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-    if (!user.MFA_Enabled) {
       const accessToken = generateToken(user._id);
       //create secure cookie with refresh token
       // res.cookie("jwt", accessToken, {
@@ -81,10 +51,41 @@ const authController = {
       console.log(accessToken);
       return res.status(200).json({ message: "Logged in " },accessToken);
     }
-}catch(err){
-   return res.status(500).json({message: err.message})
-}
-  
+
+        console.log("Logged in successfully:", user.Username);
+        return res.status(200).json({ message: "Logged in" },accessToken);
+      }
+
+      const verified = await authenticator.check(code, user.secret);
+      if (!verified) {
+        console.log("Invalid code for user:", user.Username);
+        return res.status(401).json({ message: "Invalid Code" });
+      }
+
+      const accessToken = jwt.sign(
+        {
+          UserInfo: {
+            Username: user.Username,
+            RoleID: user.RoleID,
+          },
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1h" }
+      );
+
+      res.cookie("jwt", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      console.log("Logged in successfully with MFA:", user.Username);
+      return res.status(200).json({ message: "Logged in" });
+    } catch (error) {
+      console.error("Error in login:", error.message);
+      res.status(500).json({ message: error.message });
+    }
 },
  refresh: async (req, res, next) => {
   const cookies = req.cookies;
@@ -126,7 +127,7 @@ const authController = {
     return res.status(204);
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None" });
   return res.status(200).json({ message: "Cookie cleared" });
-},
 }
+
 
 module.exports = authController;
