@@ -26,6 +26,8 @@ const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
 const managerRoutes = require('./routes/managerRoutes');
 const userRoutes = require('./routes/userRoutes');
+const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+const authorizationMiddleware = require('./middleware/authorizationMiddleware');
 
 
 
@@ -100,6 +102,8 @@ app.post('/predict', async (req, res) => {
 // Add middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(authenticationMiddleware.authenticationMiddlewareFunction);
+app.use(authorizationMiddleware.authorizationMiddlewareFunction);
 
 
 //use the routes
@@ -131,7 +135,7 @@ app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
 
-app.use('/api/v1/auth', login);
+app.use(login);
 // Use the workflow router
 app.use('/', workflowRouter);
 
