@@ -6,6 +6,10 @@ const admin = require("../models/adminModel");
 //const qrcode = require('qrcode');
 //const crypto = require('crypto');
 
+async function generateToken(id){
+  return jwt.sign({id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:"15m"})
+  
+}
 
 const loginUser =  async (req, res) => {
   try {
@@ -29,25 +33,16 @@ const loginUser =  async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
     if (!user.MFA_Enabled) {
-      const accessToken = jwt.sign(
-        {
-          UserInfo: {
-            UserId: user._id,
-            Username: user.Username,
-            RoleID: user.RoleID,
-          },
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" } //make it 15 min after deployement it's 10s for testing purposes
-      );
+      const accessToken = generateToken(user._id);
       //create secure cookie with refresh token
-      res.cookie("jwt", accessToken, {
-        httpOnly: true,
-        //secure: true,
-        sameSite: "None",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-      return res.status(200).json({ message: "Logged in " });
+      // res.cookie("jwt", accessToken, {
+      //   httpOnly: true,
+      //   //secure: true,
+      //   sameSite: "None",
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
+      console.log(accessToken);
+      return res.status(200).json({ message: "Logged in " },accessToken);
     }
 
     const verified = await authenticator.check(code, user.secret);
