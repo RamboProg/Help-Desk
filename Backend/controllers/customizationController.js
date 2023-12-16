@@ -2,38 +2,36 @@
 const Customization = require('../models/customizationModel');
 const User = require('../models/userModel');
 
-exports.getUserCustomization = async (req, res) => {
+exports.getAllUniqueCustomizations = async (req, res) => {
   try {
-    const userId = req.params._id;
-    const customization = await Customization.findOne({ userId });
+    const uniqueThemes = await User.distinct('theme');
+    const uniqueLogoPaths = await User.distinct('logoPath');
 
-    if (!customization) {
-      return res.status(404).json({ message: 'Customization not found' });
-    }
+    const uniqueCustomizations = {
+      uniqueThemes,
+      uniqueLogoPaths
+    };
 
-    res.status(200).json(customization);
+    res.status(200).json(uniqueCustomizations);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-exports.updateUserCustomization = async (req, res) => {
+exports.updateAllUsersCustomization = async (req, res) => {
   try {
-    const userId = req.params._id;
     const { theme, logoPath } = req.body;
 
-    // Update or create customization settings for the user
-    await Customization.findOneAndUpdate(
-      { userId },
-      { $set: { theme, logoPath } },
-      { upsert: true, new: true }
-    );
+    // Update or create customization settings for all users
+    await Customization.updateMany({}, { $set: { theme, logoPath } }, { upsert: true });
 
-    // Update the user's theme in the user model
-    await User.findOneAndUpdate({ _id: userId }, { $set: { theme } });
+    // Update the theme in all user models
+    await User.updateMany({}, { $set: { theme } });
+    await User.updateMany({}, { $set: { logoPath } });
 
-    res.status(200).json({ message: 'Customization updated successfully' });
+
+    res.status(200).json({ message: 'Customization updated successfully for all users' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
