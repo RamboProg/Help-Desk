@@ -3,6 +3,7 @@
 const io = require('socket.io');
 const Chat = require('../models/chatModel');
 const jwt = require('jsonwebtoken');
+const { getUser } = require('./userController');
 
 // const saveChat = async (message, fromId, toId) => { //function for saving chats
 //   try {
@@ -33,23 +34,28 @@ const jwt = require('jsonwebtoken');
       const { Message } = req.body;
 
       // Extract user information from the JWT
-      const { userId } = req.user;
+      const { _id } = await getUser(req);
+      console.log(_id);
 
       // Create a new chat instance
-      const newChat = new Chat({
-        Support_AgentID: userId, // Assuming userId is the Support Agent ID from JWT
-        TicketID: 456, // Replace with the actual Ticket ID
-        Messages: Message,
-        Chat_Start_Time: new Date(),
-        Final_Message_Time: null,
-        Message_Count: 1
-      });
+      // const newChat = new Chat({
+      //   Support_AgentID: _id, // Assuming userId is the Support Agent ID from JWT
+      //   TicketID: 456, // Replace with the actual Ticket ID
+      //   Messages: Message,
+      //   Chat_Start_Time: new Date(),
+      //   Final_Message_Time: new Date(),
+      //   Message_Count: 1
+      // });
+      // // Emit a socket event to inform connected clients about the new chat
+      // req.io.emit('newChat', saveChat);
 
-      // Emit a socket event to inform connected clients about the new chat
-      req.io.emit('newChat', saveChat);
+      // // For demonstration purposes, let's just send a response with the saved chat details
+      // res.json({ success: true, chat: saveChat });
+      
+      // Save the chat to the database
+      await newChat.save();
+      res.status(200).json({ success: true });
 
-      // For demonstration purposes, let's just send a response with the saved chat details
-      res.json({ success: true, chat: saveChat });
     } catch (error) {
       console.error('Error creating new chat:', error);
       res.status(500).json({ success: false, error: 'Internal Server Error' });
