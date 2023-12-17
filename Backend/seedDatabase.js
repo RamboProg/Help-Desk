@@ -131,7 +131,6 @@ async function hashPassword(password, salt) {
   }
 }
 
-
 // Seed user data
 const users = [];
 for (let i = 0; i < 30; i++) {
@@ -225,7 +224,33 @@ for (let i = 0; i < 30; i++) {
 
   await user.save(); // Save UserModel
 }
-
+  const salt = await generateSalt();
+  const hashedPassword = await hashPassword('password123', salt); // Hash the password
+  // Create a valid user
+  const validUser = new UserModel({
+    _id: 31,
+    Email: 'zaidqarxoy@gmail.com',
+    Password: hashedPassword,
+    Username: 'zaidqarxoy',
+    PhoneNumber: '123-456-7890',
+    RoleID: 4,
+    MFA_Enabled: false, // Every other user has MFA enabled
+    Is_Enabled: false,
+    salt: salt,
+  }); 
+  await validUser.save(); // Save UserModel
+const validClient = new ClientModel({
+  _id: validUser._id,
+  Email: validUser.Email,
+  Password: validUser.Password,
+  Username: validUser.Username,
+  PhoneNumber: validUser.PhoneNumber,
+  RoleID: validUser.RoleID,
+  MFA_Enabled: validUser.MFA_Enabled,
+  Is_Enabled: validUser.Is_Enabled,
+  Salt: validUser.salt,
+});
+await validClient.save();
     // Seed FAQ data
     const faqs = [];
     for (let i = 0; i < 5; i++) {
@@ -267,7 +292,21 @@ for (let i = 0; i < 30; i++) {
       });
       tickets.push(ticket.save());
     }
-
+     // Create a valid ticket
+    const ValidTicket = new TicketModel({
+      _id: 7,
+      Status: 'Open', // Default ticket status
+      Assigned_AgentID: 1, // Assign tickets to agents in a loop
+      Ticket_Owner: 31, // Assign tickets to users in a loop
+      Issue_Type: issuesData[0].Issue, // Assign issues in a loop
+      Description: `Ticket description ${6}`,
+      Priority: 'High', // Alternate priority
+      Resolution_Details: `Resolution details ${6}`,
+      Start_Date: new Date(), // Current date as the start date
+      End_Date: new Date(), // Current date as the end date
+      Sub_Issue_Type: issuesData[0].Sub_Issue_Type, // Assign sub-issue types
+    });
+    await ValidTicket.save();
 
       // Seed chat data
     const chats = [];
