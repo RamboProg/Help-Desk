@@ -27,6 +27,8 @@ router.put('/api/v1/users/:userId', authenticateUser.authenticationMiddlewareFun
 
 // Registration route does not require authentication
 router.post('/api/v1/auth/register', userController.registerUser);
+router.post('/login', userController.loginUser);
+
 
 // Other routes...
 router.put('/api/v1/auth/reset-password/request', userController.resetPassword);

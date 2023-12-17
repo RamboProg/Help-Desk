@@ -90,21 +90,13 @@ const userController = {
     
         try {
           const user = await userModel.findOne({ Email: email }).select('+Password');
-          console.log(user);
             if (!user) {
                 return res.status(400).json({ message: "Invalid credentials" });
             }
 
             if (!user || !user.Password) {
               return res.status(400).json({ message: "Invalid credentials" });
-          }
-    
-            console.log("User found:", user);
-    
-            // Log the values of password and user.Password
-            console.log("Provided Password:", password);
-            console.log("User Password:", user.Password);
-    
+          }    
             // Check if user.Password is defined and not null
             if (!user.Password) {
                 return res.status(400).json({ message: "Invalid credentials" });
