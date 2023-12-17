@@ -255,13 +255,8 @@ const userController = {
           }
     },
 
-         getUser: async (req, res) => {
-            res.status(200).json(req.user);
-        },
-        
-     
-        
-};
+
+    };
 
 
 const generateToken = (id) => {

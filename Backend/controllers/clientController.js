@@ -8,14 +8,14 @@ const { getUser } = require('../controllers/userController');
 
   getMyTickets: async (req, res) => {
     try {
-      const { _id } = await getUser(req);
-      const client = await Client.findById(_id);
+      const clientid = req.user.userId;
+      const client = await Client.findById(clientid);
 
       if (!client) {
         return res.status(404).json({ error: 'Client not found!' });
       }
 
-      const tickets = await Ticket.find({ Ticket_Owner: _id });
+      const tickets = await Ticket.find({ Ticket_Owner: userId });
 
       res.json(tickets);
     } catch (error) {
@@ -26,10 +26,8 @@ const { getUser } = require('../controllers/userController');
 
   createTicket: async (req, res) => {
     try {
-      const { _id } = getUser(req)
-      // check if the client exists
-      const client = await Client.findById(_id);
-
+      const userId = req.user.userId;
+      const client = await Client.findById(userId);      // check if the client exists
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
@@ -77,7 +75,7 @@ const { getUser } = require('../controllers/userController');
         _id: new mongoose.Types.ObjectId(),
         Status: 'Open',
         Assigned_AgentID: null, //needs a function
-        Ticket_Owner: _id,
+        Ticket_Owner: userId,
         Issue_Type: req.body.Issue_Type,
         Description: req.body.description,
         Priority: priority,
