@@ -27,6 +27,7 @@ const { getUser } = require('../controllers/userController');
   createTicket: async (req, res) => {
     try {
       const userId = req.user.userId;
+      console.log(userId);
       const client = await Client.findById(userId);      // check if the client exists
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
@@ -90,30 +91,37 @@ const { getUser } = require('../controllers/userController');
       if (requestedSubIssueType.toLowerCase() == 'other') {
         newChat = new Chat({
           _id: new mongoose.Types.ObjectId(),
-          Client_ID: _id,
+          Client_ID: userId,
           Support_AgentID: null, //needs a function
           Messages: null,
           Start_Time: currentDate.getTime(),
           End_Time: null,
           Message_Count: 0,
           TicketID: newTicket._id
-        })
+        });
+        
+        // Additional logic for newChat, if needed
       }
 
-      const agent = await Agent.findById(newChat.Support_AgentID); //also needs function to retrieve agent id
-      if (!agent) {
+      const agent = await Agent.findById(newChat ? newChat.Support_AgentID : null);
+      if (!agent && requestedSubIssueType.toLowerCase() == 'other') {
         return res.status(404).json({ error: 'Agent not found' });
       }
-      //increasing the ticket count in the agent table
-      agent.Ticket_Count = agent.Ticket_Count++;
-      agent.Active_Tickets = agent.Active_Tickets++;
+
+      // Additional logic for agent, if needed
+
+      // Increase the ticket count in the agent table
+      if (requestedSubIssueType.toLowerCase() == 'other') {
+        agent.Ticket_Count = (agent.Ticket_Count || 0) + 1;
+        agent.Active_Tickets = (agent.Active_Tickets || 0) + 1;
+      }
 
       const savedTicket = await newTicket.save();
-      res.status(201).json({ ticket: newTicket, chat: newChat}); //check this condition
+      const savedChat = newChat ? await newChat.save() : null;
 
-
+      res.status(201).json({ ticket: savedTicket, chat: savedChat }); // Check this condition
     } catch (error) {
-      console.error('Error fetching tickets:', error);
+      console.error('Error creating ticket:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -148,7 +156,7 @@ const { getUser } = require('../controllers/userController');
       if (req.body.rating <= 1) {
         newChat = new Chat({
           _id: new mongoose.Types.ObjectId(),
-          Client_ID: _id,
+          Client_ID: userId,
           Support_AgentID: null, //needs a function
           Messages: null,
           Start_Time: currentDate.getTime(),
