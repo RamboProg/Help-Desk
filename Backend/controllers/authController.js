@@ -3,6 +3,12 @@ const jwt = require("jsonwebtoken");
 const authenticator = require('otplib');
 const bcrypt = require('bcryptjs');
 const admin = require("../models/adminModel");
+//const qrcode = require('qrcode');
+//const crypto = require('crypto');
+
+async function generateToken(id){
+return jwt.sign({id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:"15m"})
+}
 
 const authController = {
 //   loginUser: async (req, res) => {
@@ -87,6 +93,7 @@ const authController = {
 //       res.status(500).json({ message: error.message });
 //     }
 // },
+
  refresh: async (req, res, next) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
@@ -127,7 +134,7 @@ const authController = {
     return res.status(204);
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None" });
   return res.status(200).json({ message: "Cookie cleared" });
-}
+},
 }
 
 module.exports = authController;
