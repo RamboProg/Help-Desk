@@ -65,8 +65,20 @@ const userController = {
             Username: username,
             PhoneNumber: phoneNumber,
             Salt: salt,
-            Roles: 4, // Assuming Roles is an array field in your userModel
+            RoleID: 4, 
         });
+
+        const Client = await clientModel.create({
+            _id: user._id,
+            Email: user.Email,
+            Password: user.Password,
+            Username: user.Username,
+            PhoneNumber: user.PhoneNumber,
+            Salt: user.salt,
+            RoleID: user.RoleID,
+        });
+        
+        await Client.save();
 
         if (user) {
           res.status(201).json({
