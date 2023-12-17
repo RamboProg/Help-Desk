@@ -13,17 +13,17 @@ const Customization = require('../models/customizationModel');
 
 
 // Function to generate salt
-async function generateSalt() {
-  return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
-}
-async function hashPassword(password, salt) {
-  try {
-    const hashedPassword = await bcrypt.hash(password, salt);
-    return hashedPassword;
-  } catch (error) {
-    throw error;
-  }
-} 
+// async function generateSalt() {
+//   return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+// }
+// async function hashPassword(password, salt) {
+//   try {
+//     const hashedPassword = await bcrypt.hash(password, salt);
+//     return hashedPassword;
+//   } catch (error) {
+//     throw error;
+//   }
+// } 
 
 // const authentication = require('../middleware/authenticationMiddleware');
 //  // Function to get user based on role
@@ -54,8 +54,7 @@ const userController = {
           throw new Error('User already exists');
         }
       
-        const salt = await generateSalt();
-        const hashedPassword = await hashPassword(password , salt);
+        const salt = await bcrypt.genSalt(10);        const hashedPassword = await bcrypt.hash(password, salt);      
         const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
         const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
         const newId = lastId + 1; // Increment the last _id
@@ -82,39 +81,54 @@ const userController = {
         }
       },
 
-
       loginUser: async (req, res) => {
         const { email, password, code } = req.body;
-      
+    
         if (!email || !password) {
-          return res.status(400).json({ message: "Email and password are required" });
+            return res.status(400).json({ message: "Email and password are required" });
         }
-      
+    
         try {
-          const user = await userModel.findOne({ email });
-      
-          if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
+          const user = await userModel.findOne({ Email: email }).select('+Password');
+          console.log(user);
+            if (!user) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+
+            if (!user || !user.Password) {
+              return res.status(400).json({ message: "Invalid credentials" });
           }
-      
-          const isPasswordValid = await bcrypt.compare(password, user.Password);
-      
-          if (!isPasswordValid) {
-            return res.status(400).json({ message: "Invalid credentials" });
-          }
-      
-          res.status(200).json({
-            _id: user._id,
-            name: user.Username,
-            email: user.Email,
-            isAdmin: user.isAdmin,
-            token: generateToken(user._id),
-          });
+    
+            console.log("User found:", user);
+    
+            // Log the values of password and user.Password
+            console.log("Provided Password:", password);
+            console.log("User Password:", user.Password);
+    
+            // Check if user.Password is defined and not null
+            if (!user.Password) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+    
+            const isPasswordValid = await bcrypt.compare(password, user.Password);
+    
+            if (!isPasswordValid) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+    
+            res.status(200).json({
+                _id: user._id,
+                name: user.Username,
+                email: user.Email,
+                token: generateToken(user._id),
+            });
         } catch (error) {
-          console.error("Error during login:", error);
-          res.status(500).json({ message: "Internal Server Error" });
+            console.error("Error during login:", error);
+            res.status(500).json({ message: "Internal Server Error" });
         }
-      },
+    },
+    
+      
       
 
     // View user profile
@@ -168,10 +182,9 @@ const userController = {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const salt = await generateSalt();
-            const hash = bcrypt.hashSync(password, salt);
+            const salt = await bcrypt.genSalt(10);            const hash = bcrypt.hashSync(password, salt);
             user.Password = hash;
-            user.Salt = salt;
+            user.salt = salt;
 
             await user.save();
             res.status(200).json({ message: "Password reset successfully" });

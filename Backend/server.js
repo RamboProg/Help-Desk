@@ -18,7 +18,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
-const login= require("./routes/authRoutes");
+const authRoutes= require("./routes/authRoutes");
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -122,6 +122,7 @@ app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
 app.use(userRoutes);
+app.use(authRoutes);
 
 
 const upload = multer({ storage: storage });
@@ -139,7 +140,6 @@ app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
 
-app.use(login);
 // Use the workflow router
 app.use('/', workflowRouter);
 
