@@ -39,52 +39,57 @@ const Customization = require('../models/customizationModel');
 // }
 
 const userController = {
-    // Register user
-    registerUser: async (req, res) => {
-        try {
-            const { username, email, password, phoneNumber } = req.body;
+     registerUser: async (req, res) => {
+        const { username, email, password , phoneNumber} = req.body;
+      
+        if (!username || !email || !password || !phoneNumber) {
+          res.status(400);
+          throw new Error('Please add your name, email, phone number, and password');
+        }
+      
+        const userExists = await userModel.findOne({ Email: email });
+      
+        if (userExists) {
+          res.status(400);
+          throw new Error('User already exists');
+        }
+      
+        const salt = await bcrypt.genSalt(10);        const hashedPassword = await bcrypt.hash(password, salt);      
+        const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
+        const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
+        const newId = lastId + 1; // Increment the last _id
+        const user = await userModel.create({
+            _id: newId,
+            Email: email,
+            Password: hashedPassword,
+            Username: username,
+            PhoneNumber: phoneNumber,
+            Salt: salt,
+            RoleID: 4, 
+        });
 
-            if (!username || !email || !password || !phoneNumber) {
-                res.status(400);
-                throw new Error('Please add your name, email, phone number, and password');
-            }
+        const Client = await clientModel.create({
+            _id: user._id,
+            Email: user.Email,
+            Password: user.Password,
+            Username: user.Username,
+            PhoneNumber: user.PhoneNumber,
+            Salt: user.salt,
+            RoleID: user.RoleID,
+        });
+        
+        await Client.save();
 
-            const userExists = await userModel.findOne({ Email: email });
-
-            if (userExists) {
-                res.status(400);
-                throw new Error('User already exists');
-            }
-
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-            const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
-            const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
-            const newId = lastId + 1; // Increment the last _id
-            const user = await userModel.create({
-                _id: newId,
-                Email: email,
-                Password: hashedPassword,
-                Username: username,
-                PhoneNumber: phoneNumber,
-                Salt: salt,
-                Roles: 4, // Assuming Roles is an array field in your userModel
-            });
-
-            if (user) {
-                res.status(201).json({
-                    _id: user._id,
-                    name: user.Username,
-                    email: user.Email,
-                    token: generateToken(user._id),
-                });
-            } else {
-                res.status(400);
-                throw new Error('Invalid user data');
-            }
-        } catch (error) {
-            console.error('Error in registerUser:', error);
-            res.status(500).json({ message: 'Internal Server Error' });
+        if (user) {
+          res.status(201).json({
+            _id: user._id,
+            name: user.Username,
+            email: user.Email,
+            token: generateToken(user._id),
+          });
+        } else {
+          res.status(400);
+          throw new Error('Invalid user data' , error.message );
         }
     },
 
