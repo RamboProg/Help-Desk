@@ -26,8 +26,7 @@ const { getUser } = require('../controllers/userController');
 
   createTicket: async (req, res) => {
     try {
-      const userId = req.user.userId;
-      console.log(userId);
+      const userId = req.user.id;
       const client = await Client.findById(userId);      // check if the client exists
       if (!client) {
         return res.status(404).json({ error: 'client not found' });

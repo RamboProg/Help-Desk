@@ -21,8 +21,8 @@ const authenticationMiddleware = {
 
       
 
-      // Log user information for debugging
-      console.log('Authenticated User:', req.user);
+      // // Log user information for debugging
+      // console.log('Authenticated User:', req.user);
 
       next();
     } catch (error) {
