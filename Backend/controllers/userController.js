@@ -103,8 +103,7 @@ const userController = {
           res.status(200).json({
             _id: user._id,
             name: user.Username,
-            imageUrl: user.imageUrl,
-            email: user.email,
+            email: user.Email,
             isAdmin: user.isAdmin,
             token: generateToken(user._id),
           });
