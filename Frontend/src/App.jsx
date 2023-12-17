@@ -1,35 +1,34 @@
-// App.jsx
-import { useState } from 'react';
-import { createRoot } from 'react-dom';
-import { ThemeProvider } from 'styled-components';
-import themes from './config/themeConfig';
-import ThemedComponent from './components/ThemedComponent';
+import "./index.css";
+import styles from "./style";
+import React from "react";
+import { NavBar, Hero, Stats, Business, Billing, Card, Yomum } from "./components/tutorial Components";
 
-const App = () => {
-  const [selectedTheme, setSelectedTheme] = useState('default');
 
-  const changeTheme = (theme) => {
-    setSelectedTheme(theme);
-  };
-
-  return (
-    <ThemeProvider theme={themes[selectedTheme]}>
-      <div>
-      <ThemeProvider>
-        <ThemedComponent />
-      </ThemeProvider>
-        
-        <div>
-          <button onClick={() => changeTheme('default')}>Default Theme</button>
-          <button onClick={() => changeTheme('dark')}>Dark Theme</button>
-          <button onClick={() => changeTheme('light')}>Light Theme</button>
+const App= () => (
+  <div className="App" style={{ backgroundColor: "gray" }}>
+      <div className={`${styles.paddingX} ${styles.flexCenter}`}>
+        <div className={`${styles.boxWidth}`} >
+          <NavBar />
         </div>
       </div>
-    </ThemeProvider>
-  );
-};
 
-const root = document.getElementById('root');
-const reactRoot = createRoot(root);
-reactRoot.render(<App />);
-export default App; // Export the component
+      <div className={`${styles.flexStart}`}>
+        <div className={`${styles.boxWidth}`} >
+          <Hero />
+        </div>
+      </div>
+
+      <div className={`${style.paddingX} ${styles.flexStart}`}>
+        <div className={`${styles.boxWidth}`} >
+          <Stats />
+          <Business />
+          <Billing /> 
+          <Card /> 
+          <Yomum />
+        </div>
+      </div>
+
+  </div>
+)
+
+export default App;
