@@ -10,7 +10,7 @@ const managerModel = require('../models/managerModel.js');
 const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
 const Customization = require('../models/customizationModel');
-
+const nodemailer = require("nodemailer");
 
 // Function to generate salt
 // async function generateSalt() {
@@ -70,6 +70,7 @@ const userController = {
                 Salt: salt,
                 Roles: 4, // Assuming Roles is an array field in your userModel
             });
+
 
             if (user) {
                 res.status(201).json({
@@ -190,43 +191,23 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-
-    // Get QR Code
-    getQRImage: async (req, res) => {
-        try {
-            const { id } = req.cookies;
-            const user = await userModel.findById(req.user.userId);
-            const uri = authenticator.keyuri(id, "Help Desk", process.env.QRCODE_SECRET);
-            const image = await qrcode.toDataURL(uri);
-            user.temp_secret = process.env.QRCODE_SECRET;
-            await user.save();
-            return res.status(200).json({ image });
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
-
     // Set MFA get request
     setMFA: async (req, res) => {
         try {
-            const { id } = req.cookies;
-            const { code } = req.query;
-            const user = await userModel.findById(req.user.userId);
-            const temp_secret = user.temp_secret;
-
-            const verified = authenticator.check(code, temp_secret);
-            if (!verified) {
-                return res.status(401).json({ message: "Invalid Code" });
-            }
-
-            user.secret = temp_secret;
-            user.MFA_Enabled = true;
-            await user.save();
-            return res.status(200).json({ message: "MFA Enabled" });
+            let token;
+             // Get token from header
+            token = req.headers.authorization.split(' ')[1];
+            // Verify token
+             const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+            // Get user from the token
+            req.user = await userModel.findById(decoded.id);
+            
+            
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
+
     updateUserCustomization: async (req, res) => {
         try {
             const userId = req.params._id;
@@ -262,6 +243,28 @@ const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
     });
+};
+
+const verifyEmail = async (email,link) => {
+    try{
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.MAIL_ADD,
+                PASS: process.env.MAIL_PASS,
+            },
+        });
+        let info = await transporter.sendMail({
+            from: process.env.MAIL_ADD,
+            to: email,
+            subject: "Verify your email",
+            text: "Please click the link below to verify your email",
+            html: `<a href="${link}">Verify</a>`,
+        });
+        console.log("Email sent successfully");
+    }catch(error){
+        console.error(error);
+    }   
 };
 
 

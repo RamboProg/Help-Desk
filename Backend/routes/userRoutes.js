@@ -32,7 +32,8 @@ router.post('/login', userController.loginUser);
 
 // Other routes...
 router.put('/api/v1/auth/reset-password/request', userController.resetPassword);
-router.get('/api/v1/auth/QrImage', userController.getQRImage);
-router.get('/api/v1/auth/setMFA', userController.setMFA);
+router.post('/api/v1/auth/setMFA', userController.setMFA);
+
+
 
 module.exports = router;

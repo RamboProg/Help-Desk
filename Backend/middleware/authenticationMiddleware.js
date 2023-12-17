@@ -17,7 +17,7 @@ const authenticationMiddleware = {
       const decoded = await jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password');
+      req.user = await User.findById(decoded.id);
 
       // Log user information for debugging
       console.log('Authenticated User:', req.user);
