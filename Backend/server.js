@@ -10,11 +10,15 @@ const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', reason);
+});
+
 
 
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
-const login= require("./routes/authRoutes");
+const authRoutes= require("./routes/authRoutes");
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -102,8 +106,8 @@ app.post('/predict', async (req, res) => {
 // Add middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(authenticationMiddleware.authenticationMiddlewareFunction);
-app.use(authorizationMiddleware.authorizationMiddlewareFunction);
+// app.use(authenticationMiddleware.authenticationMiddlewareFunction);
+// app.use(authorizationMiddleware.authorizationMiddlewareFunction);
 
 
 //use the routes
@@ -118,6 +122,7 @@ app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
 app.use(userRoutes);
+app.use(authRoutes);
 
 
 const upload = multer({ storage: storage });
@@ -135,7 +140,6 @@ app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
 
-app.use(login);
 // Use the workflow router
 app.use('/', workflowRouter);
 

@@ -13,59 +13,115 @@ const Customization = require('../models/customizationModel');
 
 
 // Function to generate salt
-async function generateSalt() {
-    return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
-  }
-  async function hashPassword(password, salt) {
-    try {
-      const hashedPassword = await bcrypt.hash(password, salt);
-      return hashedPassword;
-    } catch (error) {
-      throw error;
-    }
-  } 
+// async function generateSalt() {
+//   return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+// }
+// async function hashPassword(password, salt) {
+//   try {
+//     const hashedPassword = await bcrypt.hash(password, salt);
+//     return hashedPassword;
+//   } catch (error) {
+//     throw error;
+//   }
+// } 
 
-const authentication = require('../middleware/authenticationMiddleware');
- // Function to get user based on role
- async function getUser(req, res) {
-    try {
-        const Token = req.header('Authorization');
-        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
+// const authentication = require('../middleware/authenticationMiddleware');
+//  // Function to get user based on role
+//  async function getUser(req, res) {
+//     try {
+//         const Token = req.header('Authorization');
+//         const decoded = jwt.verify(Token, process.env.SECRET_KEY);
 
-    } catch (error) {
-        console.error('Error could not get user', error);
-        throw error;
-    }
-}
+//     } catch (error) {
+//         console.error('Error could not get user', error);
+//         throw error;
+//     }
+// }
 
 const userController = {
-    register: async (req, res) => {
-        try {
-            const { email, password, username, phoneNumber } = req.body;
+     registerUser: async (req, res) => {
+        const { username, email, password , phoneNumber} = req.body;
+      
+        if (!username || !email || !password || !phoneNumber) {
+          res.status(400);
+          throw new Error('Please add your name, email, phone number, and password');
+        }
+      
+        const userExists = await userModel.findOne({ Email: email });
+      
+        if (userExists) {
+          res.status(400);
+          throw new Error('User already exists');
+        }
+      
+        const salt = await bcrypt.genSalt(10);        const hashedPassword = await bcrypt.hash(password, salt);      
+        const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
+        const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
+        const newId = lastId + 1; // Increment the last _id
+        const user = await userModel.create({
+            _id: newId,
+            Email: email,
+            Password: hashedPassword,
+            Username: username,
+            PhoneNumber: phoneNumber,
+            Salt: salt,
+            Roles: 4, // Assuming Roles is an array field in your userModel
+        });
 
-            // Check if user already exists
-            const userExists = await userModel.findOne({ Email: email });
-            if (userExists) {
-                res.status(400).json({ message: "User already exists" });
-            } else {
-                const salt = await generateSalt();
-                const hash = await hashPassword(password, salt);
-                // Create a new user with roles
-                const user = await userModel.create({
-                    Email: email,
-                    Password: hash,
-                    Username: username,
-                    PhoneNumber: phoneNumber,
-                    Salt: salt,
-                    Roles: 4, // Assuming Roles is an array field in your userModel
-                });
-                res.status(201).json(user);
+        if (user) {
+          res.status(201).json({
+            _id: user._id,
+            name: user.Username,
+            email: user.Email,
+            token: generateToken(user._id),
+          });
+        } else {
+          res.status(400);
+          throw new Error('Invalid user data' , error.message );
+        }
+      },
+
+      loginUser: async (req, res) => {
+        const { email, password, code } = req.body;
+    
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+    
+        try {
+          const user = await userModel.findOne({ Email: email }).select('+Password');
+            if (!user) {
+                return res.status(400).json({ message: "Invalid credentials" });
             }
+
+            if (!user || !user.Password) {
+              return res.status(400).json({ message: "Invalid credentials" });
+          }    
+            // Check if user.Password is defined and not null
+            if (!user.Password) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+    
+            const isPasswordValid = await bcrypt.compare(password, user.Password);
+    
+            if (!isPasswordValid) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+    
+            res.status(200).json({
+                _id: user._id,
+                name: user.Username,
+                email: user.Email,
+                token: generateToken(user._id),
+            });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            console.error("Error during login:", error);
+            res.status(500).json({ message: "Internal Server Error" });
         }
     },
     
+      
+      
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -118,10 +174,9 @@ const userController = {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const salt = await generateSalt();
-            const hash = bcrypt.hashSync(password, salt);
+            const salt = await bcrypt.genSalt(10);            const hash = bcrypt.hashSync(password, salt);
             user.Password = hash;
-            user.Salt = salt;
+            user.salt = salt;
 
             await user.save();
             res.status(200).json({ message: "Password reset successfully" });
@@ -187,37 +242,24 @@ const userController = {
             res.status(500).json({ message: 'Internal server error' });
           }
     },
+
+         getUser: async (req, res) => {
+            res.status(200).json(req.user);
+        },
+        
+     
+        
 };
 
 
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+      expiresIn: '30d',
+    });
+  };
 
-// module.exports = { userController, getUser };
+
+
 module.exports = userController;
 
-// async function getUser(userId) {
-//     const User = require('./models/userModel');
-//     const Admin = require('./models/adminModel');
-//     const Manager = require('./models/managerModel');
-//     const Agent = require('./models/agentModel');
-//     const Client = require('./models/clientModel');
-//     try {
-//       const user = await User.findById({ _id: userId }); //assuming all users of different role types are also saved in the users table
 
-//       switch (user.RoleID) {
-//         case 1:
-//           return await Admin.findById(userId);
-//         case 2:
-//           return await Manager.findById(userId);
-//         case 3:
-//           return await Agent.findById(userId);
-//         case 4:
-//           return await Client.findById(userId);
-//         default:
-//           return null; // user is not in tables
-//       }
-
-//     } catch (error) {
-//       console.error('Error could not get user', error)
-//       throw error;
-//     }
-//   }
