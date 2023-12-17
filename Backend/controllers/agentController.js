@@ -83,10 +83,10 @@ const agentController = {
           } else {
             if (status === "closed") {
               var transporter = nodemailer.createTransport({
-                service: "gmail",
+                service: "GMAIL",
                 auth: {
-                  user: "helpdesk.notis@gmail.com",
-                  pass: "SeProject1",
+                  user: process.env.MAIL_ADD,
+                  pass: process.env.MAIL_PASS,
                 },
               });
               var mailOptions = {
@@ -104,10 +104,10 @@ const agentController = {
               });
             } else {
               var transporter = nodemailer.createTransport({
-                service: "gmail",
+                service: "GMAIL",
                 auth: {
-                  user: "helpdesk.notis@gmail.com",
-                  pass: "SeProject1",
+                  user: process.env.MAIL_ADD,
+                  pass: process.env.MAIL_PASS,
                 },
               });
               var mailOptions = {
