@@ -10,6 +10,10 @@ const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', reason);
+});
+
 
 
 // Import routes

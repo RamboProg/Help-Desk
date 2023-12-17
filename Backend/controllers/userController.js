@@ -25,47 +25,95 @@ async function generateSalt() {
     }
   } 
 
-const authentication = require('../middleware/authenticationMiddleware');
- // Function to get user based on role
- async function getUser(req, res) {
-    try {
-        const Token = req.header('Authorization');
-        const decoded = jwt.verify(Token, process.env.SECRET_KEY);
+// const authentication = require('../middleware/authenticationMiddleware');
+//  // Function to get user based on role
+//  async function getUser(req, res) {
+//     try {
+//         const Token = req.header('Authorization');
+//         const decoded = jwt.verify(Token, process.env.SECRET_KEY);
 
-    } catch (error) {
-        console.error('Error could not get user', error);
-        throw error;
-    }
-}
+//     } catch (error) {
+//         console.error('Error could not get user', error);
+//         throw error;
+//     }
+// }
 
 const userController = {
-    register: async (req, res) => {
-        try {
-            const { email, password, username, phoneNumber } = req.body;
-
-            // Check if user already exists
-            const userExists = await userModel.findOne({ Email: email });
-            if (userExists) {
-                res.status(400).json({ message: "User already exists" });
-            } else {
-                const salt = await generateSalt();
-                const hash = await hashPassword(password, salt);
-                // Create a new user with roles
-                const user = await userModel.create({
-                    Email: email,
-                    Password: hash,
-                    Username: username,
-                    PhoneNumber: phoneNumber,
-                    Salt: salt,
-                    Roles: 4, // Assuming Roles is an array field in your userModel
-                });
-                res.status(201).json(user);
-            }
-        } catch (error) {
-            res.status(500).json({ message: error.message });
+     registerUser: async (req, res) => {
+        const { name, email, password , phoneNumber} = req.body;
+      
+        if (!name || !email || !password || !phoneNumber) {
+          res.status(400);
+          throw new Error('Please add your name, email, phone number, and password');
         }
-    },
-    
+      
+        const userExists = await userModel.findOne({ Email: email });
+      
+        if (userExists) {
+          res.status(400);
+          throw new Error('User already exists');
+        }
+      
+        const salt = await generateSalt();
+        const hashedPassword = await hashPassword();
+      
+        const user = await userModel.create({
+            Email: email,
+            Password: hash,
+            Username: username,
+            PhoneNumber: phoneNumber,
+            Salt: salt,
+            Roles: 4, // Assuming Roles is an array field in your userModel
+        });
+
+        if (user) {
+          res.status(201).json({
+            _id: user._id,
+            name: user.Username,
+            email: user.Email,
+            token: generateToken(user._id),
+          });
+        } else {
+          res.status(400);
+          throw new Error('Invalid user data' , error.message );
+        }
+      },
+
+
+      loginUser: async (req, res) => {
+        const { email, password, code } = req.body;
+      
+        if (!email || !password) {
+          return res.status(400).json({ message: "Email and password are required" });
+        }
+      
+        try {
+          const user = await userModel.findOne({ email });
+      
+          if (!user) {
+            return res.status(400).json({ message: "Invalid credentials" });
+          }
+      
+          const isPasswordValid = await bcrypt.compare(password, user.Password);
+      
+          if (!isPasswordValid) {
+            return res.status(400).json({ message: "Invalid credentials" });
+          }
+      
+          res.status(200).json({
+            _id: user._id,
+            name: user.Username,
+            imageUrl: user.imageUrl,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token: generateToken(user._id),
+          });
+        } catch (error) {
+          console.error("Error during login:", error);
+          res.status(500).json({ message: "Internal Server Error" });
+        }
+      },
+      
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -187,37 +235,24 @@ const userController = {
             res.status(500).json({ message: 'Internal server error' });
           }
     },
+
+         getUser: async (req, res) => {
+            res.status(200).json(req.user);
+        },
+        
+     
+        
 };
 
 
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+      expiresIn: '30d',
+    });
+  };
 
-// module.exports = { userController, getUser };
+
+
 module.exports = userController;
 
-// async function getUser(userId) {
-//     const User = require('./models/userModel');
-//     const Admin = require('./models/adminModel');
-//     const Manager = require('./models/managerModel');
-//     const Agent = require('./models/agentModel');
-//     const Client = require('./models/clientModel');
-//     try {
-//       const user = await User.findById({ _id: userId }); //assuming all users of different role types are also saved in the users table
 
-//       switch (user.RoleID) {
-//         case 1:
-//           return await Admin.findById(userId);
-//         case 2:
-//           return await Manager.findById(userId);
-//         case 3:
-//           return await Agent.findById(userId);
-//         case 4:
-//           return await Client.findById(userId);
-//         default:
-//           return null; // user is not in tables
-//       }
-
-//     } catch (error) {
-//       console.error('Error could not get user', error)
-//       throw error;
-//     }
-//   }

@@ -7,7 +7,7 @@ const { authenticateUser } = require('../middleware/authenticationMiddleware');
 const verifyJWT = require('../middleware/verifyJWT')
 
 router.use(verifyJWT)
-router.post('/api/v1/auth/register', userController.register); // Login
+router.post('/api/v1/auth/register', userController.registerUser); // Login
 router.get('/api/v1/profile', userController.viewUserProfile); // View user profile
 router.put('/api/v1/users/:userId', userController.updateUserProfile); // Update user profile
 router.put('/api/v1/auth/reset-password/request', userController.resetPassword); // Reset password request
