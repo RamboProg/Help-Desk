@@ -14,16 +14,16 @@ const Customization = require('../models/customizationModel');
 
 // Function to generate salt
 async function generateSalt() {
-    return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+  return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+}
+async function hashPassword(password, salt) {
+  try {
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  } catch (error) {
+    throw error;
   }
-  async function hashPassword(password, salt) {
-    try {
-      const hashedPassword = await bcrypt.hash(password, salt);
-      return hashedPassword;
-    } catch (error) {
-      throw error;
-    }
-  } 
+} 
 
 // const authentication = require('../middleware/authenticationMiddleware');
 //  // Function to get user based on role
@@ -40,9 +40,9 @@ async function generateSalt() {
 
 const userController = {
      registerUser: async (req, res) => {
-        const { name, email, password , phoneNumber} = req.body;
+        const { username, email, password , phoneNumber} = req.body;
       
-        if (!name || !email || !password || !phoneNumber) {
+        if (!username || !email || !password || !phoneNumber) {
           res.status(400);
           throw new Error('Please add your name, email, phone number, and password');
         }
@@ -55,11 +55,14 @@ const userController = {
         }
       
         const salt = await generateSalt();
-        const hashedPassword = await hashPassword();
-      
+        const hashedPassword = await hashPassword(password , salt);
+        const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
+        const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
+        const newId = lastId + 1; // Increment the last _id
         const user = await userModel.create({
+            _id: newId,
             Email: email,
-            Password: hash,
+            Password: hashedPassword,
             Username: username,
             PhoneNumber: phoneNumber,
             Salt: salt,

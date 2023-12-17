@@ -3,7 +3,9 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
-const authenticationMiddlewareFunction = async (req, res, next) => {
+const authenticationMiddleware = {
+  
+ authenticationMiddlewareFunction: async (req, res, next) => {
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -31,6 +33,7 @@ const authenticationMiddlewareFunction = async (req, res, next) => {
     console.error('No token found in the headers');
     res.status(401).json({ message: 'Not authorised, no token' });
   }
+},
 };
 
-module.exports = { authenticationMiddlewareFunction };
+module.exports = authenticationMiddleware;

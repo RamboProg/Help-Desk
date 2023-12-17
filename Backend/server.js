@@ -106,8 +106,8 @@ app.post('/predict', async (req, res) => {
 // Add middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(authenticationMiddleware.authenticationMiddlewareFunction);
-app.use(authorizationMiddleware.authorizationMiddlewareFunction);
+// app.use(authenticationMiddleware.authenticationMiddlewareFunction);
+// app.use(authorizationMiddleware.authorizationMiddlewareFunction);
 
 
 //use the routes
