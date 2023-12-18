@@ -115,12 +115,9 @@ const userController = {
                 return res.status(400).json({ message: "Invalid credentials" });
             }
 
-            res.status(200).json({
-                _id: user._id,
-                name: user.Username,
-                email: user.Email,
-                token: generateToken(user._id),
-            });
+            const token = generateToken(user._id);
+
+            res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
         } catch (error) {
             console.error("Error during login:", error);
             res.status(500).json({ message: "Internal Server Error" });
@@ -249,9 +246,32 @@ const userController = {
         }
     },
 
-    getUser: async (req, res) => {
-        res.status(200).json(req.user);
-    },
+  // Get user's ID
+  getUser: async (req) => {
+    // split from token= to the first . and get the second part
+    const token = req.headers.cookie.split('token=')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token, authorization denied' });
+    }
+
+    let payload = null;
+
+    try {
+        payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        return res.status(401).json({ message: 'Token is not valid' });
+    }
+
+    const user = await userModel.findById(payload.id);
+    // console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return user;
+  }
 
 
 

@@ -3,8 +3,10 @@ const Client = require('../models/clientModel');
 const Ticket = require('../models/ticketModel');
 const Agent = require('../models/agentModel');
 const Chat = require('../models/chatModel');
+const axios = require('axios');
 const { getUser } = require('../controllers/userController');
- const clientController = {
+const { PriorityQueue } = require('../utils/PriorityQueue');
+const clientController = {
 
   getMyTickets: async (req, res) => {
     try {
@@ -27,23 +29,22 @@ const { getUser } = require('../controllers/userController');
   createTicket: async (req, res) => {
     try {
       const userId = req.user.id;
+      const requestedSubIssueType = req.body.Sub_Issue_Type;
+      
       const client = await Client.findById(userId);      // check if the client exists
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
-      //getting current date for start date
       const currentDate = new Date();
-      //checking to see if the subissue type is allowed or not
+
       const allowedIssueTypes = ['Network', 'Software', 'Hardware'];
       const requestedIssueType = req.body.Issue_Type;
 
       if (!allowedIssueTypes.includes(requestedIssueType)) {
         return res.status(400).json({ error: 'Invalid Sub_Issue_Type. Allowed values are: Network, Software, Hardware.' });
       }
-      // setting the priority of the sub issue type and checking to see if the sub issue type is valid
-      let validSubIssueTypes; //used for populating the drop down later on
-      const highPriority = ['Servers', 'Networking equipment', 'Operating system', 'Integration issues', 'Email issues'];
-      const mediumPriority = ['Laptops', 'Desktops', 'Application software', 'Website errors'];
+      let validSubIssueTypes;
+
       switch (requestedIssueType) {
         case 'Hardware':
           validSubIssueTypes = ['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment', 'other'];
@@ -57,68 +58,116 @@ const { getUser } = require('../controllers/userController');
         default:
           validSubIssueTypes = [];
 
-          if (!validSubIssueTypes.includes(req.body.Sub_Issue_Type)) {
+          if (!validSubIssueTypes.includes(requestedSubIssueType)) {
             return res.status(400).json({ error: 'Invalid Sub issue Type' });
           }
       }
-      let priority; //setting the priority based on the sub issue type 
-      const requestedSubIssueType = req.body.Sub_Issue_Type;
-      if (highPriority.includes(requestedSubIssueType)) {
-        priority = 'high';
-      } else if (mediumPriority.includes(requestedSubIssueType)) {
-        priority = 'medium';
-      } else {
-        priority = 'low';
-      }
+      const highPriority = ['Servers', 'Networking equipment', 'Operating system', 'Integration issues', 'Email issues'];
+      const mediumPriority = ['Laptops', 'Desktops', 'Application software', 'Website errors'];
+      let priority;
+
+      const highPriorityQueue = new PriorityQueue();
+      const mediumPriorityQueue = new PriorityQueue();
+      const lowPriorityQueue = new PriorityQueue();
 
       const newTicket = new Ticket({
         _id: new mongoose.Types.ObjectId(),
         Status: 'Open',
-        Assigned_AgentID: null, //needs a function
+        Assigned_AgentID: null, //cannot be null
         Ticket_Owner: userId,
         Issue_Type: req.body.Issue_Type,
         Description: req.body.description,
-        Priority: priority,
+        Priority: null,
         Resolution_Details: null,
         Rating: null,
         Start_Date: currentDate.getTime(),
         End_Date: null, //needs a function close ticket
         Sub_Issue_Type: req.body.Sub_Issue_Type,
       })
-
-      let newChat;
-      if (requestedSubIssueType.toLowerCase() == 'other') {
-        newChat = new Chat({
-          _id: new mongoose.Types.ObjectId(),
-          Client_ID: userId,
-          Support_AgentID: null, //needs a function
-          Messages: null,
-          Start_Time: currentDate.getTime(),
-          End_Time: null,
-          Message_Count: 0,
-          TicketID: newTicket._id
-        });
-        
-        // Additional logic for newChat, if needed
+      
+      
+      
+      if (highPriority.includes(requestedSubIssueType)) {
+        priority = 'high';
+        highPriorityQueue.enqueue(newTicket);
+      } else if (mediumPriority.includes(requestedSubIssueType)) {
+        priority = 'medium';
+        mediumPriorityQueue.enqueue(newTicket);
+      } else {
+        priority = 'low';
+        lowPriorityQueue.enqueue(newTicket);
       }
 
-      const agent = await Agent.findById(newChat ? newChat.Support_AgentID : null);
-      if (!agent && requestedSubIssueType.toLowerCase() == 'other') {
-        return res.status(404).json({ error: 'Agent not found' });
+      newTicket.Priority = priority;
+      
+      const reenqueueTicketAtFront = (newTicket) => {
+        if (newTicket.Priority === 'high') {
+            highPriorityQueue.enqueueFront(newTicket);
+        } else if (newTicket.Priority === 'medium') {
+            mediumPriorityQueue.enqueueFront(newTicket);
+        } else {
+            lowPriorityQueue.enqueueFront(newTicket);
+        }
+    };
+      
+
+      //newTicket = highPriorityQueue.dequeue() || mediumPriorityQueue.dequeue() || lowPriorityQueue.dequeue();
+      //console.log(newTicket);
+
+      const response = await axios.post('http://localhost:3000/predict', {
+        Priority: newTicket.Priority,
+        Type: newTicket.Issue_Type
+      });
+
+      const agentProbabilities = response.data.agent_probabilities;
+      const sortedAgents = Object.keys(agentProbabilities).sort((a, b) => agentProbabilities[b] - agentProbabilities[a]);
+      for (const agentId of sortedAgents) {
+        if (agentProbabilities[agentId] === 0)
+          reenqueueTicketAtFront(newTicket);
+
+        const assignedAgent = await SupportAgent.findById(agentId);
+        if (assignedAgent && assignedAgent.Active_Tickets < 5) {
+          newTicket.Assigned_AgentID = assignedAgent._id;
+          newTicket.Status = 'Pending';
+          await newTicket.save();
+
+        } else {
+          reenqueueTicketAtFront(newTicket);
+        }
       }
 
-      // Additional logic for agent, if needed
+      // let newChat;
+      // if (requestedSubIssueType.toLowerCase() == 'other') {
+      //   newChat = new Chat({
+      //     _id: new mongoose.Types.ObjectId(),
+      //     Client_ID: userId,
+      //     Support_AgentID: assignedAgent._id,
+      //     Messages: null,
+      //     Start_Time: currentDate.getTime(),
+      //     End_Time: null,
+      //     Message_Count: 0,
+      //     TicketID: newTicket._id
+      //   });
 
-      // Increase the ticket count in the agent table
-      if (requestedSubIssueType.toLowerCase() == 'other') {
-        agent.Ticket_Count = (agent.Ticket_Count || 0) + 1;
-        agent.Active_Tickets = (agent.Active_Tickets || 0) + 1;
-      }
+      // }
 
+      // const assignedAgent = await Agent.findById(newChat ? newChat.Support_AgentID : null);
+      // if (!assignedAgent && requestedSubIssueType.toLowerCase() == 'other') {
+      //   return res.status(404).json({ error: 'Agent not found' });
+      // }
+
+
+
+      assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
+      assignedAgent.Active_Tikets = (assignedAgent.Active_Tickets || 0) + 1;
+
+
+      await assignedAgent.save();
       const savedTicket = await newTicket.save();
-      const savedChat = newChat ? await newChat.save() : null;
+      // const savedChat = newChat ? await newChat.save() : null;
+      
 
-      res.status(201).json({ ticket: savedTicket, chat: savedChat }); // Check this condition
+    res.status(201).json({ newTicket: savedTicket/*, chat: savedChat */}); // Check this condition
     } catch (error) {
       console.error('Error creating ticket:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -165,7 +214,7 @@ const { getUser } = require('../controllers/userController');
         })
       }
       await agent.save();
-      res.json({ticket: updatedTicket, chat: createChat ? newChat : null });
+      res.json({ ticket: updatedTicket, chat: createChat ? newChat : null });
 
     } catch (error) {
       console.log(e.message)
@@ -173,6 +222,8 @@ const { getUser } = require('../controllers/userController');
       throw error;
     }
   },
+
+
 };
 
 module.exports = clientController;
