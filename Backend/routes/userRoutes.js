@@ -28,12 +28,14 @@ router.put('/api/v1/users/:userId', authenticateUser.authenticationMiddlewareFun
 // Registration route does not require authentication
 router.post('/api/v1/auth/register', userController.registerUser);
 router.post('/login', userController.loginUser);
-
-
+router.post('/sendOTP', userController.sendOTP);
+router.post('/verifyOTP', userController.verifyOTP);
+router.post('/setMFA', userController.setMFA);
 // Other routes...
 router.put('/api/v1/auth/reset-password/request', userController.resetPassword);
-router.post('/api/v1/auth/setMFA', userController.setMFA);
-
+// router.post('/api/v1/auth/setMFA', userController.setMFA);
+// router.get('/verify/:userId/:uniqueString', userController.verifyUser);
+router.post('/logout', userController.logoutUser);
 
 
 module.exports = router;

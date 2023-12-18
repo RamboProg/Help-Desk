@@ -11,6 +11,10 @@ const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
 const Customization = require('../models/customizationModel');
 const nodemailer = require("nodemailer");
+//const userVerification = require('../models/userVerification.js');
+const {v4: uuidv4} = require('uuid');
+const { error } = require('console');
+const OTP = require('../models/otpModel.js');
 
 // Function to generate salt
 // async function generateSalt() {
@@ -37,7 +41,13 @@ const nodemailer = require("nodemailer");
 //         throw error;
 //     }
 // }
-
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.MAIL_ADD,
+        pass: process.env.MAIL_PASS,
+    },
+});
 const userController = {
      registerUser: async (req, res) => {
         const { username, email, password , phoneNumber} = req.body;
@@ -94,7 +104,7 @@ const userController = {
     },
 
     loginUser: async (req, res) => {
-        const { email, password, code } = req.body;
+        const { email, password} = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password are required" });
@@ -119,13 +129,15 @@ const userController = {
             if (!isPasswordValid) {
                 return res.status(400).json({ message: "Invalid credentials" });
             }
-
-            res.status(200).json({
-                _id: user._id,
-                name: user.Username,
-                email: user.Email,
-                token: generateToken(user._id),
-            });
+            const token = generateToken(user._id);
+            res.cookie("jwt", token, {httpOnly: true,secure :true, sameSite: "None", maxAge: 3600000 });
+            res.json({ success: true, message: 'Login successful' });
+            // res.status(200).json({
+            //     _id: user._id,
+            //     name: user.Username,
+            //     email: user.Email,
+            //     token: generateToken(user._id),
+            // });
         } catch (error) {
             console.error("Error during login:", error);
             res.status(500).json({ message: "Internal Server Error" });
@@ -146,8 +158,7 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
-    ,
+    },
 
     // Update user profile
     updateUserProfile: async (req, res) => {
@@ -171,8 +182,7 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
-    ,
+    },
 
     // Reset password
     resetPassword: async (req, res) => {
@@ -198,20 +208,33 @@ const userController = {
     // Set MFA get request
     setMFA: async (req, res) => {
         try {
-            let token;
-             // Get token from header
-            token = req.headers.authorization.split(' ')[1];
-            // Verify token
-             const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-            // Get user from the token
-            req.user = await userModel.findById(decoded.id);
-            
+            const cookies = req.cookies;
+            const token = cookies.jwt;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await userModel.findById(decoded._id);
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            await userModel.updateOne({ _id: decoded._id }, { $set: { MFA_Enabled: true } });
+            console.log("Email sent successfully");
+
             
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
-
+    logoutUser: async (req, res) => {
+        try {
+            // Clear the JWT cookie
+            res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
+            await userModel.updateOne({ _id: req.user.id }, { $set: { verified: false } });
+            res.status(200).json({ success: true, message: 'Logout successful' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    
+    
     updateUserCustomization: async (req, res) => {
         try {
             const userId = req.params._id;
@@ -237,11 +260,104 @@ const userController = {
     getUser: async (req, res) => {
         res.status(200).json(req.user);
     },
+    sendOTP : async (req, res) => {
+        try {
+            // const cookies = req.cookies;
+            // const token = cookies.jwt;
 
+            // // Check if the token is available
+            // if (!token) {
+            //     return res.status(401).json({ message: 'Unauthorized' });
+            // }
+
+            // // Verify the JWT token
+            // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // // Get user from the token
+            // const user = await userModel.findById(decoded.id);
+
+            // if (!user) {
+            //     return res.status(404).json({ message: 'User not found' });
+            // }
+            await OTP.deleteOne({email:"zaidqarxoy@gmail.com"});
+            const OneTimePass = await (Math.floor(100000 + Math.random() * 900000)).toString();
+            const hashedOTP = await bcrypt.hash(OneTimePass, 10);
+            const newOTP = new OTP({
+                email: "zaidqarxoy@gmail.com",
+                otp: hashedOTP,
+                createdAt: Date.now(),
+                expiredAt: Date.now() + 1 * 60 * 1000,
+            });
+
+            var mailOptions = {
+                from: process.env.MAIL_ADD,
+                to: "zaidqarxoy@gmail.com",
+                subject: 'Verify your email',
+                text: 'Please click the link below to enable Multi-factor authentication',
+                html: `<p>${OneTimePass}</p>`,
+            };
+
+            await transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                console.log(error);
+                } else {
+                    console.log("Email sent: " + info.response);
+                }
+            });
+            const user = await userModel.findOne({ Email: "zaidqarxoy@gmail.com" });
+            await newOTP.save();
+            await user.updateOne({MFA_Enabled: true});
+            res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+  verifyOTP: async (req, res) => {
+    try {
+      const { email,code } = req.body;
+      console.log(email,code);
+      const validOTP = await verifyOTP(email,code);
+      
+        if(!validOTP){
+            throw Error("Invalid OTP")
+        }
+        await userModel.updateOne({Email:email},{verified:true});
+      res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
+    }catch (error) {
+        res.status(500).json({ message: error.message });
+    } 
+  },
 
 
 };
-
+const verifyOTP = async (email,otp) => {
+    try {
+        if(!email || !otp){
+            throw Error("Provide values for Email and/or OTP")
+        }
+        const matchedOTPRecord = await OTP.findOne({email:email});
+        if(!matchedOTPRecord){
+            throw Error("Invalid OTP")
+        }
+        const {expiresAt} = matchedOTPRecord;
+        if( expiresAt < Date.now()){
+            await OTP.deleteOne({email:email});
+            throw Error("OTP expired, request a new one.")
+        }
+        const hashedOTP = matchedOTPRecord.otp;
+        const validOTP = await bcrypt.compare(otp,hashedOTP);
+        return validOTP;
+    } catch (error) {
+        throw error;
+    }
+};
+const deleteOTP = async (email) => {
+    try {
+        await OTP.deleteOne({email:email});
+    } catch (error) {
+        throw error;
+    }
+};
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -249,28 +365,45 @@ const generateToken = (id) => {
     });
 };
 
-const verifyEmail = async (email,link) => {
-    try{
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.MAIL_ADD,
-                PASS: process.env.MAIL_PASS,
-            },
-        });
-        let info = await transporter.sendMail({
-            from: process.env.MAIL_ADD,
-            to: email,
-            subject: "Verify your email",
-            text: "Please click the link below to verify your email",
-            html: `<a href="${link}">Verify</a>`,
-        });
-        console.log("Email sent successfully");
-    }catch(error){
-        console.error(error);
-    }   
-};
+// const sendVerificationEmail = async ({_id,email},res) => {
+//     const currentUrl ="http://localhost:3000/";
+//     const uniqueString = uuidv4() + _id;
+    
+//     const mailOptions = {
+//         from: process.env.MAIL_ADD,
+//         to: email,
+//         subject: "Verify your email",
+//         text: "Please click the link below to verify your email",
+//         html: `<a href="${currentUrl + "user/verify/"+ _id + "/" + uniqueString}>Verify</a>`,
+//     };
+//     //hash the unique string
+//     const saltRounds =10;
+//     bcrypt
+//     .hash(uniqueString,saltRounds)
+//     .then((hashedUniqueString) => {
+//         //set values in userVerification collection
+//         const newVerification = new userVerification({
+//             userId: _id,
+//             uniqueString: hashedUniqueString,
+//             createdAt: Date.now(),
+//             expiresAt: Date.now() + 1 * 60 * 60 * 1000, //expires in 1 hour
+//     })
+//     newVerification.save()
+//     .then(()=>{
+//         transporter.sendMail(mailOptions).then(()=>{
 
+//             res.json({status:"Pending",message:"Verification email sent successfully"});
+//         })
+    
+//     })
+//     .catch((error) => {
+//         res.json({message:"Error saving verification details"});
+//     })
+//     .catch(()=>{
+//         res.json({message:"Error hashing unique string"});
+//     });
+// });
+// };
 
 
 module.exports = userController;
