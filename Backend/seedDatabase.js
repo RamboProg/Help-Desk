@@ -66,8 +66,8 @@ const seedData = async () => {
         Is_Enabled: user.Is_Enabled,
         Pref_Type: 'email', // Default preference type
         Average_Rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
-        Ticket_Count: Math.floor(Math.random() * 10), // Random ticket count
-        Active_Tickets: Math.floor(Math.random() * 5), // Random active ticket count
+        Ticket_Count: 0,
+        Active_Tickets: 0,
         Salt: user.salt,
       });
 
@@ -77,6 +77,9 @@ const seedData = async () => {
       user.supportAgentId = supportAgent._id;
       supportAgents.push(user);
     }
+
+
+    
     
 // Seed issue data
 const issueTypes = [
@@ -309,16 +312,21 @@ await validClient.save();
       });
       faqs.push(faq.save());
     }
-
-
+    
+    const chats = [];
+    const existingClients = await ClientModel.find({}, '_id'); // Get existing client IDs
+    const existingSupportAgents = await SupportAgentModel.find({}, '_id'); // Get existing support agent IDs
+    
     // Seed ticket data
     const tickets = [];
     for (let i = 0; i < 5; i++) {
+      const randomSupportAgentIndex = i % existingSupportAgents.length;
+      const randomClientIndex = i % existingClients.length;
       const ticket = new TicketModel({
         _id: i + 1,
         Status: 'Open', // Default ticket status
-        Assigned_AgentID: i % 5 + 1, // Assign tickets to agents in a loop
-        Ticket_Owner: (i % 10) + 1, // Assign tickets to users in a loop
+        Assigned_AgentID: existingSupportAgents[randomSupportAgentIndex]._id, // Assign tickets to agents in a loop
+        Ticket_Owner: existingClients[randomClientIndex]._id, // Assign tickets to users in a loop
         Issue_Type: issuesData[i % 3].Issue, // Assign issues in a loop
         Description: `Ticket description ${i + 1}`,
         Priority: i % 3 === 0 ? 'High' : 'Low', // Alternate priority
@@ -329,12 +337,13 @@ await validClient.save();
       });
       tickets.push(ticket.save());
     }
+    // Seed chat data
      // Create a valid ticket
     const ValidTicket = new TicketModel({
       _id: 7,
       Status: 'Open', // Default ticket status
       Assigned_AgentID: 1, // Assign tickets to agents in a loop
-      Ticket_Owner: 31, // Assign tickets to users in a loop
+      Ticket_Owner: validUser._id, // Assign tickets to users in a loop
       Issue_Type: issuesData[0].Issue, // Assign issues in a loop
       Description: `Ticket description ${6}`,
       Priority: 'High', // Alternate priority
@@ -345,10 +354,16 @@ await validClient.save();
     });
     await ValidTicket.save();
 
-      // Seed chat data
-    const chats = [];
-    const existingClients = await ClientModel.find({}, '_id'); // Get existing client IDs
-    const existingSupportAgents = await SupportAgentModel.find({}, '_id'); // Get existing support agent IDs
+    // Adjust Ticket_Count and Active_Tickets for SupportAgentModel
+    for (const user of supportAgents) {
+      const ticketCount = await TicketModel.countDocuments({ Assigned_AgentID: user._id });
+      const activeTicketCount = await TicketModel.countDocuments({ Assigned_AgentID: user._id, Status: 'Open' });
+
+      user.Ticket_Count = ticketCount;
+      user.Active_Tickets = activeTicketCount;
+
+      await user.save();
+    }
 
     for (let i = 0; i < 5; i++) {
       const randomClientIndex = i % existingClients.length;

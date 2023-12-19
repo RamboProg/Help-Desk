@@ -71,8 +71,13 @@ const clientController = {
       const mediumPriorityQueue = new PriorityQueue();
       const lowPriorityQueue = new PriorityQueue();
   
+
+      const lastTicket = await Ticket.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
+      const lastTicketId = lastTicket ? lastTicket._id : 0; // Get the last _id or default to 0 if no user exists
+      const newTicketId = lastTicketId + 1; // Increment the last _id
+
       const newTicket = new Ticket({
-        _id: new mongoose.Types.ObjectId(),
+        _id: newTicketId,
         Status: 'Open',
         Assigned_AgentID: null, // cannot be null
         Ticket_Owner: userId,
@@ -110,11 +115,13 @@ const clientController = {
       };
   
       let newChat;
-      let assignedAgent = null; // Initialize to null
-  
+      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
+      const lastChatId = lastChat ? lastChat._id : 0; // Get the last _id or default to 0 if no user exists
+      const newChatId = lastChatId + 1; // Increment the last _id
+      console.log(requestedSubIssueType);
       if (requestedSubIssueType.toLowerCase() == 'other') {
         newChat = new Chat({
-          _id: new mongoose.Types.ObjectId(),
+          _id: newChatId,
           Client_ID: userId,
           Support_AgentID: null, // Initialize to null, you'll set it later
           Messages: null,
@@ -124,14 +131,7 @@ const clientController = {
           TicketID: newTicket._id,
         });
       }
-  
-      // const response = await axios.post('http://localhost:3000/predict', {
-      //   Priority: priority ,
-      //   Type: requestedIssueType,
-      // });
 
-
-      
       const url = "http://127.0.0.1:3000/predict";
         const response = await axios.post(url, {
             Priority: priority,
@@ -142,20 +142,36 @@ const clientController = {
             console.error('Invalid response from prediction server');
             return res.status(500).json({ error: 'Internal server error' });
         }
-        console.log(response);
         const agentProbabilities = response.data.agent_probabilities;
         const sortedAgents = Object.keys(agentProbabilities).sort(
             (a, b) => agentProbabilities[b] - agentProbabilities[a]
         );
 
-        
 
-        for (const agentId of sortedAgents) {
-          if (agentProbabilities[agentId] === 0) {
+        for (const TempAgentId of sortedAgents) {
+          if (agentProbabilities[TempAgentId] === 0) {
               reenqueueTicketAtFront(newTicket);
               continue;
           }
+
+          let agentId; // Declare a new variable to store the mapped agentId
+
+          switch (TempAgentId) {
+              case 'Agent 1':
+                agentId = 1;
+                  break;
+              case 'Agent 2':
+                agentId = 2;
+                  break;
+              case 'Agent 3':
+                agentId = 3;
+                  break;
+              default:
+                  // Handle the default case if 'response' doesn't match any case
+                  break;
+          }
       
+          // Now 'mappedAgentId' will contain the mapped value based on the 'response'
           let assignedAgent = await Agent.findOne({ _id: agentId });
           if (assignedAgent && assignedAgent.Active_Tickets < 5) {
               newTicket.Assigned_AgentID = assignedAgent._id;
