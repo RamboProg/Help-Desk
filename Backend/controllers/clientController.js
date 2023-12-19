@@ -10,11 +10,10 @@ const clientController = {
 
   getMyTickets: async (req, res) => {
     try {
-      const clientid = req.user.userId;
-      const client = await Client.findById(clientid);
-
+      const userId = req.user.id;
+      const client = await Client.findById(userId);
       if (!client) {
-        return res.status(404).json({ error: 'Client not found!' });
+        return res.status(404).json({ error: 'client not found' });
       }
 
       const tickets = await Ticket.find({ Ticket_Owner: userId });
@@ -30,7 +29,7 @@ const clientController = {
     try {
       const userId = req.user.id;
       const requestedSubIssueType = req.body.Sub_Issue_Type;
-      
+
       const client = await Client.findById(userId);      // check if the client exists
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
@@ -84,9 +83,9 @@ const clientController = {
         End_Date: null, //needs a function close ticket
         Sub_Issue_Type: req.body.Sub_Issue_Type,
       })
-      
-      
-      
+
+
+
       if (highPriority.includes(requestedSubIssueType)) {
         priority = 'high';
         highPriorityQueue.enqueue(newTicket);
@@ -99,75 +98,80 @@ const clientController = {
       }
 
       newTicket.Priority = priority;
-      
+
       const reenqueueTicketAtFront = (newTicket) => {
         if (newTicket.Priority === 'high') {
-            highPriorityQueue.enqueueFront(newTicket);
+          highPriorityQueue.enqueueFront(newTicket);
         } else if (newTicket.Priority === 'medium') {
-            mediumPriorityQueue.enqueueFront(newTicket);
+          mediumPriorityQueue.enqueueFront(newTicket);
         } else {
-            lowPriorityQueue.enqueueFront(newTicket);
+          lowPriorityQueue.enqueueFront(newTicket);
         }
-    };
-      
+      };
+
 
       //newTicket = highPriorityQueue.dequeue() || mediumPriorityQueue.dequeue() || lowPriorityQueue.dequeue();
-      //console.log(newTicket);
+
+      // ... (previous code)
+
+      let newChat;
+      let assignedAgent = null;  // Initialize to null
+
+      if (requestedSubIssueType.toLowerCase() == 'other') {
+        newChat = new Chat({
+          _id: new mongoose.Types.ObjectId(),
+          Client_ID: userId,
+          Support_AgentID: null,  // Initialize to null, you'll set it later
+          Messages: null,
+          Start_Time: currentDate.getTime(),
+          End_Time: null,
+          Message_Count: 0,
+          TicketID: newTicket._id,
+        });
+      }
 
       const response = await axios.post('http://localhost:3000/predict', {
         Priority: newTicket.Priority,
-        Type: newTicket.Issue_Type
+        Type: newTicket.Issue_Type,
       });
 
       const agentProbabilities = response.data.agent_probabilities;
-      const sortedAgents = Object.keys(agentProbabilities).sort((a, b) => agentProbabilities[b] - agentProbabilities[a]);
-      for (const agentId of sortedAgents) {
-        if (agentProbabilities[agentId] === 0)
-          reenqueueTicketAtFront(newTicket);
+      const sortedAgents = Object.keys(agentProbabilities).sort(
+        (a, b) => agentProbabilities[b] - agentProbabilities[a]
+      );
 
-        const assignedAgent = await SupportAgent.findById(agentId);
+      for (const agentId of sortedAgents) {
+        if (agentProbabilities[agentId] === 0) {
+          reenqueueTicketAtFront(newTicket);
+          continue;  // Skip to the next iteration if the probability is 0
+        }
+
+        assignedAgent = await SupportAgent.findById(agentId);
         if (assignedAgent && assignedAgent.Active_Tickets < 5) {
           newTicket.Assigned_AgentID = assignedAgent._id;
-          newTicket.Status = 'Pending';
-          await newTicket.save();
+          newTicket
 
-        } else {
-          reenqueueTicketAtFront(newTicket);
+
         }
+
+        assignedAgent = await Agent.findById(newChat ? newChat.Support_AgentID : null);
+        if (!assignedAgent && requestedSubIssueType.toLowerCase() == 'other') {
+          return res.status(404).json({ error: 'Agent not found' });
+        }
+
+
+
+        assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
+        assignedAgent.Active_Tikets = (assignedAgent.Active_Tickets || 0) + 1;
+
+
+        await assignedAgent.save();
+        const savedTicket = await newTicket.save();
+        // const savedChat = newChat ? await newChat.save() : null;
+
+
+        res.status(201).json({ newTicket: savedTicket/*, chat: savedChat */ }); // Check this condition
       }
-
-      // let newChat;
-      // if (requestedSubIssueType.toLowerCase() == 'other') {
-      //   newChat = new Chat({
-      //     _id: new mongoose.Types.ObjectId(),
-      //     Client_ID: userId,
-      //     Support_AgentID: assignedAgent._id,
-      //     Messages: null,
-      //     Start_Time: currentDate.getTime(),
-      //     End_Time: null,
-      //     Message_Count: 0,
-      //     TicketID: newTicket._id
-      //   });
-
-      // }
-
-      // const assignedAgent = await Agent.findById(newChat ? newChat.Support_AgentID : null);
-      // if (!assignedAgent && requestedSubIssueType.toLowerCase() == 'other') {
-      //   return res.status(404).json({ error: 'Agent not found' });
-      // }
-
-
-
-      assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
-      assignedAgent.Active_Tikets = (assignedAgent.Active_Tickets || 0) + 1;
-
-
-      await assignedAgent.save();
-      const savedTicket = await newTicket.save();
-      // const savedChat = newChat ? await newChat.save() : null;
-      
-
-    res.status(201).json({ newTicket: savedTicket/*, chat: savedChat */}); // Check this condition
     } catch (error) {
       console.error('Error creating ticket:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -176,13 +180,14 @@ const clientController = {
 
   rateAgent: async (req, res) => {
     try {
-
-      const ticket = Ticket.findById(req.body.ticketId);
+      const ticketId = req.body.ticketId;
+      const rating = req.body.Rating;
+      const ticket = await Ticket.findById(ticketId);
       if (!ticket) {
         return res.status(404).json({ error: 'Ticket does not exist' });
       }
-      if (ticket.status != 'Closed') {
-        return res.status(400).json({ error: 'This ticket/chat is not closed and cannot be rated' });
+      if (ticket.Status != 'Closed') {
+        return res.status(400).json({ error: 'This ticket is not closed yet and cannot be rated' });
       }
 
       // get the agent id from the ticket
@@ -193,15 +198,14 @@ const clientController = {
         return res.status(404).json({ error: 'Agent not found' });
       }
 
-      ticket.Rating = req.body.rating;
+      ticket.Rating = rating;
       const updatedTicket = await ticket.save();
 
       //update the agent's avg rating
-      //the ticket count is updated the creation of the ticket function
-      agent.Average_Rating = (req.body.rating + (agent.Average_Rating * (agent.Ticket_Count - 1))) / agent.Ticket_Count
-      agent.Active_Tickets = agent.Active_Tickets--;
-
-      if (req.body.rating <= 1) {
+      //the ticket count is updated 
+      agent.Average_Rating = (rating + (agent.Average_Rating * (agent.Ticket_Count - 1))) / agent.Ticket_Count
+      let newChat;
+      if (rating <= 1) {
         newChat = new Chat({
           _id: new mongoose.Types.ObjectId(),
           Client_ID: userId,
@@ -210,20 +214,21 @@ const clientController = {
           Start_Time: currentDate.getTime(),
           End_Time: null,
           Message_Count: 0,
-          TicketID: newTicket._id
+          TicketID: new mongoose.Types.ObjectId()
         })
       }
       await agent.save();
-      res.json({ ticket: updatedTicket, chat: createChat ? newChat : null });
+      res.json({ ticket: updatedTicket, Chat: newChat });
 
     } catch (error) {
-      console.log(e.message)
-      console.error(500).json({ error: 'Internal error' })
-      throw error;
+      console.error('Error Inserting Rating:', error);
+      res.status(500).json({ error: 'Internal server error' });
+
     }
   },
 
 
 };
+
 
 module.exports = clientController;

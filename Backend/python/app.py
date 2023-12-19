@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager
-import pandas as pd
+from flask_jwt_extended import JWTManager, jwt_required
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from joblib import dump, load
+import pandas as pd
 import os
 
 app = Flask(__name__)
@@ -12,7 +12,7 @@ jwt = JWTManager(app)
 
 # Load dataset
 def load_data(): 
-    df = pd.read_csv('../python/agentData')
+    df = pd.read_csv('../python/agentData.csv')
     return df
 
 # Initialize and train model
@@ -73,7 +73,7 @@ def predict():
 
     return jsonify({'agent_probabilities': agent_probabilities})
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True, port=3000)
 
     
