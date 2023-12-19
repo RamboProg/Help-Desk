@@ -162,7 +162,7 @@ const clientController = {
 
 
         assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
-        assignedAgent.Active_Tikets = (assignedAgent.Active_Tickets || 0) + 1;
+        assignedAgent.Active_Tickets = (assignedAgent.Active_Tickets || 0) + 1;
 
 
         await assignedAgent.save();
