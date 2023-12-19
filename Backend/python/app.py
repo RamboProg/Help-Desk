@@ -7,8 +7,8 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-app.config["JWT_SECRET"] = "0f6738513cbdeb7f0f7ed741182698acac6b992fe54fa5fb21866e0b27d556d1"  # Replace with your secret key
-jwt = JWTManager(app)
+# app.config["JWT_SECRET"] = "0f6738513cbdeb7f0f7ed741182698acac6b992fe54fa5fb21866e0b27d556d1"  # Replace with your secret key
+# jwt = JWTManager(app)
 
 # Load dataset
 def load_data(): 
@@ -81,10 +81,11 @@ def load_model_and_encoders():
 rf_classifier, priority_encoder, type_encoder, agent_encoder = load_model_and_encoders()
 
 @app.route('/predict', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 
 def predict():
     data = request.get_json()
+    app.logger.info('Received data: %s', data)
     try:
         priority_encoded = priority_encoder.transform([data['Priority']])
         type_encoded = type_encoder.transform([data['Type']])
