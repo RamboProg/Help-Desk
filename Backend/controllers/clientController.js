@@ -3,7 +3,7 @@ const Client = require('../models/clientModel');
 const Ticket = require('../models/ticketModel');
 const Agent = require('../models/agentModel');
 const Chat = require('../models/chatModel');
-// const axios = require('axios');
+const axios = require('axios');
 const { getUser } = require('../controllers/userController');
 const { PriorityQueue } = require('../utils/PriorityQueue');
 const clientController = {
@@ -132,43 +132,37 @@ const clientController = {
 
 
       
-      let url = "http://localhost:3000/predict";
-      const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              Priority: priority,
-              Type: requestedIssueType,
-          })
-      });
+      const url = "http://127.0.0.1:3000/predict";
+        const response = await axios.post(url, {
+            Priority: priority,
+            Type: requestedIssueType,
+        });
 
-      if (!response.ok) {
-          console.error('Network response was not ok');
-          return res.status(500).json({ error: 'Internal server error' });
-      }
+        if (!response.data || !response.data.agent_probabilities) {
+            console.error('Invalid response from prediction server');
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        console.log(response);
+        const agentProbabilities = response.data.agent_probabilities;
+        const sortedAgents = Object.keys(agentProbabilities).sort(
+            (a, b) => agentProbabilities[b] - agentProbabilities[a]
+        );
 
-      const data = await response.json();
-      console.log(data);
+        
 
-      const agentProbabilities = data.data.agent_probabilities;
-      const sortedAgents = Object.keys(agentProbabilities).sort(
-          (a, b) => agentProbabilities[b] - agentProbabilities[a]
-      );
-
-      for (const agentId of sortedAgents) {
+        for (const agentId of sortedAgents) {
           if (agentProbabilities[agentId] === 0) {
               reenqueueTicketAtFront(newTicket);
               continue;
           }
-
-          let assignedAgent = await SupportAgent.findById(agentId);
+      
+          let assignedAgent = await Agent.findOne({ _id: agentId });
           if (assignedAgent && assignedAgent.Active_Tickets < 5) {
               newTicket.Assigned_AgentID = assignedAgent._id;
               break;
           }
       }
+      
 
       if (!newTicket.Assigned_AgentID) {
           return res.status(404).json({ error: 'No available agent found' });

@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required
+from flask_cors import CORS
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from joblib import dump, load
@@ -9,7 +10,7 @@ import os
 app = Flask(__name__)
 # app.config["JWT_SECRET"] = "0f6738513cbdeb7f0f7ed741182698acac6b992fe54fa5fb21866e0b27d556d1"  # Replace with your secret key
 # jwt = JWTManager(app)
-
+CORS(app)
 # Load dataset
 def load_data(): 
     df = pd.read_csv('../python/agentData.csv')
