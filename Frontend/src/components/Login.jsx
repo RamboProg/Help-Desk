@@ -25,8 +25,6 @@ const Login = ({ theme }) => {
           email,
           password,
         });
-        console.log(response.data.Role_ID);
-        console.log("Full Response:", response.data);
         switch (response.data.Role_ID) {
           case 1:
             navigate("/AdminHome"); // Redirect to AdminHome component
