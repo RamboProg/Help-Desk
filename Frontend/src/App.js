@@ -9,10 +9,16 @@ import Home from './components/Home'
 import Login from './components/Login'
 import Landing from './components/notes'
 
+
 function App() {
   return (
     <div>
         <Navbar />
+
+        <Hero />
+        <HeadlineCards />
+        <Food />
+        <Category />
     </div>
   );
 }
@@ -30,3 +36,4 @@ export default App;
       //         {/* Add other routes here as needed */}
       //       </Routes>
       //     </Router>
+
