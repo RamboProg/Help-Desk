@@ -11,7 +11,6 @@ const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
 const Customization = require('../models/customizationModel');
 
-
 // Function to generate salt
 // async function generateSalt() {
 //   return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
@@ -23,7 +22,7 @@ const Customization = require('../models/customizationModel');
 //   } catch (error) {
 //     throw error;
 //   }
-// } 
+// }
 
 // const authentication = require('../middleware/authenticationMiddleware');
 //  // Function to get user based on role
@@ -39,90 +38,102 @@ const Customization = require('../models/customizationModel');
 // }
 
 const userController = {
-    // Register user
-    registerUser: async (req, res) => {
-        try {
-            const { username, email, password, phoneNumber } = req.body;
+     registerUser: async (req, res) => {
+        const { username, email, password , phoneNumber} = req.body;
+      
+        if (!username || !email || !password || !phoneNumber) {
+          res.status(400);
+          throw new Error('Please add your name, email, phone number, and password');
+        }
+      
+        const userExists = await userModel.findOne({ Email: email });
+      
+        if (userExists) {
+          res.status(400);
+          throw new Error('User already exists');
+        }
+      
+        const salt = await bcrypt.genSalt(10);        const hashedPassword = await bcrypt.hash(password, salt);      
+        const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
+        const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
+        const newId = lastId + 1; // Increment the last _id
+        const user = await userModel.create({
+            _id: newId,
+            Email: email,
+            Password: hashedPassword,
+            Username: username,
+            PhoneNumber: phoneNumber,
+            Salt: salt,
+            RoleID: 4, 
+        });
 
-            if (!username || !email || !password || !phoneNumber) {
-                res.status(400);
-                throw new Error('Please add your name, email, phone number, and password');
-            }
+        const Client = await clientModel.create({
+            _id: user._id,
+            Email: user.Email,
+            Password: user.Password,
+            Username: user.Username,
+            PhoneNumber: user.PhoneNumber,
+            Salt: user.salt,
+            RoleID: user.RoleID,
+        });
+        
+        await Client.save();
 
-            const userExists = await userModel.findOne({ Email: email });
-
-            if (userExists) {
-                res.status(400);
-                throw new Error('User already exists');
-            }
-
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-            const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
-            const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
-            const newId = lastId + 1; // Increment the last _id
-            const user = await userModel.create({
-                _id: newId,
-                Email: email,
-                Password: hashedPassword,
-                Username: username,
-                PhoneNumber: phoneNumber,
-                Salt: salt,
-                Roles: 4, // Assuming Roles is an array field in your userModel
-            });
-
-            if (user) {
-                res.status(201).json({
-                    _id: user._id,
-                    name: user.Username,
-                    email: user.Email,
-                    token: generateToken(user._id),
-                });
-            } else {
-                res.status(400);
-                throw new Error('Invalid user data');
-            }
-        } catch (error) {
-            console.error('Error in registerUser:', error);
-            res.status(500).json({ message: 'Internal Server Error' });
+        if (user) {
+          res.status(201).json({
+            _id: user._id,
+            name: user.Username,
+            email: user.Email,
+            token: generateToken(user._id),
+          });
+        } else {
+          res.status(400);
+          throw new Error('Invalid user data' , error.message );
         }
     },
 
     loginUser: async (req, res) => {
-        const { email, password, code } = req.body;
+    const { email, password, code } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
-        }
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
 
-        try {
-            const user = await userModel.findOne({ Email: email }).select('+Password');
-            if (!user) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
+    try {
+      const user = await userModel.findOne({ Email: email }).select('+Password');
+      if (!user) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-            if (!user || !user.Password) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-            // Check if user.Password is defined and not null
-            if (!user.Password) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
+      if (!user || !user.Password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+      // Check if user.Password is defined and not null
+      if (!user.Password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-            const isPasswordValid = await bcrypt.compare(password, user.Password);
+      const isPasswordValid = await bcrypt.compare(password, user.Password);
 
-            if (!isPasswordValid) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-            const token = generateToken(user._id);
+      const token = generateToken(user._id);
 
-            res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
-        } catch (error) {
-            console.error("Error during login:", error);
-            res.status(500).json({ message: "Internal Server Error" });
-        }
-    },
+      res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
+
+    //   res.status(200).json({
+    //     _id: user._id,
+    //     name: user.Username,
+    //     email: user.Email,
+    //     token: generateToken(user._id)
+    //   });
+    } catch (error) {
+      console.error('Error during login:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  },
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -138,8 +149,7 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
-    ,
+    },
 
     // Update user profile
     updateUserProfile: async (req, res) => {
@@ -246,9 +256,9 @@ const userController = {
         }
     },
 
-  // Get user's ID
-  getUser: async (req) => {
+    getUser: async (req) => {
     // split from token= to the first . and get the second part
+    // console.log(req.headers.cookie.split('token=')[1]);
     const token = req.headers.cookie.split('token=')[1];
 
     if (!token) {
@@ -271,8 +281,7 @@ const userController = {
     }
 
     return user;
-  }
-
+  },
 
 
 };
@@ -284,8 +293,4 @@ const generateToken = (id) => {
     });
 };
 
-
-
 module.exports = userController;
-
-
