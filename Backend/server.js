@@ -130,7 +130,6 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('/getUser');
 
 // Import routes
 app.use('/workflow', workflowRouter);
