@@ -42,3 +42,4 @@ package.json
 package-lock.json
 Frontend/package-lock.json
 Frontend/package.json
+Frontend/node_modules
