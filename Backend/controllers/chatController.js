@@ -35,19 +35,20 @@ const { getUser } = require('./userController');
 
       // Extract user information from the JWT
       const { _id } = await getUser(req);
-      console.log(_id);
+      // console.log(_id);
 
       // Create a new chat instance
-      // const newChat = new Chat({
-      //   Support_AgentID: _id, // Assuming userId is the Support Agent ID from JWT
-      //   TicketID: 456, // Replace with the actual Ticket ID
-      //   Messages: Message,
-      //   Chat_Start_Time: new Date(),
-      //   Final_Message_Time: new Date(),
-      //   Message_Count: 1
-      // });
+      const newChat = new Chat({
+        Support_AgentID: _id, // Assuming userId is the Support Agent ID from JWT
+        TicketID: 456, // Replace with the actual Ticket ID
+        Messages: Message,
+        Chat_Start_Time: new Date(),
+        Final_Message_Time: new Date(),
+        Message_Count: 1
+      });
       // // Emit a socket event to inform connected clients about the new chat
-      // req.io.emit('newChat', saveChat);
+      req.io.emit('newChat', newChat);
+      
 
       // // For demonstration purposes, let's just send a response with the saved chat details
       // res.json({ success: true, chat: saveChat });
