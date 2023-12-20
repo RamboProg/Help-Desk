@@ -1,34 +1,52 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from "react-icons/ai";
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ theme }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-
+  const [message, setMessage] = useState(""); // To display success or error messages
   // State variables to store form inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  const navigate = useNavigate();
+
   // Function to handle login/signup
   const handleAction = async () => {
+    setMessage(""); // Reset message
+
     if (isLogin) {
       try {
         const response = await axios.post("http://localhost:3000/login", {
           email,
           password,
-        }, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        // Handle successful login (e.g., store token, redirect user)
-        console.log(response.data);
+        });
+        console.log(response.data.Role_ID);
+        console.log("Full Response:", response.data);
+        switch (response.data.Role_ID) {
+          case 1:
+            navigate("/AdminHome"); // Redirect to AdminHome component
+            break;
+          case 2:
+            navigate("/ManagerHome"); // Redirect to ManagerHome component
+            break;
+          case 3:
+            navigate("/AgentHome"); // Redirect to AgentHome component
+            break;
+          case 4:
+            navigate("/ClientHome"); // Redirect to ClientHome component
+            break;
+          default:
+            console.log("invalid role");
+            break;
+        }
+        setShowLogin(false);
       } catch (error) {
-        // Handle login error
-        console.error("Login failed:", error);
+        setMessage(`Login failed: ${error.message}`);
       }
     } else {
       try {
