@@ -32,7 +32,7 @@ const Homepage = () => {
     <div style={backgroundStyle}>
       <div style={overlayStyle}>
         <div style={contentStyle}>
-          <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}>Welcome To Help Desk</h1>
+          <h1 style={{ fontSize: '3rem', marginBottom: '20px' }}><span className='font-bold'>Welcome To Help Desk</span></h1>
           <p style={{ fontSize: '1.5rem', marginBottom: '20px' }}>
             Help Desk is your ultimate solution for all your queries and issues.
           </p>
