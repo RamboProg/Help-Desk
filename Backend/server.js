@@ -78,15 +78,15 @@ const storage = multer.diskStorage({
 });
 
 // Route for ML model prediction
-app.post('/predict', async (req, res) => {
-  try {
-    const response = await axios.post('http://localhost:3000/predict', req.body);
-    res.json(response.data);
-  } catch (error) {
-    logger.error('Error calling Flask service:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+// app.post('/predict', async (req, res) => {
+//   try {
+//     const response = await axios.post('http://localhost:3000/predict', req.body);
+//     res.json(response.data);
+//   } catch (error) {
+//     logger.error('Error calling Flask service:', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 // Add middleware
 app.use(bodyParser.json());
