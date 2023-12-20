@@ -8,11 +8,13 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home'
 import Login from './components/Login'
 import Landing from './components/notes'
+import Homepage from './components/Homepage'
 
 function App() {
   return (
     <div>
         <Navbar />
+        <Homepage />
     </div>
   );
 }
