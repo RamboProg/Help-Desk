@@ -9,8 +9,7 @@ const adminModel = require('../models/adminModel.js');
 const managerModel = require('../models/managerModel.js');
 const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
-const Customization = require('../models/customizationModel'); 
-
+const Customization = require('../models/customizationModel');
 
 // Function to generate salt
 // async function generateSalt() {
@@ -23,7 +22,7 @@ const Customization = require('../models/customizationModel');
 //   } catch (error) {
 //     throw error;
 //   }
-// } 
+// }
 
 // const authentication = require('../middleware/authenticationMiddleware');
 //  // Function to get user based on role
@@ -91,54 +90,55 @@ const userController = {
           res.status(400);
           throw new Error('Invalid user data' , error.message );
         }
-      },
-
-      loginUser: async (req, res) => {
-        const { email, password, code } = req.body;
-    
-        if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
-        }
-    
-        try {
-          const user = await userModel.findOne({ Email: email }).select('+Password');
-            if (!user) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-
-            if (!user || !user.Password) {
-              return res.status(400).json({ message: "Invalid credentials" });
-          }    
-            // Check if user.Password is defined and not null
-            if (!user.Password) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-    
-            const isPasswordValid = await bcrypt.compare(password, user.Password);
-    
-            if (!isPasswordValid) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-    
-            res.status(200).json({
-                _id: user._id,
-                name: user.Username,
-                email: user.Email,
-                token: generateToken(user._id),
-            });
-        } catch (error) {
-            console.error("Error during login:", error);
-            res.status(500).json({ message: "Internal Server Error" });
-        }
     },
-    
-      
-      
+
+    loginUser: async (req, res) => {
+    const { email, password, code } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    try {
+      const user = await userModel.findOne({ Email: email }).select('+Password');
+      if (!user) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+
+      if (!user || !user.Password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+      // Check if user.Password is defined and not null
+      if (!user.Password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.Password);
+
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+
+      const token = generateToken(user._id);
+
+      res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
+
+    //   res.status(200).json({
+    //     _id: user._id,
+    //     name: user.Username,
+    //     email: user.Email,
+    //     token: generateToken(user._id)
+    //   });
+    } catch (error) {
+      console.error('Error during login:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  },
 
     // View user profile
     viewUserProfile: async (req, res) => {
         try {
-            const userId = req.user.userId;
+            const userId = req.user.id; // Use req.user.id to get the user ID from the decoded token
             const user = await userModel.findById(userId);
 
             if (!user) {
@@ -154,7 +154,7 @@ const userController = {
     // Update user profile
     updateUserProfile: async (req, res) => {
         try {
-            const userId = req.user.userId;
+            const userId = req.user.id; // Use req.user.id to get the user ID from the decoded token
             const { newEmail, newUsername, newPhoneNumber } = req.body;
 
             const user = await userModel.findById(userId);
@@ -173,7 +173,8 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    },
+    }
+    ,
 
     // Reset password
     resetPassword: async (req, res) => {
@@ -186,7 +187,7 @@ const userController = {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const salt = await bcrypt.genSalt(10);            const hash = bcrypt.hashSync(password, salt);
+            const salt = await bcrypt.genSalt(10); const hash = bcrypt.hashSync(password, salt);
             user.Password = hash;
             user.salt = salt;
 
@@ -237,41 +238,59 @@ const userController = {
         try {
             const userId = req.params._id;
             const { theme, logoPath } = req.body;
-      
+
             // Update or create customization settings for the user
             await Customization.findOneAndUpdate(
-              { userId },
-              { $set: { theme, logoPath } },
-              { upsert: true, new: true }
+                { userId },
+                { $set: { theme, logoPath } },
+                { upsert: true, new: true }
             );
-      
+
             // Update the user's theme in the user model
             await userModel.findOneAndUpdate({ _id: userId }, { $set: { theme } }); // Update this line
-      
+
             res.status(200).json({ message: 'Customization updated successfully' });
-          } catch (error) {
+        } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
-          }
+        }
     },
 
-         getUser: async (req, res) => {
-            res.status(200).json(req.user);
-        },
-        
-     
-        
+    getUser: async (req) => {
+    // split from token= to the first . and get the second part
+    // console.log(req.headers.cookie.split('token=')[1]);
+    const token = req.headers.cookie.split('token=')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token, authorization denied' });
+    }
+
+    let payload = null;
+
+    try {
+        payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        return res.status(401).json({ message: 'Token is not valid' });
+    }
+
+    const user = await userModel.findById(payload.id);
+    // console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return user;
+  },
+
+
 };
 
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
+        expiresIn: '30d',
     });
-  };
-
-
+};
 
 module.exports = userController;
-
-
