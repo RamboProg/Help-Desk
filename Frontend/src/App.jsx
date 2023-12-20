@@ -5,7 +5,7 @@ import { NavBar, Hero, Stats, Business, Billing, Card, Yomum } from "./component
 
 
 const App= () => (
-  <div className="App" style={{ backgroundColor: "gray" }}>
+  <div className="bg-gray" style={{ backgroundColor: "gray" }}>
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
         <div className={`${styles.boxWidth}`} >
           <NavBar />
