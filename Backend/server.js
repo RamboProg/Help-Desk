@@ -2,7 +2,6 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
-const socketio = require('socket.io'); // Add this line for socket.io
 const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
@@ -10,6 +9,7 @@ const path = require('path'); // Add this line for path
 const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
+const cors = require('cors');
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -35,7 +35,11 @@ const userRoutes = require('./routes/userRoutes');
 // Create the Express app
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+// const io = socketio(server);
+app.use(cors({
+  credentials: true,
+  origin: process.env.CLIENT_URL
+}));
 
 // Configure Winston with MongoDB Transport
 const logger = Winston.createLogger({
@@ -108,24 +112,10 @@ app.use(managerRoutes);
 app.use(userRoutes);
 app.use(authRoutes);
 
+app.use(express.json());
+
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
-
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('join', ({ userId, chatId }) => {
-    console.log('User joined chat room:', userId, chatId);
-  });
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-});
 
 app.get('/getUser');
 
@@ -146,10 +136,6 @@ mongoose
 app.use('/', workflowRouter);
 
 const Image = mongoose.model('Image', { imagePath: String });
-
-io.on('connection', (socket) => {
-  logger.info('A user connected');
-});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
