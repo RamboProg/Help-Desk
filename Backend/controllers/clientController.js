@@ -8,7 +8,7 @@ const { getUser } = require('../controllers/userController');
 const { PriorityQueue } = require('../utils/PriorityQueue');
 const clientController = {
 
-  getMyTickets: async (req, res) => {
+  clientTickets: async (req, res) => {
     try {
       const userId = req.user.id;
       const client = await Client.findById(userId);
@@ -29,6 +29,9 @@ const clientController = {
     try {
       const userId = req.user.id;
       const requestedSubIssueType = req.body.Sub_Issue_Type;
+      const requestedIssueType = req.body.Issue_Type;
+      let priority;
+      let agentId;
 
       // Check if the client exists
       const client = await Client.findById(userId);
@@ -39,7 +42,7 @@ const clientController = {
       const currentDate = new Date();
 
       const allowedIssueTypes = ['network', 'software', 'hardware'];
-      const requestedIssueType = req.body.Issue_Type;
+
       if (!allowedIssueTypes.includes(requestedIssueType)) {
         return res.status(400).json({ error: 'Invalid Issue_Type. Allowed values are: Network, Software, Hardware.' });
       }
@@ -65,7 +68,6 @@ const clientController = {
 
       const highPriority = ['Servers', 'Networking equipment', 'Operating system', 'Integration issues', 'Email issues'];
       const mediumPriority = ['Laptops', 'Desktops', 'Application software', 'Website errors'];
-      let priority;
 
       const highPriorityQueue = new PriorityQueue();
       const mediumPriorityQueue = new PriorityQueue();
@@ -115,9 +117,10 @@ const clientController = {
       };
 
       let newChat;
-      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
-      const lastChatId = lastChat ? lastChat._id : 0; // Get the last _id or default to 0 if non exists
-      const newChatId = lastChatId + 1; // Increment the last _id
+      let otherTicket = false;
+      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); 
+      const lastChatId = lastChat ? lastChat._id : 0; 
+      const newChatId = lastChatId + 1; 
       if (requestedSubIssueType == 'other') {
         newChat = new Chat({
           _id: newChatId,
@@ -129,6 +132,7 @@ const clientController = {
           Message_Count: 0,
           TicketID: newTicket._id,
         });
+        otherTicket = true;
       }
 
       const url = "http://127.0.0.1:5000/predict";
@@ -147,7 +151,7 @@ const clientController = {
       );
 
       function findHighestAgent(probabilities) {
-        let highestAgent = null;
+        let highestAgent;
         let highestProbability = -1; // Assuming probabilities are between 0 and 1
 
         for (const agent in probabilities) {
@@ -163,7 +167,6 @@ const clientController = {
       }
 
       const highestAgent = findHighestAgent(response.data.agent_probabilities);
-      let agentId; // Declare a new variable to store the mapped agentId
 
       switch (highestAgent) {
         case 'Agent 1':
@@ -183,40 +186,84 @@ const clientController = {
       let assignedAgent = await Agent.findOne({ _id: agentId });
       if (assignedAgent && assignedAgent.Active_Tickets < 5) {
         newTicket.Assigned_AgentID = assignedAgent._id;
-        if(requestedSubIssueType == 'other'){
 
+        if (otherTicket) {
+          
+          newChat.Support_AgentID = assignedAgent._id;
         }
-      } else {
-        newChat.Assigned_AgentID = assignedAgent._id;
-      }
 
+      }else{
+        if (!newTicket.Assigned_AgentID) {
+          let alternativeAgentId;
+        
+          // Iterate through the sorted agents to find the next available agent
+          for (const agentName of sortedAgents) {
+            const agentIndex = agentName.split(' ')[1];
+            const alternativeAgent = await Agent.findOne({ _id: agentIndex });
+        
+            if (alternativeAgent && alternativeAgent.Active_Tickets < 5) {
+              alternativeAgentId = alternativeAgent._id;
+              break;
+            }
+          }
+        
+          if (alternativeAgentId) {
+            newTicket.Assigned_AgentID = alternativeAgentId;
+        
+            if (otherTicket) {
+              newChat.Support_AgentID = alternativeAgentId;
+            }
+        
+            try {
+              const assignedAgent = await Agent.findOne({ _id: alternativeAgentId });
+        
+              if (assignedAgent) {
+                assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
+                assignedAgent.Active_Tickets = (assignedAgent.Active_Tickets || 0) + 1;
+        
+                assignedAgent.save();
+              }
+            } catch (agentError) {
+              console.error('Error processing agent:', agentError);
+              return res.status(500).json({ error: 'Internal server error' });
+            }
+          } else {
+            return res.status(404).json({ error: 'No available agent found' });
+          }
+        }
+        
+      }
 
       if (!newTicket.Assigned_AgentID) {
         return res.status(404).json({ error: 'No available agent found' });
       }
 
       try {
-        const assignedAgent = await Agent.findById(newTicket.Assigned_AgentID);
-        if (!assignedAgent && requestedSubIssueType.toLowerCase() == 'other') {
+        if (!assignedAgent && requestedSubIssueType == 'other') {
           return res.status(404).json({ error: 'Agent not found' });
         }
+        
 
         assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
         assignedAgent.Active_Tickets = (assignedAgent.Active_Tickets || 0) + 1;
 
-        await assignedAgent.save();
-        const savedTicket = await newTicket.save();
+        assignedAgent.save();
 
-        const response = {
-          ticket: newTicket, 
-        };
-        if (newChat) {
-          response.Chat = newChat; 
-        }
       } catch (agentError) {
         console.error('Error processing agent:', agentError);
         return res.status(500).json({ error: 'Internal server error' });
       }
+      newTicket.save();
+      newChat.save();
+
+      result = {
+        ticket: newTicket,
+      };
+      if (newChat) {
+        result.Chat = newChat;
+      }
+      res.json(result);
+
     } catch (error) {
       console.error('Error creating ticket:', error);
       return res.status(500).json({ error: 'Internal server error' });
@@ -225,6 +272,11 @@ const clientController = {
 
   rateAgent: async (req, res) => {
     try {
+      const userId = req.user.id;
+      const client = await Client.findById(userId);
+      if (!client) {
+        return res.status(404).json({ error: 'client not found' });
+      }
       const ticketId = req.body.ticketId;
       const rating = req.body.Rating;
       const ticket = await Ticket.findById(ticketId);
@@ -235,6 +287,7 @@ const clientController = {
         return res.status(400).json({ error: 'This ticket is not closed yet and cannot be rated' });
       }
 
+      const currentDate = new Date();
       // get the agent id from the ticket
       const agentId = ticket.Assigned_AgentID;
 
@@ -254,12 +307,12 @@ const clientController = {
       const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
       const lastChatId = lastChat ? lastChat._id : 0; // Get the last _id or default to 0 if non exists
       const newChatId = lastChatId + 1; // Increment the last _id
-      
+
       if (rating <= 1) {
         newChat = new Chat({
           _id: newChatId,
           Client_ID: userId,
-          Support_AgentID: null, //needs a function
+          Support_AgentID: ticket.Support_AgentID, //needs a function
           Messages: null,
           Start_Time: currentDate.getTime(),
           End_Time: null,
