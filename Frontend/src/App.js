@@ -11,6 +11,7 @@ import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import AgentLayout from './AgentLayout';
 import AdminLayout from './AdminLayout';
+import ManagerLayout from './ManagerLayout';
 
 function App() {
   return (
@@ -34,7 +35,7 @@ function App() {
         />
         <Route
           path="/ManagerHome"
-          element={<MainLayout><ManagerHome /></MainLayout>}
+          element={<ManagerLayout><ManagerHome /></ManagerLayout>}
         />
         <Route
           path="/AgentHome"
