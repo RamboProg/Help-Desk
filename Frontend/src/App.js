@@ -9,6 +9,7 @@ import ClientHome from './components/ClientHome';
 import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
+import KnowledgeBase from './components/KnowledgeBase';
 
 function App() {
   return (
@@ -37,6 +38,10 @@ function App() {
         <Route
           path="/AgentHome"
           element={<MainLayout><AgentHome /></MainLayout>}
+        />
+        <Route
+          path="/KnowledgeBase"
+          element={<ClientLayout><KnowledgeBase /></ClientLayout>}
         />
       </Routes>
     </Router>

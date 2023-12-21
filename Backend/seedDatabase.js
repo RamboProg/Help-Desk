@@ -251,17 +251,67 @@ const validClient = new ClientModel({
   Salt: validUser.salt,
 });
 await validClient.save();
-    // Seed FAQ data
-    const faqs = [];
-    for (let i = 0; i < 5; i++) {
-      const faq = new FAQModel({
-        Question: `Question ${i + 1}`,
-        Answer: `Answer ${i + 1}`,
-        Category: `Category ${i + 1}`,
-        Sub_Category: `Sub-Category ${i + 1}`,
-      });
-      faqs.push(faq.save());
+   // Seed FAQ data
+   const faqs = [
+    {
+      Question: "How do I submit a support ticket?",
+      Answer: "To submit a support ticket, navigate to the 'Support' section in the application dashboard. Click on the 'Submit Ticket' button and fill out the required details, including the issue description. Once submitted, our support team will review and address your request promptly.",
+      Category: "Ticket Submission",
+      Sub_Category: "Process"
+    },
+    {
+      Question: "What are the operating hours of the helpdesk?",
+      Answer: "Our helpdesk operates from Monday to Friday, 9:00 AM to 5:00 PM local time. During these hours, you can reach out to our support team for assistance with any issues or inquiries related to the application.",
+      Category: "Support Hours",
+      Sub_Category: "Operating Time"
+    },
+    {
+      Question: "How can I reset my password?",
+      Answer: "If you need to reset your password, click on the 'Forgot Password' link on the login page. Enter your registered email address, and you will receive a password reset link via email. Follow the instructions in the email to create a new password for your account.",
+      Category: "Account Management",
+      Sub_Category: "Password Reset"
+    },
+    {
+      Question: "Is there a mobile app available for the helpdesk?",
+      Answer: "Yes, we offer a mobile application for our helpdesk platform, available for both Android and iOS devices. You can download the app from the respective app stores.",
+      Category: "Mobile App",
+      Sub_Category: "Availability"
+    },
+    {
+      Question: "How long does it typically take to resolve a support ticket?",
+      Answer: "The resolution time for support tickets varies depending on the complexity of the issue and the current workload of our support team. However, we strive to resolve all tickets within 24 to 48 hours.",
+      Category: "Ticket Resolution",
+      Sub_Category: "Timeframe"
+    },
+    {
+      Question: "Can I track the status of my support ticket?",
+      Answer: "Yes, you can track the status of your support ticket directly from the application dashboard. Once logged in, navigate to the 'My Tickets' section.",
+      Category: "Ticket Tracking",
+      Sub_Category: "Tracking"
+    },
+    {
+      Question: "How do I escalate a ticket if it's not resolved in a timely manner?",
+      Answer: "If you feel that your support ticket is not being addressed adequately or within the expected timeframe, you can escalate the ticket by contacting our customer support manager directly via email or phone.",
+      Category: "Ticket Escalation",
+      Sub_Category: "Process"
+    },
+    {
+      Question: "Is there a user guide or documentation available for the application?",
+      Answer: "Yes, we provide comprehensive user guides, tutorials, and documentation resources to help you navigate and utilize all features of our helpdesk application effectively.",
+      Category: "Documentation",
+      Sub_Category: "Resource"
     }
+  ];
+
+  const faqPromises = faqs.map(async (faq) => {
+    const newFaq = new FAQModel({
+      Question: faq.Question,
+      Answer: faq.Answer,
+      Category: faq.Category,
+      Sub_Category: faq.Sub_Category,
+    });
+    return await newFaq.save();
+  });
 
     // Seed log data
     const logs = [];
@@ -349,7 +399,7 @@ await validClient.save();
       customizations.push(customization.save());
     }
 
-    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
+    await Promise.all([...users, ...faqPromises, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
 
     console.log('Database seeded successfully!');
   } catch (error) {

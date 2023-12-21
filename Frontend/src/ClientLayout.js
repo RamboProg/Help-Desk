@@ -5,7 +5,7 @@ import ClientNav from './components/ClientNav';
 
 const ClientLayout = ({ children }) => {
     const location = useLocation();
-    const showNavbar = location.pathname === '/ClientHome'; //|| location.pathname === '/login';
+    const showNavbar = location.pathname === '/ClientHome' || location.pathname === '/KnowledgeBase';
 
     return (
         <div>
