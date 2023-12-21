@@ -29,7 +29,8 @@ router.put('/api/v1/users/:userId', authenticateUser.authenticationMiddlewareFun
 router.post('/api/v1/auth/register', userController.registerUser);
 router.post('/login', userController.loginUser);
 router.post('/sendOTP', userController.sendOTP);
-router.post('/verifyOTP', userController.verifyOTP);
+router.post('/verifyOTPLogin', userController.verifyOTPforLogin);
+router.post('/verifyOTPRegister', userController.verifyOTPForRegister);
 router.post('/setMFA', userController.setMFA);
 // Other routes...
 router.put('/api/v1/auth/reset-password/request', userController.resetPassword);

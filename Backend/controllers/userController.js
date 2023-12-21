@@ -48,6 +48,9 @@ let transporter = nodemailer.createTransport({
         pass: process.env.MAIL_PASS,
     },
 });
+async function sendOtp (){
+  
+}
 const userController = {
      registerUser: async (req, res) => {
         const { username, email, password , phoneNumber} = req.body;
@@ -279,11 +282,22 @@ const userController = {
             // if (!user) {
             //     return res.status(404).json({ message: 'User not found' });
             // }
-            await OTP.deleteOne({email:"zaidqarxoy@gmail.com"});
+            const email = req.body;
+            const cookies =req.cookies;
+            const token = cookies.jwt;
+            if(token){
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                const user = await userModel.findById(decoded.id);
+                if (!user) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+
+            }
+            
             const OneTimePass = await (Math.floor(100000 + Math.random() * 900000)).toString();
             const hashedOTP = await bcrypt.hash(OneTimePass, 10);
             const newOTP = new OTP({
-                email: "zaidqarxoy@gmail.com",
+                email: email,
                 otp: hashedOTP,
                 createdAt: Date.now(),
                 expiredAt: Date.now() + 1 * 60 * 1000,
@@ -291,7 +305,7 @@ const userController = {
 
             var mailOptions = {
                 from: process.env.MAIL_ADD,
-                to: "zaidqarxoy@gmail.com",
+                to: email,
                 subject: 'Verify your email',
                 text: 'Please click the link below to enable Multi-factor authentication',
                 html: `<p>${OneTimePass}</p>`,
@@ -304,15 +318,28 @@ const userController = {
                     console.log("Email sent: " + info.response);
                 }
             });
-            const user = await userModel.findOne({ Email: "zaidqarxoy@gmail.com" });
             await newOTP.save();
-            await user.updateOne({MFA_Enabled: true});
             res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
-  verifyOTP: async (req, res) => {
+  verifyOTPForRegister: async (req, res) => {
+    try {
+      const {email,code} = req.body;
+      console.log(email,code);
+      const validOTP = await verifyOTP(email,code);
+      if(!validOTP){
+          throw Error("Invalid OTP")
+      }
+      await userModel.updateOne({Email:email},{is_valid:true});
+      await deleteOTP(email);
+      res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
+    } catch (error) {
+     return res.status(500).json({ message: error.message });
+    }
+  },
+  verifyOTPforLogin: async (req, res) => {
     try {
       const { email,code } = req.body;
       console.log(email,code);
@@ -322,6 +349,8 @@ const userController = {
             throw Error("Invalid OTP")
         }
         await userModel.updateOne({Email:email},{verified:true});
+        await deleteOTP(email);
+        
       res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
     }catch (error) {
         res.status(500).json({ message: error.message });

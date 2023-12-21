@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     theme: { type: String },
     logoPath: { type: String },
     salt :{type: String},
-    verified: { type: Boolean, default: false  }, 
+    verified: { type: Boolean, default: false  },
+    is_valid: { type: Boolean, default: false },
   });
 
 module.exports = mongoose.model('User', userSchema);
