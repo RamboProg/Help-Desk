@@ -78,7 +78,8 @@ const userController = {
             Username: username,
             PhoneNumber: phoneNumber,
             Salt: salt,
-            RoleID: 4, 
+            RoleID: 4,
+            is_valid:true, 
         });
 
         const Client = await clientModel.create({
@@ -89,6 +90,7 @@ const userController = {
             PhoneNumber: user.PhoneNumber,
             Salt: user.salt,
             RoleID: user.RoleID,
+            is_valid:true, 
         });
         
         await Client.save();
@@ -114,9 +116,13 @@ const userController = {
         }
 
         try {
+
             const user = await userModel.findOne({ Email: email }).select('+Password');
             if (!user) {
                 return res.status(400).json({ message: "Invalid credentials" });
+            }
+            if(!user.is_valid){
+                return res.status(400).json({ message: "User is not verified" });
             }
 
             if (!user || !user.Password) {
@@ -282,18 +288,18 @@ const userController = {
             // if (!user) {
             //     return res.status(404).json({ message: 'User not found' });
             // }
-            const email = req.body;
-            const cookies =req.cookies;
-            const token = cookies.jwt;
-            if(token){
-                const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                const user = await userModel.findById(decoded.id);
-                if (!user) {
-                    return res.status(404).json({ message: 'User not found' });
-                }
+            const {email} = (req.body);
+            // const cookies =req.cookies;
+            // const token = cookies.jwt;
+            // if(token){
+            //     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            //     const user = await userModel.findById(decoded.id);
+            //     if (!user) {
+            //         return res.status(404).json({ message: 'User not found' });
+            //     }
 
-            }
-            
+            // }
+            await deleteOTP(email);
             const OneTimePass = await (Math.floor(100000 + Math.random() * 900000)).toString();
             const hashedOTP = await bcrypt.hash(OneTimePass, 10);
             const newOTP = new OTP({
@@ -324,38 +330,51 @@ const userController = {
             res.status(500).json({ message: error.message });
         }
     },
-  verifyOTPForRegister: async (req, res) => {
-    try {
-      const {email,code} = req.body;
-      console.log(email,code);
-      const validOTP = await verifyOTP(email,code);
-      if(!validOTP){
-          throw Error("Invalid OTP")
-      }
-      await userModel.updateOne({Email:email},{is_valid:true});
-      await deleteOTP(email);
-      res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
-    } catch (error) {
-     return res.status(500).json({ message: error.message });
-    }
-  },
-  verifyOTPforLogin: async (req, res) => {
-    try {
-      const { email,code } = req.body;
-      console.log(email,code);
-      const validOTP = await verifyOTP(email,code);
-      
-        if(!validOTP){
-            throw Error("Invalid OTP")
+    verifyOTP: async (req, res) => {
+      try {
+        const { email, code } = req.body;
+        console.log(email, code);
+    
+        const user = await userModel.findOne({ Email: email });
+        console.log(1);
+        const validOTP = await verifyOTP(email, code);
+        console.log(2);
+        if (!validOTP) {
+          throw new Error("Invalid OTP");
         }
-        await userModel.updateOne({Email:email},{verified:true});
+        console.log(3);
+    
         await deleteOTP(email);
+        console.log(4);
+        if (user) {
+          console.log(13);
+          await userModel.updateOne({ Email: email }, { verified: true });
+          console.log(14);
+        }
+        return res.status(200).json({ message: "Multi-factor authentication email sent successfully" });
+    
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
+    },
+    
+  // verifyOTPforLogin: async (req, res) => {
+  //   try {
+  //     const { email,code } = req.body;
+  //     console.log(email,code);
+  //     const validOTP = await verifyOTP(email,code);
+      
+  //       if(!validOTP){
+  //           throw Error("Invalid OTP")
+  //       }
+  //       await userModel.updateOne({Email:email},{verified:true});
+  //       await deleteOTP(email);
         
-      res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
-    }catch (error) {
-        res.status(500).json({ message: error.message });
-    } 
-  },
+  //     res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
+  //   }catch (error) {
+  //       res.status(500).json({ message: error.message });
+  //   } 
+  // },
 
 
 };
@@ -364,17 +383,25 @@ const verifyOTP = async (email,otp) => {
         if(!email || !otp){
             throw Error("Provide values for Email and/or OTP")
         }
+        console.log(5);
         const matchedOTPRecord = await OTP.findOne({email:email});
+        console.log(6);
         if(!matchedOTPRecord){
             throw Error("Invalid OTP")
         }
+        console.log(7);
         const {expiresAt} = matchedOTPRecord;
+        console.log(8);
         if( expiresAt < Date.now()){
+          console.log(9);
             await OTP.deleteOne({email:email});
+            console.log(10);
             throw Error("OTP expired, request a new one.")
         }
         const hashedOTP = matchedOTPRecord.otp;
+        console.log(11);
         const validOTP = await bcrypt.compare(otp,hashedOTP);
+        console.log(12);
         return validOTP;
     } catch (error) {
         throw error;
