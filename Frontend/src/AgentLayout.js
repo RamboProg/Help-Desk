@@ -6,7 +6,6 @@ import AgentNav from './components/AgentNav';
 const AgentLayout = ({ children }) => {
     const location = useLocation();
     const showNavbar = location.pathname === '/AgentHome';
-    // console.log("AgentLayout: location.pathname = " + location.pathname);
 
     return (
         <div>

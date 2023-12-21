@@ -10,6 +10,7 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import AgentLayout from './AgentLayout';
+import AdminLayout from './AdminLayout';
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
         />
         <Route
           path="/AdminHome"
-          element={<MainLayout><AdminHome /></MainLayout>}
+          element={<AdminLayout><AdminHome /></AdminLayout>}
         />
         <Route
           path="/ManagerHome"
