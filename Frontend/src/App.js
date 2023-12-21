@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainLayout from './MainLayout';
+import ClientLayout from './ClientLayout';
 import Login from './components/Login';
 import Homepage from './components/Homepage';
 import ClientHome from './components/ClientHome';
@@ -23,7 +24,7 @@ function App() {
         />
         <Route
           path="/ClientHome"
-          element={<MainLayout><ClientHome /></MainLayout>}
+          element={<ClientLayout><ClientHome /></ClientLayout>}
         />
         <Route
           path="/AdminHome"
