@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from "react-icons/ai";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ theme }) => {
   const [showLogin, setShowLogin] = useState(false);
@@ -50,15 +50,13 @@ const Login = ({ theme }) => {
       try {
         const response = await axios.post(
           "http://localhost:3000/api/v1/auth/register",
-          { email, password, username, phoneNumber }, {
+          { email, password, username, phoneNumber },
+          {
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-         }, {
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+          }
+        );
         // Handle successful signup
         console.log(response.data);
       } catch (error) {
@@ -161,7 +159,8 @@ const Login = ({ theme }) => {
 
               {/* Action Button */}
               <button
-  onClick={handleAction}               className={`bg-${theme.colors.primary} text-${theme.colors.text} py-2 px-4 rounded-full w-full mb-4`}
+                onClick={handleAction}
+                className={`bg-${theme.colors.primary} text-${theme.colors.text} py-2 px-4 rounded-full w-full mb-4`}
               >
                 {isLogin ? "Login" : "Signup"}
               </button>
