@@ -10,6 +10,7 @@ const path = require('path'); // Add this line for path
 const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
+const cors = require('cors');
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -65,6 +66,8 @@ const logger = Winston.createLogger({
     })
   ]
 });
+// Enable CORS for all routes
+app.use(cors());
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -127,7 +130,6 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('/getUser');
 
 // Import routes
 app.use('/workflow', workflowRouter);

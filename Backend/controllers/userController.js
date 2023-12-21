@@ -121,14 +121,13 @@ const userController = {
 
       const token = generateToken(user._id);
 
-      res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
+      res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }); // 50 days
+        // Return the Role_ID along with the token
+        res.status(200).json({
+          message: 'Logged in',
+          Role_ID: user.RoleID, // Return the Role_ID
+        });
 
-    //   res.status(200).json({
-    //     _id: user._id,
-    //     name: user.Username,
-    //     email: user.Email,
-    //     token: generateToken(user._id)
-    //   });
     } catch (error) {
       console.error('Error during login:', error);
       res.status(500).json({ message: 'Internal Server Error' });
