@@ -10,6 +10,7 @@ const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
 const cors = require('cors');
+const FAQ = require('./models/FAQModel');
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -69,6 +70,8 @@ const logger = Winston.createLogger({
     })
   ]
 });
+// Enable CORS for all routes
+app.use(cors());
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -82,15 +85,25 @@ const storage = multer.diskStorage({
 });
 
 // Route for ML model prediction
-// app.post('/predict', async (req, res) => {
-//   try {
-//     const response = await axios.post('http://localhost:3000/predict', req.body);
-//     res.json(response.data);
-//   } catch (error) {
-//     logger.error('Error calling Flask service:', error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
+app.post('/predict', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:3000/predict', req.body);
+    res.json(response.data);
+  } catch (error) {
+    logger.error('Error calling Flask service:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/api/faqs', async (req, res) => {
+  try {
+    const faqs = await FAQ.find();
+    res.json(faqs);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching FAQs', error });
+  }
+});
+
 
 // Add middleware
 app.use(bodyParser.json());
@@ -117,7 +130,22 @@ app.use(express.json());
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-app.get('/getUser');
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('join', ({ userId, chatId }) => {
+    console.log('User joined chat room:', userId, chatId);
+  });
+
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
 
 // Import routes
 app.use('/workflow', workflowRouter);
