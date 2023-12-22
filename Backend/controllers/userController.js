@@ -336,20 +336,16 @@ const userController = {
         console.log(email, code);
     
         const user = await userModel.findOne({ Email: email });
-        console.log(1);
         const validOTP = await verifyOTP(email, code);
-        console.log(2);
         if (!validOTP) {
           throw new Error("Invalid OTP");
         }
-        console.log(3);
     
         await deleteOTP(email);
-        console.log(4);
         if (user) {
-          console.log(13);
+          
           await userModel.updateOne({ Email: email }, { verified: true });
-          console.log(14);
+          
         }
         return res.status(200).json({ message: "Multi-factor authentication email sent successfully" });
     
