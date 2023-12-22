@@ -10,6 +10,7 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
+import AssignRole from './components/AssignRole';
 
 function App() {
   return (
@@ -43,6 +44,9 @@ function App() {
           path="/KnowledgeBase"
           element={<ClientLayout><KnowledgeBase /></ClientLayout>}
         />
+        <Route 
+          path="/AssignRole"
+          element={<MainLayout><AssignRole /></MainLayout>}/>
       </Routes>
     </Router>
   );

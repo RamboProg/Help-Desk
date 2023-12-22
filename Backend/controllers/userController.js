@@ -48,9 +48,6 @@ let transporter = nodemailer.createTransport({
         pass: process.env.MAIL_PASS,
     },
 });
-async function sendOtp (){
-  
-}
 const userController = {
      registerUser: async (req, res) => {
         const { username, email, password , phoneNumber} = req.body;
