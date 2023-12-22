@@ -130,23 +130,6 @@ app.use(express.json());
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('join', ({ userId, chatId }) => {
-    console.log('User joined chat room:', userId, chatId);
-  });
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-});
-
-
 // Import routes
 app.use('/workflow', workflowRouter);
 app.use('/auth', require('./routes/authRoutes'));

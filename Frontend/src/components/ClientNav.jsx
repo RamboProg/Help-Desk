@@ -47,11 +47,17 @@ const ClientNav = () => {
           <h2 className="text-2xl p-4">My Menu</h2>
           <nav>
             <ul className="flex flex-col p-4 text-gray-800">
-              <li 
+            <li 
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
                 onClick={() => navigate("/CreateTicket")}
               >
                 <AiOutlinePlus size={25} className="mr-4" /> Create Ticket
+              </li>
+              <li 
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
+                onClick={() => navigate("/ViewMyTickets")}
+              >
+                <AiOutlinePlus size={25} className="mr-4" /> View My Tickets
               </li>
               <li 
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 

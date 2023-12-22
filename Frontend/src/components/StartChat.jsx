@@ -6,7 +6,7 @@ export default function Register() {
 
   async function register(ev) {
     ev.preventDefault();
-    const { data } = await axios.post('/api/v1/createChat', ticketId);
+    const res = await axios.post('/api/v1/createChat', ticketId);
   }
 
   return (
