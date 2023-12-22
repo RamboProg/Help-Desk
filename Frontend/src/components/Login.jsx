@@ -21,7 +21,8 @@ const Login = ({ theme }) => {
 
     if (isLogin) {
       try {
-        
+        const setMFA = await axios.get("httpL//localhost:3000/getMFA") ;
+        console.log(setMFa);
         const response = await axios.post("http://localhost:3000/login", {
           email,
           password,
