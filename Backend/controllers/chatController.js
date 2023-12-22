@@ -7,10 +7,9 @@ const chatController = {
   // Controller function to start a new chat
   startNewChat: async (req, res) => {
     try {
-      const { TicketId } = req.body;
-
-      // Extract user information from the JWT
       const { _id } = await getUser(req);
+      const { TicketId } = req.body;
+      // Extract user information from the JWT
       // console.log(_id);
       // verify the ticket belongs to the user
       const ticket = await Ticket.findById(TicketId);

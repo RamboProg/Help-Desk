@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { AiOutlineMenu, AiOutlineClose, AiOutlinePlus, AiOutlineQuestionCircle, AiOutlineSetting, AiOutlineUser } from "react-icons/ai";
+import { AiOutlineMenu, AiOutlineClose, AiOutlinePlus, AiOutlineQuestionCircle, AiOutlineSetting, AiOutlineUser, AiOutlineCheck } from "react-icons/ai";
 import { LightOceanTheme } from "./themes";
 
 const ClientNav = () => {
@@ -57,7 +57,7 @@ const ClientNav = () => {
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
                 onClick={() => navigate("/ViewMyTickets")}
               >
-                <AiOutlinePlus size={25} className="mr-4" /> View My Tickets
+                <AiOutlineCheck size={25} className="mr-4" /> View My Tickets
               </li>
               <li 
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 

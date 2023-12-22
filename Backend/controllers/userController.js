@@ -37,6 +37,34 @@ const Customization = require('../models/customizationModel');
 //     }
 // }
 
+
+    const getUser = async (req) => {
+    // split from token= to the first . and get the second part
+    // console.log(req.headers.cookie.split('token=')[1]);
+    const token = req.headers.cookie.split('token=')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token, authorization denied' });
+    }
+
+    let payload = null;
+
+    try {
+        payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        return res.status(401).json({ message: 'Token is not valid' });
+    }
+
+    const user = await userModel.findById(payload.id);
+    // console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return user;
+  };
+
 const userController = {
      registerUser: async (req, res) => {
         const { username, email, password , phoneNumber} = req.body;
@@ -137,8 +165,8 @@ const userController = {
     // View user profile
     viewUserProfile: async (req, res) => {
         try {
-            const userId = req.user.id; // Use req.user.id to get the user ID from the decoded token
-            const user = await userModel.findById(userId);
+            const { _id } = await getUser(req); // Use req.user.id to get the user ID from the decoded token
+            const user = await userModel.findById(_id);
 
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
@@ -253,34 +281,7 @@ const userController = {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
         }
-    },
-
-    getUser: async (req) => {
-    // split from token= to the first . and get the second part
-    // console.log(req.headers.cookie.split('token=')[1]);
-    const token = req.headers.cookie.split('token=')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'No token, authorization denied' });
     }
-
-    let payload = null;
-
-    try {
-        payload = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-        return res.status(401).json({ message: 'Token is not valid' });
-    }
-
-    const user = await userModel.findById(payload.id);
-    // console.log(user)
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    return user;
-  },
 
 
 };
@@ -292,4 +293,4 @@ const generateToken = (id) => {
     });
 };
 
-module.exports = userController;
+module.exports = { userController, getUser };

@@ -6,17 +6,17 @@ const Chat = require('../models/chatModel');
 const axios = require('axios');
 const { getUser } = require('../controllers/userController');
 const { PriorityQueue } = require('../utils/PriorityQueue');
-const clientController = {
 
+const clientController = {
   clientTickets: async (req, res) => {
     try {
-      const userId = req.user.id;
-      const client = await Client.findById(userId);
+      const { _id } = await getUser(req);
+      const client = await Client.findById(_id);
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
 
-      const tickets = await Ticket.find({ Ticket_Owner: userId });
+      const tickets = await Ticket.find({ Ticket_Owner: _id });
 
       res.json(tickets);
     } catch (error) {
@@ -27,7 +27,7 @@ const clientController = {
 
   createTicket: async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = await getUser(req)._id;
       const requestedSubIssueType = req.body.Sub_Issue_Type;
       const requestedIssueType = req.body.Issue_Type;
       let priority;

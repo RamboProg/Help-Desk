@@ -43,6 +43,9 @@ const Login = ({ theme }) => {
             break;
         }
         setShowLogin(false);
+        // store the cookie
+        localStorage.setItem("user", JSON.stringify(response.data));
+        
       } catch (error) {
         setMessage(`Login failed: ${error.message}`);
       }
