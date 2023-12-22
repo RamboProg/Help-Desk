@@ -18,13 +18,15 @@ exports.getWorkflow = async (req, res) => {
 };
 
 exports.createWorkflow = async (req, res) => {
-    const { Issue, Custom_Workflow } = req.body;
+    const { Issue, Custom_Workflow , Sub_Issue_Type} = req.body;
     try {
       const workflow = await Workflow.create({ Issue, Custom_Workflow });
       res.status(201).json({ workflow });
     } catch (err) {
+      console.error("Error creating workflow:", err); // Log the error details for debugging
       res.status(500).json({ message: "Internal Server Error; Try Again" });
     }
+    
 }
 
 exports.updateWorkflow = async (req, res) => {
