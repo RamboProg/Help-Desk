@@ -10,6 +10,8 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
+import Settings from './components/Settings';
+import Profile from './components/Profile';
 
 function App() {
   return (
@@ -42,6 +44,14 @@ function App() {
         <Route
           path="/KnowledgeBase"
           element={<ClientLayout><KnowledgeBase /></ClientLayout>}
+        />
+        <Route
+          path="/Settings"
+          element={<ClientLayout><Settings /></ClientLayout>}
+        />
+        <Route
+          path="/Profile"
+          element={<ClientLayout><Profile /></ClientLayout>}
         />
       </Routes>
     </Router>
