@@ -14,7 +14,7 @@ const managerController = {
 
   // Get tickets by status
   getTicketsByStatus: async (req, res) => {
-    const { status } = req.params;
+    const status = req.query.status;
     try {
       const tickets = await Ticket.find({ Status: status });
       res.json(tickets);
