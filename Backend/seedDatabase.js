@@ -37,50 +37,7 @@ const seedData = async () => {
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
 
-    const supportAgents = [];
-    for (let i = 1; i <= 3; i++) {
-      let mysalt = await generateSalt();
-      const hashedPassword = await hashPassword('password123', mysalt);
-      const user = new UserModel({
-        _id: i,
-        Email: `support${i}@example.com`,
-        Password: hashedPassword,
-        Username: `support${i}`,
-        PhoneNumber: '123-456-7890',
-        RoleID: 3, // Support Agent role
-        MFA_Enabled: i % 2 === 0, // Every other user has MFA enabled
-        Is_Enabled: true,
-        theme: 'light', // Default theme is light
-        logoPath: 'https://placekitten.com/200/200', // Placeholder image
-        salt: mysalt,
-      });
 
-      const supportAgent = new SupportAgentModel({
-        _id: user._id,
-        Email: user.Email,
-        Password: user.Password,
-        Username: user.Username,
-        PhoneNumber: user.PhoneNumber,
-        RoleID: user.RoleID,
-        MFA_Enabled: user.MFA_Enabled,
-        Is_Enabled: user.Is_Enabled,
-        Pref_Type: 'email', // Default preference type
-        Average_Rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
-        Ticket_Count: 0,
-        Active_Tickets: 0,
-        Salt: user.salt,
-      });
-
-      await user.save();
-      await supportAgent.save();
-
-      user.supportAgentId = supportAgent._id;
-      supportAgents.push(user);
-    }
-
-
-    
-    
 // Seed issue data
 const issueTypes = [
   {
@@ -146,39 +103,39 @@ const issueTypes = [
 ];
 
 
-const issuesData = await Promise.all(issueTypes.map(async (issue) => {
-  const newIssue = new IssueModel({
-    Issue: issue.Issue,
-    Custom_Workflow: issue.Custom_Workflow,
-    Sub_Issue_Type: issue.Sub_Issue_Type,
-  });
+    const issuesData = await Promise.all(issueTypes.map(async (issue) => {
+      const newIssue = new IssueModel({
+        Issue: issue.Issue,
+        Custom_Workflow: issue.Custom_Workflow,
+        Sub_Issue_Type: issue.Sub_Issue_Type,
+      });
 
-  await newIssue.save();
-  return newIssue;
-}));
+      await newIssue.save();
+      return newIssue;
+    }));
 
-// Function to generate salt using bcrypt
-async function generateSalt() {
-  return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
-}
+    // Function to generate salt using bcrypt
+    async function generateSalt() {
+      return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
+    }
 
 
-// Function to hash password using bcrypt
-async function hashPassword(password, salt) {
-  try {
-    const hashedPassword = await bcrypt.hash(password, salt);
-    return hashedPassword;
-  } catch (error) {
-    throw error;
-  }
-}
+    // Function to hash password using bcrypt
+    async function hashPassword(password, salt) {
+      try {
+        const hashedPassword = await bcrypt.hash(password, salt);
+        return hashedPassword;
+      } catch (error) {
+        throw error;
+      }
+    }
 
 // Seed user data
 const users = [];
-for (let i = 4; i <= 33; i++) {
+for (let i = 0; i < 30; i++) {
   let mysalt = await generateSalt();
   const hashedPassword = await hashPassword('password123', mysalt); // Hash the password
-  const randomRoleID = i % 3 === 0 ? 2 : i % 2 === 0 ? 4 : 1; // Alternating role IDs
+  const randomRoleID = i % 4 + 1; // Alternating role IDs
   const user = new UserModel({
     _id: i + 1,
     Email: `user${i + 1}@example.com`,
@@ -226,25 +183,25 @@ for (let i = 4; i <= 33; i++) {
       await manager.save();
       user.managerId = manager._id; // Link to ManagerModel
       break;
-    // case 3: // Support Agent
-    //   const supportAgent = new SupportAgentModel({
-    //     _id: user._id,
-    //     Email: user.Email,
-    //     Password: user.Password,
-    //     Username: user.Username,
-    //     PhoneNumber: user.PhoneNumber,
-    //     RoleID: user.RoleID,
-    //     MFA_Enabled: user.MFA_Enabled,
-    //     Is_Enabled: user.Is_Enabled,
-    //     Pref_Type: 'email', // Default preference type
-    //     Average_Rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
-    //     Ticket_Count: Math.floor(Math.random() * 10), // Random ticket count
-    //     Active_Tickets: Math.floor(Math.random() * 5), // Random active ticket count
-    //     Salt: user.salt,
-    //   });
-    //   await supportAgent.save();
-    //   user.supportAgentId = supportAgent._id; // Link to SupportAgentModel
-    //   break;
+    case 3: // Support Agent
+      const supportAgent = new SupportAgentModel({
+        _id: user._id,
+        Email: user.Email,
+        Password: user.Password,
+        Username: user.Username,
+        PhoneNumber: user.PhoneNumber,
+        RoleID: user.RoleID,
+        MFA_Enabled: user.MFA_Enabled,
+        Is_Enabled: user.Is_Enabled,
+        Pref_Type: 'email', // Default preference type
+        Average_Rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
+        Ticket_Count: Math.floor(Math.random() * 10), // Random ticket count
+        Active_Tickets: Math.floor(Math.random() * 5), // Random active ticket count
+        Salt: user.salt,
+      });
+      await supportAgent.save();
+      user.supportAgentId = supportAgent._id; // Link to SupportAgentModel
+      break;
     case 4: // Client
       const client = new ClientModel({
         _id: user._id,
@@ -269,26 +226,18 @@ for (let i = 4; i <= 33; i++) {
   const salt = await generateSalt();
   const hashedPassword = await hashPassword('password123', salt); // Hash the password
   // Create a valid user
-// Find the last user in the database and get their ID
-const lastUser = await UserModel.findOne({}, {}, { sort: { '_id': -1 } });
-
-// Determine the next available ID
-const nextUserId = lastUser ? lastUser._id + 1 : 1;
-
-// Create a valid user with the next available ID
-const validUser = new UserModel({
-  _id: nextUserId,
-  Email: 'zaidqarxoy@gmail.com',
-  Password: hashedPassword,
-  Username: 'zaidqarxoy',
-  PhoneNumber: '123-456-7890',
-  RoleID: 4,
-  MFA_Enabled: false,
-  Is_Enabled: false,
-  salt: salt,
-});
-
-await validUser.save();
+  const validUser = new UserModel({
+    _id: 31,
+    Email: 'zaidqarxoy@gmail.com',
+    Password: hashedPassword,
+    Username: 'zaidqarxoy',
+    PhoneNumber: '123-456-7890',
+    RoleID: 4,
+    MFA_Enabled: false, // Every other user has MFA enabled
+    Is_Enabled: false,
+    salt: salt,
+  }); 
+  await validUser.save(); // Save UserModel
 const validClient = new ClientModel({
   _id: validUser._id,
   Email: validUser.Email,
@@ -312,16 +261,21 @@ await validClient.save();
       });
       faqs.push(faq.save());
     }
-    
-    const chats = [];
-    const existingClients = await ClientModel.find({}, '_id'); // Get existing client IDs
-    const existingSupportAgents = await SupportAgentModel.find({}, '_id'); // Get existing support agent IDs
-    
+
+    // Seed log data
+    const logs = [];
+    for (let i = 0; i < 5; i++) {
+      const log = new LogModel({
+        level: 'info', // Default log level
+        message: `Log message ${i + 1}`,
+        meta: { key: `key${i + 1}`, value: `value${i + 1}` },
+      });
+      logs.push(log.save());
+    }
+
     // Seed ticket data
     const tickets = [];
     for (let i = 0; i < 5; i++) {
-      const randomSupportAgentIndex = i % existingSupportAgents.length;
-      const randomClientIndex = i % existingClients.length;
       const ticket = new TicketModel({
         _id: i + 1,
         Status: 'Open', // Default ticket status
@@ -337,7 +291,6 @@ await validClient.save();
       });
       tickets.push(ticket.save());
     }
-    // Seed chat data
      // Create a valid ticket
     const ValidTicket = new TicketModel({
       _id: 7,
@@ -354,16 +307,19 @@ await validClient.save();
     });
     await ValidTicket.save();
 
-    // Adjust Ticket_Count and Active_Tickets for SupportAgentModel
+    // Adjust Ticket_Count and Active_Tickets for SupportAgentModel 
     for (const user of supportAgents) {
       const ticketCount = await TicketModel.countDocuments({ Assigned_AgentID: user._id });
       const activeTicketCount = await TicketModel.countDocuments({ Assigned_AgentID: user._id, Status: 'Open' });
-
       user.Ticket_Count = ticketCount;
       user.Active_Tickets = activeTicketCount;
-
       await user.save();
     }
+
+      // Seed chat data
+    const chats = [];
+    const existingClients = await ClientModel.find({}, '_id'); // Get existing client IDs
+    const existingSupportAgents = await SupportAgentModel.find({}, '_id'); // Get existing support agent IDs
 
     for (let i = 0; i < 5; i++) {
       const randomClientIndex = i % existingClients.length;
@@ -401,7 +357,7 @@ await validClient.save();
       customizations.push(customization.save());
     }
 
-    await Promise.all([...users, ...faqs, ...issuesData, ...tickets, ...chats, ...customizations]);
+    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
 
     console.log('Database seeded successfully!');
   } catch (error) {
