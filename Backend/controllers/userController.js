@@ -107,8 +107,7 @@ const userController = {
           throw new Error('Invalid user data' , error.message );
         }
     },
-
-    loginUser: async (req, res) => {
+        loginUser: async (req, res) => {
             const { email, password, code } = req.body;
         
             if (!email || !password) {
@@ -137,20 +136,18 @@ const userController = {
         
               const token = generateToken(user._id);
         
-              res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
+              res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }); // 50 days
+                // Return the Role_ID along with the token
+                res.status(200).json({
+                  message: 'Logged in',
+                  Role_ID: user.RoleID, // Return the Role_ID
+                });
         
-            //   res.status(200).json({
-            //     _id: user._id,
-            //     name: user.Username,
-            //     email: user.Email,
-            //     token: generateToken(user._id)
-            //   });
             } catch (error) {
               console.error('Error during login:', error);
               res.status(500).json({ message: 'Internal Server Error' });
             }
-          
-  },
+          },
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -291,19 +288,28 @@ const userController = {
     return user;
   },
   getMFA: async (req, res) => {
+    const {email}  = req.body;
     try {
-        const {email} = req.body;
-        console.log(email);
-        const user  = await userModel.findOne({Email:email});
-        if(!user){
-          return res.status(404).json({message:"User not found"});
-        }
-       return res.status(200).json(user.MFA_Enabled);    
+      
+      console.log(email);
+      console.log("Received email:", email); // Add this line for debugging
+      const user = await userModel.findOne({ Email: email });
+      console.log(user);
+      console.log(2);
+      if (!user) {
+        console.log("User not found");
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      console.log("User found. MFA Enabled:", user.MFA_Enabled);
+      return res.status(200).json(user.MFA_Enabled);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+      console.error("Error in getMFA:", error.message);
+      return res.status(500).json({ message: error.message });
     }
-    
-  },  
+  },
+  
+   
   sendOTP : async (req, res) => {
         try {
             // const cookies = req.cookies;
