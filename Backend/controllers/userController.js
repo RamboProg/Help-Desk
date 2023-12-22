@@ -27,7 +27,7 @@ const OTP = require('../models/otpModel.js');
 //   } catch (error) {
 //     throw error;
 //   }
-// } 
+// }
 
 // const authentication = require('../middleware/authenticationMiddleware');
 //  // Function to get user based on role
@@ -111,9 +111,9 @@ const userController = {
     loginUser: async (req, res) => {
         const { email, password} = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
-        }
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
 
         try {
 
@@ -125,33 +125,34 @@ const userController = {
                 return res.status(400).json({ message: "User is not verified" });
             }
 
-            if (!user || !user.Password) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-            // Check if user.Password is defined and not null
-            if (!user.Password) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
+      if (!user || !user.Password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+      // Check if user.Password is defined and not null
+      if (!user.Password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-            const isPasswordValid = await bcrypt.compare(password, user.Password);
+      const isPasswordValid = await bcrypt.compare(password, user.Password);
 
-            if (!isPasswordValid) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-            const token = generateToken(user._id);
-            res.cookie("jwt", token, {httpOnly: true,secure :true, sameSite: "None", maxAge: 3600000 });
-            res.json({ success: true, message: 'Login successful' });
-            // res.status(200).json({
-            //     _id: user._id,
-            //     name: user.Username,
-            //     email: user.Email,
-            //     token: generateToken(user._id),
-            // });
-        } catch (error) {
-            console.error("Error during login:", error);
-            res.status(500).json({ message: "Internal Server Error" });
-        }
-    },
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+
+      const token = generateToken(user._id);
+
+      res.cookie('token', token, {httpOnly: true,secure:true, maxAge: 3600000 }); // 50 days
+        // Return the Role_ID along with the token
+        res.status(200).json({
+          message: 'Logged in',
+          Role_ID: user.RoleID, // Return the Role_ID
+        });
+
+    } catch (error) {
+      console.error('Error during login:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  },
 
     // View user profile
     viewUserProfile: async (req, res) => {
@@ -266,10 +267,33 @@ const userController = {
         }
     },
 
-    getUser: async (req, res) => {
-        res.status(200).json(req.user);
-    },
-    sendOTP : async (req, res) => {
+    getUser: async (req) => {
+    // split from token= to the first . and get the second part
+    // console.log(req.headers.cookie.split('token=')[1]);
+    const token = req.headers.cookie.split('token=')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token, authorization denied' });
+    }
+
+    let payload = null;
+
+    try {
+        payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        return res.status(401).json({ message: 'Token is not valid' });
+    }
+
+    const user = await userModel.findById(payload.id);
+    // console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return user;
+  },    
+  sendOTP : async (req, res) => {
         try {
             // const cookies = req.cookies;
             // const token = cookies.jwt;
@@ -459,5 +483,3 @@ const generateToken = (id) => {
 
 
 module.exports = userController;
-
-

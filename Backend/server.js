@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
+const socketio = require('socket.io'); // Add this line for socket.io
 const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
@@ -9,16 +10,16 @@ const path = require('path'); // Add this line for path
 const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
+const cors = require('cors');
+const FAQ = require('./models/FAQModel');
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
 });
 
-
-
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
-const authRoutes= require("./routes/authRoutes");
+const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -30,28 +31,17 @@ const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
 const managerRoutes = require('./routes/managerRoutes');
 const userRoutes = require('./routes/userRoutes');
-const authenticationMiddleware = require('./middleware/authenticationMiddleware');
-const authorizationMiddleware = require('./middleware/authorizationMiddleware');
+// const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+// const authorizationMiddleware = require('./middleware/authorizationMiddleware');
 
-
-
-
-
-
-
+// Create the Express app
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server);
-
-
-
+const io = socketio(server);
 
 // Configure Winston with MongoDB Transport
 const logger = Winston.createLogger({
-  format: Winston.format.combine(
-    Winston.format.timestamp(),
-    Winston.format.json()
-  ),
+  format: Winston.format.combine(Winston.format.timestamp(), Winston.format.json()),
   transports: [
     new Winston.transports.Console(),
     new Winston.transports.File({ filename: 'error.log', level: 'error' }),
@@ -59,10 +49,10 @@ const logger = Winston.createLogger({
       level: 'info', // or your desired level
       db: process.env.MONGODB_URI,
       options: {
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
       },
-      collection: 'logs', // Specify the collection name
-    }),
+      collection: 'logs' // Specify the collection name
+    })
   ],
   exceptionHandlers: [
     new Winston.transports.Console(),
@@ -71,14 +61,14 @@ const logger = Winston.createLogger({
       level: 'info', // or your desired level
       db: process.env.MONGODB_URI,
       options: {
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
       },
-      collection: 'exceptions', // Specify the collection name
-    }),
-  ],
+      collection: 'exceptions' // Specify the collection name
+    })
+  ]
 });
-
-
+// Enable CORS for all routes
+app.use(cors());
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -86,7 +76,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
@@ -102,6 +92,15 @@ app.post('/predict', async (req, res) => {
   }
 });
 
+app.get('/api/faqs', async (req, res) => {
+  try {
+    const faqs = await FAQ.find();
+    res.json(faqs);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching FAQs', error });
+  }
+});
+
 
 // Add middleware
 app.use(bodyParser.json());
@@ -109,14 +108,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(authenticationMiddleware.authenticationMiddlewareFunction);
 // app.use(authorizationMiddleware.authorizationMiddlewareFunction);
 
-
 //use the routes
 app.use(ticketRoutes);
 app.use(agentRoutes);
 app.use(adminRoutes);
 // app.use(authFile);
 // app.use(authRoutes);
-app.use(chatRoutes); //commented because of errors
+app.use(chatRoutes);
 app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
@@ -124,21 +122,38 @@ app.use(managerRoutes);
 app.use(userRoutes);
 app.use(authRoutes);
 
-
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
 io.on('connection', (socket) => {
-    console.log('A user connected');
+  console.log('A user connected');
+
+  socket.on('join', ({ userId, chatId }) => {
+    console.log('User joined chat room:', userId, chatId);
+  });
+
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
 });
 
-app.get('/getUser')
 
 // Import routes
 app.use('/workflow', workflowRouter);
 app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('Connected to MongoDB'); }).catch((err) => { console.log(err); })
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 // Use the workflow router
 app.use('/', workflowRouter);

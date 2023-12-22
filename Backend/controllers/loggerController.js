@@ -36,7 +36,7 @@ const logger = createLogger({
     logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   });
   
-  // Handle uncaught exceptions
+  // Handle uncaught exceptionsf
   process.on('uncaughtException', (error) => {
     logger.error('Uncaught Exception:', error);
   });
