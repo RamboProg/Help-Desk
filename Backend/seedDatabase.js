@@ -287,7 +287,7 @@ const seedData = async () => {
       Username: 'zaidqarxoy',
       PhoneNumber: '123-456-7890',
       RoleID: 4,
-      MFA_Enabled: false, // Every other user has MFA enabled
+      MFA_Enabled: true, // Every other user has MFA enabled
       Is_Enabled: false,
       salt: salt,
       is_valid: true,

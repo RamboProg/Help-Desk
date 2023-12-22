@@ -288,7 +288,7 @@ const userController = {
     return user;
   },
   getMFA: async (req, res) => {
-    const {email}  = req.body;
+    const {email}  = req.query;
     try {
       
       console.log(email);

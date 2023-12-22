@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import OTPPopup from "./OTPPopup"; // Adjust the path based on your project structure
+import OTPPopup from "./OTPPopup";
 import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 
@@ -23,10 +23,14 @@ const Login = ({ theme }) => {
         code: enteredOTP,
       });
 
-      console.log(verifyOTPResponse.data);
-
       if (verifyOTPResponse.data.message === "Multi-factor authentication email sent successfully") {
-        handleRoleBasedNavigation();
+        const loginResponse = await axios.post("http://localhost:3000/login", {
+          email,
+          password,
+        });
+
+        handleRoleBasedNavigation(loginResponse);
+        setShowLogin(false);
       } else {
         setMessage("MFA verification failed");
       }
@@ -34,70 +38,65 @@ const Login = ({ theme }) => {
       setMessage(`OTP verification failed: ${error.message}`);
     } finally {
       setShowOTPPopup(false);
+      
     }
   };
 
   const handleAction = async () => {
     setMessage("");
-  
     try {
-      // Ensure email is defined
       if (!email) {
         setMessage("Email is required");
         return;
       }
-  
-      console.log(email);
-      const mfaResponse = await axios.get("http://localhost:3000/getMFA" ,{
-        email
-      }); 
-  
-      console.log("MFA Response:", mfaResponse.data);
-  
-      // if (mfaResponse.data) {
-      //   const sendOTPResponse = await axios.post("http://localhost:3000/sendOTP", {
-      //     email,
-      //   });
-  
-      //   console.log("Send OTP Response:", sendOTPResponse.data);
-  
-      //   setShowOTPPopup(true);
-      
+
+      const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
+
+      if (mfaResponse.data) {
+        const sendOTPResponse = await axios.post("http://localhost:3000/sendOTP", {
+          email,
+        });
+
+        if (sendOTPResponse.data.message === "Multi-factor authentication email sent successfully") {
+          setShowOTPPopup(true);
+        }
+      } else {
+        // Handle login without OTP for cases where MFA is not enabled
         const loginResponse = await axios.post("http://localhost:3000/login", {
           email,
           password,
         });
-  
-        console.log("Login Response:", loginResponse.data);
-  
+
         handleRoleBasedNavigation(loginResponse);
-  
+
         setShowLogin(false);
-      
+      }
     } catch (error) {
       setMessage(`Login failed: ${error.message}`);
     }
   };
-  
 
   const handleRoleBasedNavigation = (loginResponse) => {
-    // Make sure 'loginResponse.data.Role_ID' is correct based on your server response
-    switch (loginResponse.data.Role_ID) {
-      case 1:
-        navigate("/AdminHome");
-        break;
-      case 2:
-        navigate("/ManagerHome");
-        break;
-      case 3:
-        navigate("/AgentHome");
-        break;
-      case 4:
-        navigate("/ClientHome");
-        break;
-      default:
-        console.log("invalid role");
-        break;
+    if (loginResponse.data && loginResponse.data.Role_ID) {
+      switch (loginResponse.data.Role_ID) {
+        case 1:
+          navigate("/AdminHome");
+          break;
+        case 2:
+          navigate("/ManagerHome");
+          break;
+        case 3:
+          navigate("/AgentHome");
+          break;
+        case 4:
+          navigate("/ClientHome");
+          break;
+        default:
+          console.log("Invalid role");
+          break;
+      }
+    } else {
+      console.log("Invalid login response format");
     }
   };
 
@@ -133,7 +132,7 @@ const Login = ({ theme }) => {
                   type="text"
                   placeholder="Email"
                   value={email}
-                  onChange={(e) => setEmail((e.target.value))}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -199,7 +198,12 @@ const Login = ({ theme }) => {
         </div>
       )}
 
-      {showOTPPopup && <OTPPopup onVerifyOTP={handleVerifyOTP} />}
+      {showOTPPopup && (
+        <OTPPopup
+          onVerifyOTP={handleVerifyOTP}
+          onClose={() => setShowOTPPopup(false)}
+        />
+      )}
     </div>
   );
 };
