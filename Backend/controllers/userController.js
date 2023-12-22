@@ -109,49 +109,47 @@ const userController = {
     },
 
     loginUser: async (req, res) => {
-        const { email, password} = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
-    }
-
-        try {
-
-            const user = await userModel.findOne({ Email: email }).select('+Password');
-            if (!user) {
-                return res.status(400).json({ message: "Invalid credentials" });
+            const { email, password, code } = req.body;
+        
+            if (!email || !password) {
+              return res.status(400).json({ message: 'Email and password are required' });
             }
-            if(!user.is_valid){
-                return res.status(400).json({ message: "User is not verified" });
+        
+            try {
+              const user = await userModel.findOne({ Email: email }).select('+Password');
+              if (!user) {
+                return res.status(400).json({ message: 'Invalid credentials' });
+              }
+        
+              if (!user || !user.Password) {
+                return res.status(400).json({ message: 'Invalid credentials' });
+              }
+              // Check if user.Password is defined and not null
+              if (!user.Password) {
+                return res.status(400).json({ message: 'Invalid credentials' });
+              }
+        
+              const isPasswordValid = await bcrypt.compare(password, user.Password);
+        
+              if (!isPasswordValid) {
+                return res.status(400).json({ message: 'Invalid credentials' });
+              }
+        
+              const token = generateToken(user._id);
+        
+              res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 50 }).status(200).send('Logged in'); // 50 days
+        
+            //   res.status(200).json({
+            //     _id: user._id,
+            //     name: user.Username,
+            //     email: user.Email,
+            //     token: generateToken(user._id)
+            //   });
+            } catch (error) {
+              console.error('Error during login:', error);
+              res.status(500).json({ message: 'Internal Server Error' });
             }
-
-      if (!user || !user.Password) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-      // Check if user.Password is defined and not null
-      if (!user.Password) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-
-      const isPasswordValid = await bcrypt.compare(password, user.Password);
-
-      if (!isPasswordValid) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-
-      const token = generateToken(user._id);
-
-      res.cookie('token', token, {httpOnly: true,secure:true, maxAge: 3600000 }); // 50 days
-        // Return the Role_ID along with the token
-        res.status(200).json({
-          message: 'Logged in',
-          Role_ID: user.RoleID, // Return the Role_ID
-        });
-
-    } catch (error) {
-      console.error('Error during login:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
-    }
+          
   },
 
     // View user profile
@@ -218,15 +216,14 @@ const userController = {
     // Set MFA get request
     setMFA: async (req, res) => {
         try {
-            const cookies = req.cookies;
-            const token = cookies.jwt;
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            const user = await userModel.findById(decoded._id);
+            const {id} = req.body;
+            const user = await userModel.findOne({ _id: id });
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
-            await userModel.updateOne({ _id: decoded._id }, { $set: { MFA_Enabled: true } });
+            await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: true } });
             console.log("Email sent successfully");
+            console.log("hi");
 
             
         } catch (error) {
@@ -267,7 +264,7 @@ const userController = {
         }
     },
 
-    getUser: async (req) => {
+    getUser: async (req,res) => {
     // split from token= to the first . and get the second part
     // console.log(req.headers.cookie.split('token=')[1]);
     const token = req.headers.cookie.split('token=')[1];
@@ -292,7 +289,21 @@ const userController = {
     }
 
     return user;
-  },    
+  },
+  getMFA: async (req, res) => {
+    try {
+        const {email} = req.body;
+        console.log(email);
+        const user  = await userModel.findOne({Email:email});
+        if(!user){
+          return res.status(404).json({message:"User not found"});
+        }
+       return res.status(200).json(user.MFA_Enabled);    
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+    
+  },  
   sendOTP : async (req, res) => {
         try {
             // const cookies = req.cookies;
@@ -377,6 +388,32 @@ const userController = {
         return res.status(500).json({ message: error.message });
       }
     },
+    getUser: async (req,res) => {
+        // split from token= to the first . and get the second part
+        // console.log(req.headers.cookie.split('token=')[1]);
+        const token = req.headers.cookie.split('token=')[1];
+    
+        if (!token) {
+          return res.status(401).json({ message: 'No token, authorization denied' });
+        }
+    
+        let payload = null;
+    
+        try {
+            payload = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(401).json({ message: 'Token is not valid' });
+        }
+    
+        const user = await userModel.findById(payload.id);
+        // console.log(user)
+    
+        if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+    
+        return user;
+      }
     
   // verifyOTPforLogin: async (req, res) => {
   //   try {

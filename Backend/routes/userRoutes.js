@@ -32,6 +32,7 @@ router.post('/sendOTP', userController.sendOTP);
 router.post('/verifyOTP', userController.verifyOTP);
 //router.post('/verifyOTPRegister', userController.verifyOTPForRegister);
 router.post('/setMFA', userController.setMFA);
+router.get('/getMFA',userController.getMFA);
 // Other routes...
 router.put('/api/v1/auth/reset-password/request', userController.resetPassword);
 // router.post('/api/v1/auth/setMFA', userController.setMFA);
