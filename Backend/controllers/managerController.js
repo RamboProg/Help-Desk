@@ -256,7 +256,16 @@ const managerController = {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
+  },
+getAgents : async (req, res) => {
+  try {
+    const agents = await AgentModel.find();
+    return res.status(200).json({ agents });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
+}
 };
 
 module.exports =  managerController;

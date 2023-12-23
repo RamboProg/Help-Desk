@@ -7,7 +7,7 @@ import Login from './components/Login';
 import Homepage from './components/Homepage';
 import ClientHome from './components/ClientHome';
 import AdminHome from './components/AdminHome';
-import ManagerHome from './components/ManagerHome';
+import Manager from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 
 
@@ -33,7 +33,7 @@ function App() {
         />
         <Route
           path="/ManagerHome"
-          element={<MainLayout><ManagerHome /></MainLayout>}
+          element={<MainLayout><Manager /></MainLayout>}
         />
         <Route
           path="/AgentHome"
