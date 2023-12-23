@@ -22,8 +22,9 @@ const userController = require('../controllers/userController');
 const authenticateUser = require('../middleware/authenticationMiddleware');
 
 // Apply the authentication middleware to protected routes
-router.get('/api/v1/profile', authenticateUser.authenticationMiddlewareFunction, userController.viewUserProfile);
-router.put('/api/v1/users/:userId', authenticateUser.authenticationMiddlewareFunction, userController.updateUserProfile);
+//there is a problem here so yea we need to fix it  in the router.get view User profile with both
+//router.get('/api/v1/profile', authenticateUser.authenticationMiddlewareFunction, userController.viewUserProfile);
+//router.put('/api/v1/users/:userId', authenticateUser.authenticationMiddlewareFunction, userController.updateUserProfile);
 
 // Registration route does not require authentication
 router.post('/api/v1/auth/register', userController.registerUser);

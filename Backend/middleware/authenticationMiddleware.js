@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 
 
 module.exports = function authenticationMiddleware(req, res, next) {
-  const cookie = req.cookies;
+  try {
+    const cookie = req.cookies;
   
   // console.log(req.headers);
 
@@ -25,4 +26,8 @@ module.exports = function authenticationMiddleware(req, res, next) {
     req.user = decoded.user;
     next();
   });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+  
 };
