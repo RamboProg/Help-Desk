@@ -92,7 +92,7 @@ const agentController = {
                 },
               });
               var mailOptions = {
-                from: "helpdesk.notis@gmail.com",
+                from: process.env.MAIL_ADD,
                 to: Client.Email,
                 subject: "Your Ticket Status Has Been Closed",
                 text: message,

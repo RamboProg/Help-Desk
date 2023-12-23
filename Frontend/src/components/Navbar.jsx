@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
-import { FaUserFriends } from 'react-icons/fa';
 import Login from './Login'; // Assuming you have a Login component
 import { CloudySkyTheme, LavenderMistTheme , SunsetGlowTheme, EarthyForestTheme, DarkNebulaTheme, LightOceanTheme} from './themes'; // Assuming you want a default theme
 
