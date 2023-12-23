@@ -1,7 +1,9 @@
 //import ticket model from separate file
-const ticket = require("../models/ticketModel");
+const Ticket = require("../models/ticketModel");
 const client = require("../models/clientModel");
 const nodemailer = require("nodemailer");
+const Agent = require("../models/agentModel");
+const {getUser} = require("../controllers/userController");
 
 // exports.closeTicket = async (req, res) => {
 //   try {
@@ -90,7 +92,7 @@ const agentController = {
                 },
               });
               var mailOptions = {
-                from: "helpdesk.notis@gmail.com",
+                from: process.env.MAIL_ADD,
                 to: Client.Email,
                 subject: "Your Ticket Status Has Been Closed",
                 text: message,
@@ -129,6 +131,24 @@ const agentController = {
       }
     } catch (error) {
       res.status(500).json({ message: "server error" });
+    }
+  },
+  getAllAgentTickets: async (req, res) => {
+    try {
+      //access agent id from req.agent
+      const agentId = await getUser(req);
+      const agent = await Agent.findById(agentId);
+      if (!agent) {
+        return res.status(404).json({ error: 'Agent not found!' });
+      }
+
+      // Retrieve only the tickets assigned to the authenticated agent
+      const tickets = await Ticket.find({ Assigned_AgentID: agentId });
+
+      res.json(tickets);
+    } catch (error) {
+      console.error('Error fetching agent tickets:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   },
 };
