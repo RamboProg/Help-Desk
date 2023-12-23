@@ -11,6 +11,7 @@ const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
 const CustomizationModel = require('./models/customizationModel.js');
+const session = require('./models/sessionModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
@@ -37,6 +38,7 @@ const seedData = async () => {
     await TicketModel.deleteMany({});
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
+    await session.deleteMany({});
 
     const supportAgents = [];
     for (let i = 1; i <= 3; i++) {
