@@ -10,11 +10,6 @@ const AdminNav = () => {
   const theme = LightOceanTheme;
   const navigate = useNavigate();
 
-  const goToAdminHome = () => {
-    navigate('/AdminHome');
-    setNav(false); // Close the navbar after navigation
-  };
-
   return (
     <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
       <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
@@ -56,7 +51,7 @@ const AdminNav = () => {
             <ul className="flex flex-col p-4 text-gray-800">
               <li 
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
-                onClick={goToAdminHome}
+                onClick= {() => navigate("/AdminHome")}
               >
                 <AiOutlineHome size={25} className="mr-4" /> Home
               </li>
@@ -66,7 +61,18 @@ const AdminNav = () => {
               >
                 <AiOutlinePlus size={25} className="mr-4" /> Assign Role
               </li>
-              {/* Add more menu items as needed */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"              
+                onClick={()=> navigate("/Profile")}
+                >
+                <AiOutlinePlus size ={25} className="mr-4"/> Profile
+              </li>
+              <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"              
+              onClick={()=> navigate("/Settings")}
+              >
+                <AiOutlinePlus size ={25} className="mr-4"/> Settings
+              </li>
             </ul>
           </nav>
         </div>
