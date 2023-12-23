@@ -1,9 +1,8 @@
 // Import required modules
 require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const http = require('http');
-const socketio = require('socket.io'); // Add this line for socket.io
-const bodyParser = require('body-parser'); // Add this line for bodyParser
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
 const path = require('path'); // Add this line for path
@@ -11,33 +10,56 @@ const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
 const cors = require('cors');
-const FAQ = require('./models/FAQModel');
+const authRouter = require('./routes/auth');
+const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+
+// Create the Express app
+const app = express();
+const server = http.createServer(app);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  })
+);
+
+app.use('/api/v1', authRouter);
+app.use(authenticationMiddleware);
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
 });
 
 // Import routes
+const FAQ = require('./models/FAQModel');
 const workflowRouter = require('./routes/workflowRoute');
-const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-// const authFile = require('./routes/auth'); //commented because of error
-// const authRoutes = require('./routes/authRoutes');
-const chatRoutes = require('./routes/chatRoutes'); //commented because of error
+const chatRoutes = require('./routes/chatRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
 const managerRoutes = require('./routes/managerRoutes');
-const userRoutes = require('./routes/userRoutes');
-// const authenticationMiddleware = require('./middleware/authenticationMiddleware');
-// const authorizationMiddleware = require('./middleware/authorizationMiddleware');
+const userRouter = require('./routes/userRoutes');
 
-// Create the Express app
-const app = express();
-const server = http.createServer(app);
-const io = socketio(server);
+//use the routes
+app.use(ticketRoutes);
+app.use(agentRoutes);
+app.use(adminRoutes);
+app.use(chatRoutes);
+app.use(clientRoutes);
+app.use(customizationRoute);
+app.use(imageRoute);
+app.use(managerRoutes);
+app.use("/api/v1/users", userRouter);
+app.use(authRouter);
+app.use(workflowRouter);
 
 // Configure Winston with MongoDB Transport
 const logger = Winston.createLogger({
@@ -67,8 +89,6 @@ const logger = Winston.createLogger({
     })
   ]
 });
-// Enable CORS for all routes
-app.use(cors());
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -82,17 +102,17 @@ const storage = multer.diskStorage({
 });
 
 // Route for ML model prediction
-// app.post('/predict', async (req, res) => {
-//   try {
-//     const response = await axios.post('http://localhost:3000/predict', req.body);
-//     res.json(response.data);
-//   } catch (error) {
-//     logger.error('Error calling Flask service:', error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
+app.post('/predict', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:3000/predict', req.body);
+    res.json(response.data);
+  } catch (error) {
+    logger.error('Error calling Flask service:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
-app.get('/api/faqs', async (req, res) => {
+app.get('/faqs', async (req, res) => {
   try {
     const faqs = await FAQ.find();
     res.json(faqs);
@@ -101,50 +121,10 @@ app.get('/api/faqs', async (req, res) => {
   }
 });
 
-
-// Add middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(authenticationMiddleware.authenticationMiddlewareFunction);
-// app.use(authorizationMiddleware.authorizationMiddlewareFunction);
-
-//use the routes
-app.use(ticketRoutes);
-app.use(agentRoutes);
-app.use(adminRoutes);
-// app.use(authFile);
-// app.use(authRoutes);
-app.use(chatRoutes);
-app.use(clientRoutes);
-app.use(customizationRoute);
-app.use(imageRoute);
-app.use(managerRoutes);
-app.use(userRoutes);
-app.use(authRoutes);
-
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('join', ({ userId, chatId }) => {
-    console.log('User joined chat room:', userId, chatId);
-  });
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-});
-
-
 // Import routes
-app.use('/workflow', workflowRouter);
-app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -155,14 +135,11 @@ mongoose
     console.log(err);
   });
 
-// Use the workflow router
-app.use('/', workflowRouter);
+app.use(function (req, res, next) {
+  res.status(500).send('Something broke!');
+});
 
 const Image = mongoose.model('Image', { imagePath: String });
-
-io.on('connection', (socket) => {
-  logger.info('A user connected');
-});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
