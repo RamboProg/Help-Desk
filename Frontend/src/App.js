@@ -10,8 +10,9 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
-import Settings from './components/Settings';
-import Profile from './components/Profile';
+import AgentLayout from './AgentLayout';
+import AdminLayout from './AdminLayout';
+import ManagerLayout from './ManagerLayout';
 
 function App() {
   return (
@@ -31,15 +32,15 @@ function App() {
         />
         <Route
           path="/AdminHome"
-          element={<MainLayout><AdminHome /></MainLayout>}
+          element={<AdminLayout><AdminHome /></AdminLayout>}
         />
         <Route
           path="/ManagerHome"
-          element={<MainLayout><ManagerHome /></MainLayout>}
+          element={<ManagerLayout><ManagerHome /></ManagerLayout>}
         />
         <Route
           path="/AgentHome"
-          element={<MainLayout><AgentHome /></MainLayout>}
+          element={<AgentLayout><AgentHome /></AgentLayout>}
         />
         <Route
           path="/KnowledgeBase"
