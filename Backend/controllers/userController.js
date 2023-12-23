@@ -64,7 +64,8 @@ const userController = {
           throw new Error('User already exists');
         }
       
-        const salt = await bcrypt.genSalt(10);        const hashedPassword = await bcrypt.hash(password, salt);      
+        const salt = await bcrypt.genSalt(10);       
+        const hashedPassword = await bcrypt.hash(password, salt);      
         const lastUser = await userModel.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
         const lastId = lastUser ? lastUser._id : 0; // Get the last _id or default to 0 if no user exists
         const newId = lastId + 1; // Increment the last _id
