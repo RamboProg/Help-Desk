@@ -1,4 +1,5 @@
 const Ticket = require('../models/ticketModel.js');
+const Agent = require('../models/agentModel.js');
 
 const managerController = {
   // Get all tickets
@@ -26,7 +27,7 @@ const managerController = {
 
   // Get tickets by agent ID
   getTicketsByAgent: async (req, res) => {
-    const { agentId } = req.params;
+    const agentId = req.params.agentId;
     try {
       const tickets = await Ticket.find({ Assigned_AgentID: agentId });
       res.json(tickets);
@@ -38,7 +39,7 @@ const managerController = {
 
   // Get tickets by priority
   getTicketsByPriority: async (req, res) => {
-    const { priority } = req.params;
+    const priority = req.params.priority;
     try {
       const tickets = await Ticket.find({ Priority: priority });
       res.json(tickets);
@@ -65,7 +66,7 @@ const managerController = {
 
   // Get tickets by resolution time
   getTicketsByResolutionTime: async (req, res) => {
-    const { ticketId } = req.params;
+    const ticketId = req.params.ticketId;
     try {
       const ticket = await Ticket.findById(ticketId);
       if (!ticket) {
@@ -85,6 +86,7 @@ const managerController = {
       const seconds = Math.floor(resolutionTimeInSeconds % 60);
 
       const resolutionTime = `${hours}h ${minutes}m ${seconds}s`;
+     //console.log(resolutionTime);
 
       res.json({ resolutionTime });
     } catch (err) {
@@ -95,7 +97,8 @@ const managerController = {
 
   // Get tickets by issue type
   getTicketsByIssueType: async (req, res) => {
-    const { issueType } = req.params;
+    const {issueType} = req.params;
+    console.log(req.params);
     try {
       const tickets = await Ticket.find({ Issue_Type: issueType });
       res.json(tickets);
@@ -107,7 +110,7 @@ const managerController = {
 
   // Get tickets by sub issue type
   getTicketsBySubIssueType: async (req, res) => {
-    const { subIssueType } = req.params;
+    const subIssueType = req.params.subIssueType;
     try {
       const tickets = await Ticket.find({ Sub_Issue_Type: subIssueType });
       res.json(tickets);
