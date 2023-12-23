@@ -9,8 +9,7 @@ const Manager = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/manager/getAgents',);
-        console.log(response);
+        const response = await axios.get('http://localhost:3000/api/v1/manager/getAgents');
         setAgents(response.data.agents);
       } catch (error) {
         console.error('Error fetching agents:', error);
@@ -26,6 +25,7 @@ const Manager = () => {
     // Add your report generation logic here
   };
 
+  //test
   return (
     <div 
       className="bg-cover bg-center h-screen flex justify-center items-center" 
@@ -35,7 +35,7 @@ const Manager = () => {
     >
       <div className='max-w-[1640px] mx-auto px-4 py-12 text-center bg-white bg-opacity-50 rounded-lg p-8'>
         <h1 className={`text-${theme.colors.primary} font-bold text-4xl mb-8`}>
-          Welcome to Manager Dashboard
+          Welcome to Manager Dashboard 
         </h1>
 
         <p className={`text-${theme.colors.text} text-xl mt-8`}>
