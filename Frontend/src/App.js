@@ -1,16 +1,47 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import MainLayout from './MainLayout';
+import ClientLayout from './ClientLayout';
+import Login from './components/Login';
+import Homepage from './components/Homepage';
+import ClientHome from './components/ClientHome';
+import AdminHome from './components/AdminHome';
+import ManagerHome from './components/ManagerHome';
+import AgentHome from './components/AgentHome';
 
-import Join from "./components/Join";
-import Chat from "./components/Chat";
 
-const App = () => (
-  <Router>
-    <Routes>
-      <Route path="/" element={<Join />} />
-      <Route path="/chat" element={<Chat />} />
-    </Routes>
-  </Router>
-);
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={<MainLayout><Homepage /></MainLayout>}
+        />
+        <Route
+          path="/login"
+          element={<MainLayout><Login /></MainLayout>}
+        />
+        <Route
+          path="/ClientHome"
+          element={<ClientLayout><ClientHome /></ClientLayout>}
+        />
+        <Route
+          path="/AdminHome"
+          element={<MainLayout><AdminHome /></MainLayout>}
+        />
+        <Route
+          path="/ManagerHome"
+          element={<MainLayout><ManagerHome /></MainLayout>}
+        />
+        <Route
+          path="/AgentHome"
+          element={<MainLayout><AgentHome /></MainLayout>}
+        />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;
