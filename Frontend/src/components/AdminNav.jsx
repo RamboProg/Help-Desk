@@ -1,12 +1,19 @@
-import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { AiOutlineMenu, AiOutlineClose, AiOutlinePlus, AiOutlineQuestionCircle, AiOutlineSetting, AiOutlineUser } from "react-icons/ai";
-import { LightOceanTheme } from "./themes";
+// AdminNav.js
+
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AiOutlineMenu, AiOutlineClose, AiOutlinePlus, AiOutlineQuestionCircle, AiOutlineSetting, AiOutlineUser, AiOutlineHome } from 'react-icons/ai';
+import { LightOceanTheme } from './themes';
 
 const AdminNav = () => {
   const [nav, setNav] = useState(false);
   const theme = LightOceanTheme;
   const navigate = useNavigate();
+
+  const goToAdminHome = () => {
+    navigate('/AdminHome');
+    setNav(false); // Close the navbar after navigation
+  };
 
   return (
     <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
@@ -18,10 +25,9 @@ const AdminNav = () => {
           </div>
           {/* Logo on the top left */}
           <div className="flex items-center h-12">
-            {/* Replace the logo URL with your admin logo */}
             <img
-              src="https://www.freepnglogos.com/uploads/administration-logo-png-12.png"
-              alt="Admin Logo"
+              src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png"
+              alt="Help Desk Logo"
               className="h-full w-auto"
               style={{ objectFit: "contain" }}
             />
@@ -50,17 +56,17 @@ const AdminNav = () => {
             <ul className="flex flex-col p-4 text-gray-800">
               <li 
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
-                onClick={() => navigate("/AssignRole")}
+                onClick={goToAdminHome}
               >
-                <AiOutlineUser size={25} className="mr-4" /> Assign Role
+                <AiOutlineHome size={25} className="mr-4" /> Home
               </li>
-              {/* Add more admin-specific menu items as needed */}
               <li 
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
-                onClick={() => navigate("/AdminSettings")}
+                onClick={() => navigate("/AssignRole")}
               >
-                <AiOutlineSetting size={25} className="mr-4" /> Admin Settings
+                <AiOutlinePlus size={25} className="mr-4" /> Assign Role
               </li>
+              {/* Add more menu items as needed */}
             </ul>
           </nav>
         </div>

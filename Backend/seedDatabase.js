@@ -40,6 +40,8 @@ const seedData = async () => {
     await CustomizationModel.deleteMany({});
     await session.deleteMany({});
 
+    // Create an empty session table
+    await session.createCollection();
     const supportAgents = [];
     for (let i = 1; i <= 3; i++) {
       let mysalt = await generateSalt();
@@ -471,7 +473,7 @@ const seedData = async () => {
     }
 
     await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
-
+  
     console.log('Database seeded successfully!');
   } catch (error) {
     console.error('Error seeding database:', error);
