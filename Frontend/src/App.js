@@ -24,7 +24,7 @@ function AdminLayout({ children }) {
     </MainLayout>
   );
 }
-
+import ViewMyTickets from './components/ClientViewTickets';
 
 function App() {
   return (
@@ -40,6 +40,10 @@ function App() {
         <Route path="/AssignRole" element={<AdminLayout><AssignRole /></AdminLayout>} />
         <Route path="/Settings" element={<ClientLayout><Settings /></ClientLayout>} />
         <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
+        <Route
+          path="/ViewMyTickets"
+          element={<ClientLayout><ViewMyTickets /></ClientLayout>}
+        />
       </Routes>
     </Router>
   );

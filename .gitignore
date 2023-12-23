@@ -38,10 +38,10 @@ package-lock.json
 
 Backend/package-lock.json
 Backend/package.json
-package.json
-package-lock.json
 Frontend/package-lock.json
 Frontend/package.json
-Frontend/node_modules/.package-lock.json
+Frontend/node_modules
 Frontend/package-lock.json
 Frontend/package-lock.json
+package-lock.json
+package.json
