@@ -68,7 +68,7 @@ const userController = {
 
   loginUser: async (req, res) => {
     const { email, password, code } = req.body;
-
+        console.log(hiii);
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
@@ -123,6 +123,7 @@ const userController = {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   },
+
 
   // View user profile
   viewUserProfile: async (req, res) => {
@@ -246,5 +247,46 @@ const generateToken = (id) => {
     expiresIn: '30d'
   });
 };
+
+// const sendVerificationEmail = async ({_id,email},res) => {
+//     const currentUrl ="http://localhost:3000/";
+//     const uniqueString = uuidv4() + _id;
+    
+//     const mailOptions = {
+//         from: process.env.MAIL_ADD,
+//         to: email,
+//         subject: "Verify your email",
+//         text: "Please click the link below to verify your email",
+//         html: `<a href="${currentUrl + "user/verify/"+ _id + "/" + uniqueString}>Verify</a>`,
+//     };
+//     //hash the unique string
+//     const saltRounds =10;
+//     bcrypt
+//     .hash(uniqueString,saltRounds)
+//     .then((hashedUniqueString) => {
+//         //set values in userVerification collection
+//         const newVerification = new userVerification({
+//             userId: _id,
+//             uniqueString: hashedUniqueString,
+//             createdAt: Date.now(),
+//             expiresAt: Date.now() + 1 * 60 * 60 * 1000, //expires in 1 hour
+//     })
+//     newVerification.save()
+//     .then(()=>{
+//         transporter.sendMail(mailOptions).then(()=>{
+
+//             res.json({status:"Pending",message:"Verification email sent successfully"});
+//         })
+    
+//     })
+//     .catch((error) => {
+//         res.json({message:"Error saving verification details"});
+//     })
+//     .catch(()=>{
+//         res.json({message:"Error hashing unique string"});
+//     });
+// });
+// };
+
 
 module.exports = { userController };
