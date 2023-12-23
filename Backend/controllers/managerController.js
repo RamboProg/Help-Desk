@@ -97,7 +97,7 @@ const managerController = {
 
   // Get tickets by issue type
   getTicketsByIssueType: async (req, res) => {
-    const {issueType} = req.params;
+    const issueType = req.params.issueType;
     console.log(req.params);
     try {
       const tickets = await Ticket.find({ Issue_Type: issueType });
@@ -120,7 +120,7 @@ const managerController = {
     }
   },
 
-  // Get analytics for tickets by status
+  // Get analytics for tickets by status  
   getTicketAnalyticsByStatus: async (req, res) => {
     try {
       const ticketCountsByStatus = await Ticket.aggregate([{ $group: { _id: '$Status', count: { $sum: 1 } } }]);
