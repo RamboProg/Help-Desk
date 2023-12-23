@@ -34,22 +34,20 @@ const clientController = {
       let priority;
       let agentId;
 
+
       // Check if the client exists
       const client = await Client.findById(userId);
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
-
       const currentDate = new Date();
-
+  
       const allowedIssueTypes = ['network', 'software', 'hardware'];
-
+      const requestedIssueType = req.body.Issue_Type;
       if (!allowedIssueTypes.includes(requestedIssueType)) {
         return res.status(400).json({ error: 'Invalid Issue_Type. Allowed values are: Network, Software, Hardware.' });
       }
-
       let validSubIssueTypes;
-
       switch (requestedIssueType) {
         case 'hardware':
           validSubIssueTypes = ['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment', 'other'];
@@ -74,7 +72,6 @@ const clientController = {
       const mediumPriorityQueue = new PriorityQueue();
       const lowPriorityQueue = new PriorityQueue();
 
-
       const lastTicket = await Ticket.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
       const lastTicketId = lastTicket ? lastTicket._id : 0; // Get the last _id or default to 0 if no user exists
       const newTicketId = lastTicketId + 1; // Increment the last _id
@@ -93,7 +90,6 @@ const clientController = {
         End_Date: null, // needs a function close ticket
         Sub_Issue_Type: req.body.Sub_Issue_Type,
       });
-
       if (highPriority.includes(requestedSubIssueType)) {
         priority = 'high';
         highPriorityQueue.enqueue(newTicket);
@@ -104,7 +100,6 @@ const clientController = {
         priority = 'low';
         lowPriorityQueue.enqueue(newTicket);
       }
-
       newTicket.Priority = priority;
 
       const reenqueueTicketAtFront = (newTicket) => {
@@ -116,13 +111,13 @@ const clientController = {
           lowPriorityQueue.enqueueFront(newTicket);
         }
       };
-
       let newChat;
       let otherTicket = false;
       const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); 
       const lastChatId = lastChat ? lastChat._id : 0; 
       const newChatId = lastChatId + 1; 
       if (requestedSubIssueType == 'other') {
+
         newChat = new Chat({
           _id: newChatId,
           Client_ID: userId,
