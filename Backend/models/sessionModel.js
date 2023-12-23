@@ -4,7 +4,7 @@ const schemaOptions = {
   strict: true,
   timestamps: true,
 };
-const Session = new mongoose.Schema(
+const sessionSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,4 +23,4 @@ const Session = new mongoose.Schema(
  schemaOptions
 );
 
-module.exports = mongoose.model("Sessions", Session);
+module.exports = mongoose.model("sessionSchema", sessionSchema);

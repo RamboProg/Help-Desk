@@ -1,14 +1,15 @@
+// AdminLayout.js
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import AdminNav from './components/AdminNav';
 
-const AdminLayout = ({children}) =>{
+const AdminLayout = ({ children }) => {
     const location = useLocation();
-    const showNavbar = location.pathname ==='/AdminHome' || location.pathname === '/AssignRole';
+    const showNavbar = location.pathname === '/AdminHome';
 
-    return(
+    return (
         <div>
-            {showNavbar && <AdminLayout/>}
+            {showNavbar && <AdminNav />}
             {children}
         </div>
     );
