@@ -24,6 +24,7 @@ function AdminLayout({ children }) {
     </MainLayout>
   );
 }
+
 import ViewMyTickets from './components/ClientViewTickets';
 
 function App() {
