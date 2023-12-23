@@ -32,10 +32,22 @@ const authenticationMiddleware = {
   }
 
   if (!token) {
-    console.error('No token found in the headers');
-    res.status(401).json({ message: 'Not authorised, no token' });
+    return res.status(405).json({ message: "No token provided" });
   }
-},
-};
 
-module.exports = authenticationMiddleware;
+  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(403).json({ message: "Invalid token" });
+    }
+
+    // Attach the decoded user ID to the request object for further use
+    // console.log(decoded.user)
+    
+    req.user = decoded.user;
+    next();
+  });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+  
+};
