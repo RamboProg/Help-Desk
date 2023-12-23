@@ -216,7 +216,11 @@ const userController = {
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
+            if(user.MFA_Enabled === false){
             await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: true } });
+            }else{
+            await userModel.updateOne({_id:id},{$set :{MFA_Enabled:false} });
+            }
             console.log("Email sent successfully");
             console.log("hi");
 
