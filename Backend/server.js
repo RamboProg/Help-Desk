@@ -10,6 +10,8 @@ const path = require('path'); // Add this line for path
 const Winston = require('winston'); // Add this line for Winston
 const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
+const cors = require('cors');
+const FAQ = require('./models/FAQModel');
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -65,6 +67,8 @@ const logger = Winston.createLogger({
     })
   ]
 });
+// Enable CORS for all routes
+app.use(cors());
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -87,6 +91,16 @@ app.post('/predict', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+app.get('/api/faqs', async (req, res) => {
+  try {
+    const faqs = await FAQ.find();
+    res.json(faqs);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching FAQs', error });
+  }
+});
+
 
 // Add middleware
 app.use(bodyParser.json());
@@ -127,7 +141,6 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('/getUser');
 
 // Import routes
 app.use('/workflow', workflowRouter);
