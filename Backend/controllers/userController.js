@@ -12,7 +12,7 @@ const clientModel = require('../models/clientModel.js');
 const Customization = require('../models/customizationModel');
 const nodemailer = require("nodemailer");
 //const userVerification = require('../models/userVerification.js');
-const {v4: uuidv4} = require('uuid');
+// const {v4: uuidv4} = require('uuid');
 const { error } = require('console');
 const OTP = require('../models/otpModel.js');
 
