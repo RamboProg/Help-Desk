@@ -9,6 +9,7 @@ import ClientHome from './components/ClientHome';
 import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
+import KnowledgeBase from './components/KnowledgeBase';
 import AgentLayout from './AgentLayout';
 import AdminLayout from './AdminLayout';
 import ManagerLayout from './ManagerLayout';
@@ -40,6 +41,10 @@ function App() {
         <Route
           path="/AgentHome"
           element={<AgentLayout><AgentHome /></AgentLayout>}
+        />
+        <Route
+          path="/KnowledgeBase"
+          element={<ClientLayout><KnowledgeBase /></ClientLayout>}
         />
       </Routes>
     </Router>
