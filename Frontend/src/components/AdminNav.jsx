@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
+import {
+  AiOutlineMenu,
+  AiOutlineClose,
+  AiOutlineUser,
+  AiOutlineSetting,
+  AiOutlineTeam,
+  AiOutlinePicture,
+  AiOutlineFileText,
+} from 'react-icons/ai';
 import { LightOceanTheme } from './themes';
 
 const AdminNav = () => {
@@ -51,19 +59,38 @@ const AdminNav = () => {
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate('/AssignRole')}
               >
+                <AiOutlineTeam size={20} className="mr-2" />
                 Assign Role
               </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate('/editAppearance')}
               >
+                <AiOutlinePicture size={20} className="mr-2" />
                 Appearance
               </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate('/logs')}
               >
+                <AiOutlineFileText size={20} className="mr-2" />
                 Logs
+              </li>
+              {/* Profile */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate('/profile')}
+              >
+                <AiOutlineUser size={20} className="mr-2" />
+                Profile
+              </li>
+              {/* Settings */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate('/settings')}
+              >
+                <AiOutlineSetting size={20} className="mr-2" />
+                Settings
               </li>
             </ul>
           </nav>
