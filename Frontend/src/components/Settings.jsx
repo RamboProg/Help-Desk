@@ -31,7 +31,6 @@ const Settings = () => {
       console.error("Error fetching MFA status:", error.message);
     }
   };
-
   const handleResetPassword = async () => {
     try {
       const response = await axios.post(
@@ -70,7 +69,6 @@ const Settings = () => {
   return (
     <div className="max-w-[1640px] m-auto px-4 py-12">
       <h1 className="font-bold text-4xl text-center mb-8">Settings</h1>
-
       <div className="p-8 rounded-lg shadow-md max-w-md mx-auto">
         <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
         <div className="flex items-center bg-white rounded-full mb-4 p-2">
