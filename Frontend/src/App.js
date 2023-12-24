@@ -49,7 +49,7 @@ function App() {
         />
         <Route
           path="/logs"
-          element={<ClientLayout><Logs /></ClientLayout>}
+          element={<AdminLayout><Logs /></AdminLayout>}
         />
       </Routes>
     </Router>
