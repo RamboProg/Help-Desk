@@ -87,6 +87,33 @@ app.get('/api/faqs', async (req, res) => {
   }
 });
 
+const MongoClient = require('mongodb').MongoClient;
+
+app.get('/api/logs', async (req, res) => {
+  try {
+    // Create a new MongoDB client connection
+    const client = await MongoClient.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    const db = client.db('test');
+    const collection = db.collection('logs');
+    // Fetch logs from the MongoDB collection
+    const logs = await collection.find({}).toArray();
+    if (logs.length === 0) {
+      console.warn('No logs found.');
+      return res.status(404).json({ error: 'No logs found' });
+    }
+    res.json(logs);
+    // Close the MongoDB client connection
+    client.close();
+  } catch (error) {
+    console.error('Error fetching logs:', error);
+    res.status(500).json({ error: 'Failed to fetch logs', details: error.message });
+  }
+});
+
+
 
 // Add middleware
 app.use(bodyParser.json());
