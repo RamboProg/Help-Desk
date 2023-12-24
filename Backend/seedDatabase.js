@@ -212,7 +212,7 @@ const seedData = async () => {
             Is_Enabled: user.Is_Enabled,
             Salt: user.salt,
             is_valid: user.is_valid
-      });
+          });
           await admin.save();
           user.adminId = admin._id; // Link to AdminModel
           break;
@@ -228,7 +228,7 @@ const seedData = async () => {
             Is_Enabled: user.Is_Enabled,
             Salt: user.salt,
             is_valid: user.is_valid
-      });
+          });
           await manager.save();
           user.managerId = manager._id; // Link to ManagerModel
           break;
@@ -264,7 +264,7 @@ const seedData = async () => {
             Is_Enabled: user.Is_Enabled,
             Salt: user.salt,
             is_valid: user.is_valid
-      });
+          });
           await client.save();
           user.clientId = client._id; // Link to ClientModel
           break;
@@ -390,8 +390,8 @@ const seedData = async () => {
     // Seed ticket data
     const tickets = [];
     for (let i = 0; i < 5; i++) {
-      const randomSupportAgentIndex = i % existingSupportAgents.length; 
-      const randomClientIndex = i % existingClients.length; 
+      const randomSupportAgentIndex = i % existingSupportAgents.length;
+      const randomClientIndex = i % existingClients.length;
 
       const ticket = new TicketModel({
         _id: i + 1,
@@ -423,7 +423,50 @@ const seedData = async () => {
       Sub_Issue_Type: issuesData[0].Sub_Issue_Type, // Assign sub-issue types
     });
     await ValidTicket.save();
+    // Create a ticket with Status 'Open', Ticket_Owner = 6
+    const openTicket = new TicketModel({
+      _id: 27,
+      Status: 'Open',
+      Assigned_AgentID: 1,
+      Ticket_Owner: 6,
+      Issue_Type: issuesData[0].Issue, // Assuming the first issue type
+      Description: 'Ticket description for Open status',
+      Priority: 'High', // Just an assumption; you can change as needed
+      Start_Date: new Date(),
+      End_Date: new Date(),
+      Sub_Issue_Type: issuesData[0].Sub_Issue_Type, // Assuming the sub-issue type corresponding to the first issue
+    });
+    tickets.push(openTicket.save());
 
+    // Create a ticket with Status 'Closed', Ticket_Owner = 6
+    const closedTicket = new TicketModel({
+      _id: 28,
+      Status: 'Closed',
+      Assigned_AgentID: 2,
+      Ticket_Owner: 6,
+      Issue_Type: issuesData[1].Issue, // Assuming the second issue type
+      Description: 'Ticket description for Closed status',
+      Priority: 'Low', // Just an assumption; you can change as needed
+      Start_Date: new Date(),
+      End_Date: new Date(),
+      Sub_Issue_Type: issuesData[1].Sub_Issue_Type, // Assuming the sub-issue type corresponding to the second issue
+    });
+    tickets.push(closedTicket.save());
+
+    // Create a ticket with Sub_Issue_Type 'Other', Ticket_Owner = 6
+    const otherTicket = new TicketModel({
+      _id: 29,
+      Status: 'Open', // You can set any status you like
+      Assigned_AgentID: 3,
+      Ticket_Owner: 6,
+      Issue_Type: issuesData[2].Issue, // Assuming the third issue type
+      Description: 'Ticket description for Other sub-issue type',
+      Priority: 'High', // Just an assumption; you can change as needed
+      Start_Date: new Date(),
+      End_Date: new Date(),
+      Sub_Issue_Type: 'Other', // Setting Sub_Issue_Type to 'Other'
+    });
+    tickets.push(otherTicket.save());
     // Adjust Ticket_Count and Active_Tickets for SupportAgentModel 
     for (const user of supportAgents) {
       const ticketCount = await TicketModel.countDocuments({ Assigned_AgentID: user._id });
@@ -473,7 +516,7 @@ const seedData = async () => {
     }
 
     await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
-  
+
     console.log('Database seeded successfully!');
   } catch (error) {
     console.error('Error seeding database:', error);
