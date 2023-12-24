@@ -13,7 +13,7 @@ const LogsPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch('http://localhost:3000/logs'); // Updated API endpoint URL
+        const response = await fetch('http://localhost:3000/api/logs'); // Updated API endpoint URL
         if (response.ok) {
           const data = await response.json();
           setLogs(data);
