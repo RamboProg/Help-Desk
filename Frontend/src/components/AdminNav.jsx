@@ -73,7 +73,7 @@ const AdminNav = () => {
               </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/editAppearance')}
+                onClick={() => navigate('/appearance')}
               >
                 <AiOutlinePicture size={20} className="mr-2" />
                 Appearance

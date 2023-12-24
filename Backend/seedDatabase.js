@@ -11,6 +11,7 @@ const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
 const CustomizationModel = require('./models/customizationModel.js');
+const session = require('./models/sessionModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
@@ -37,7 +38,10 @@ const seedData = async () => {
     await TicketModel.deleteMany({});
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
+    await session.deleteMany({});
 
+    // Create an empty session table
+    await session.createCollection();
     const supportAgents = [];
     for (let i = 1; i <= 3; i++) {
       let mysalt = await generateSalt();
@@ -190,6 +194,7 @@ const seedData = async () => {
         theme: 'light', // Default theme is light
         logoPath: 'https://placekitten.com/200/200', // Placeholder image
         salt: mysalt,
+        is_valid: true,
 
       });
 
@@ -206,7 +211,8 @@ const seedData = async () => {
             MFA_Enabled: user.MFA_Enabled,
             Is_Enabled: user.Is_Enabled,
             Salt: user.salt,
-          });
+            is_valid: user.is_valid
+      });
           await admin.save();
           user.adminId = admin._id; // Link to AdminModel
           break;
@@ -221,7 +227,8 @@ const seedData = async () => {
             MFA_Enabled: user.MFA_Enabled,
             Is_Enabled: user.Is_Enabled,
             Salt: user.salt,
-          });
+            is_valid: user.is_valid
+      });
           await manager.save();
           user.managerId = manager._id; // Link to ManagerModel
           break;
@@ -240,6 +247,7 @@ const seedData = async () => {
         //     Ticket_Count: Math.floor(Math.random() * 10), // Random ticket count
         //     Active_Tickets: Math.floor(Math.random() * 5), // Random active ticket count
         //     Salt: user.salt,
+        // is_valid: user.is_valid
         //   });
         //   await supportAgent.save();
         //   user.supportAgentId = supportAgent._id; // Link to SupportAgentModel
@@ -255,7 +263,8 @@ const seedData = async () => {
             MFA_Enabled: user.MFA_Enabled,
             Is_Enabled: user.Is_Enabled,
             Salt: user.salt,
-          });
+            is_valid: user.is_valid
+      });
           await client.save();
           user.clientId = client._id; // Link to ClientModel
           break;
@@ -282,9 +291,10 @@ const seedData = async () => {
       Username: 'zaidqarxoy',
       PhoneNumber: '123-456-7890',
       RoleID: 4,
-      MFA_Enabled: false, // Every other user has MFA enabled
+      MFA_Enabled: true, // Every other user has MFA enabled
       Is_Enabled: false,
       salt: salt,
+      is_valid: true,
     });
     await validUser.save(); // Save UserModel
     const validClient = new ClientModel({
@@ -297,6 +307,7 @@ const seedData = async () => {
       MFA_Enabled: validUser.MFA_Enabled,
       Is_Enabled: validUser.Is_Enabled,
       Salt: validUser.salt,
+      is_valid: validUser.is_valid
     });
     await validClient.save();
     // Seed FAQ data
@@ -461,8 +472,8 @@ const seedData = async () => {
       customizations.push(customization.save());
     }
 
-    await Promise.all([...users, ...faqPromises, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
-
+    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
+  
     console.log('Database seeded successfully!');
   } catch (error) {
     console.error('Error seeding database:', error);

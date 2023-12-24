@@ -14,9 +14,12 @@ import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
 import Logs from './components/Logs';
+import Appearance from './components/Appearance';
+import { ThemeProvider } from './ThemeContext'; 
 
 function App() {
   return (
+    <ThemeProvider> 
     <Router>
       <Routes>
         <Route
@@ -51,8 +54,16 @@ function App() {
           path="/logs"
           element={<AdminLayout><Logs /></AdminLayout>}
         />
+        <Route
+          path="/appearance"
+          element={<AdminLayout><Appearance /></AdminLayout>}
+        />
       </Routes>
+
+      
     </Router>
+    </ThemeProvider> 
+
   );
 }
 
