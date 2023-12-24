@@ -1,12 +1,13 @@
 const Chat = require('../models/chatModel');
 const jwt = require('jsonwebtoken');
+const { getUser } = require('./userController');
 const Ticket = require('../models/ticketModel');
 
 const chatController = {
   // Controller function to start a new chat
   startNewChat: async (req, res) => {
     try {
-      const _id = req.user.userId;
+      const { _id } = await getUser(req);
       const { TicketId } = req.body;
       // Extract user information from the JWT
       // console.log(_id);
@@ -34,7 +35,7 @@ const chatController = {
   send_message: async (req, res) => {
     try {
       const { chatId } = req.params;
-      const { Username } = req.user;
+      const { Username } = await getUser(req);
       const { message } = req.body;
 
       // Save the message to the database

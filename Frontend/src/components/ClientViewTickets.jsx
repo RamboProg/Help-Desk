@@ -8,17 +8,11 @@ const ViewMyTickets = () => {
   const [tickets, setTickets] = useState([]);
   
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/v1/clientTickets', { withCredentials: true });
-        setTickets(response.data);
-      } catch (error) {
-        console.error('Error fetching tickets in jsx:', error);
-      }
-    };
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/clientTickets', { withCredentials: true });
+        // send req to backend to get all tickets
+
+        const response = await axios.get('/api/v1/clientTickets', { withCredentials: true });
         setTickets(response.data);
       } catch (error) {
         console.error('Error fetching tickets in jsx:', error);

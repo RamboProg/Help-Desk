@@ -96,7 +96,22 @@ const Login = ({ theme }) => {
           break;
       }
     } else {
-      console.log("Invalid login response format");
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/v1/auth/register",
+          { email, password, username, phoneNumber },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        // Handle successful signup
+        console.log(response.data);
+      } catch (error) {
+        // Handle signup error
+        console.error("Signup failed:", error);
+      }
     }
   };
 
@@ -129,8 +144,8 @@ const Login = ({ theme }) => {
                 <AiOutlineUser size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                  type='text'
-                  placeholder='Email'
+                  type="text"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -141,8 +156,8 @@ const Login = ({ theme }) => {
                 <AiOutlineLock size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                  type='password'
-                  placeholder='Password'
+                  type="password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -155,8 +170,8 @@ const Login = ({ theme }) => {
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                    type='text'
-                    placeholder='Username'
+                    type="text"
+                    placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
@@ -165,12 +180,14 @@ const Login = ({ theme }) => {
               )}
 
               {!isLogin && (
-                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
+                <div
+                  className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
+                >
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                    type='text'
-                    placeholder='Phone Number'
+                    type="text"
+                    placeholder="Phone Number"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     required
