@@ -10,6 +10,7 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
+import CreateTicket from './components/CreateTicket';
 
 function App() {
   return (
@@ -42,6 +43,10 @@ function App() {
         <Route
           path="/KnowledgeBase"
           element={<ClientLayout><KnowledgeBase /></ClientLayout>}
+        />
+        <Route
+          path="/CreateTicket"
+          element={<ClientLayout><CreateTicket /></ClientLayout>}
         />
       </Routes>
     </Router>
