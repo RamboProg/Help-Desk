@@ -49,7 +49,7 @@ const Login = ({ theme }) => {
         setMessage("Email is required");
         return;
       }
-
+      if(isLogin){
       const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
 
       if (mfaResponse.data) {
@@ -70,6 +70,7 @@ const Login = ({ theme }) => {
         handleRoleBasedNavigation(loginResponse);
 
         setShowLogin(false);
+      } 
       }
     } catch (error) {
       setMessage(`Login failed: ${error.message}`);

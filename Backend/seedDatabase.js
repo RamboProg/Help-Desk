@@ -58,6 +58,7 @@ const seedData = async () => {
         theme: 'light', // Default theme is light
         logoPath: 'https://placekitten.com/200/200', // Placeholder image
         salt: mysalt,
+        is_valid: true,
       });
 
       const supportAgent = new SupportAgentModel({
@@ -74,6 +75,7 @@ const seedData = async () => {
         Ticket_Count: 0,
         Active_Tickets: 0,
         Salt: user.salt,
+        is_valid: true,
       });
 
       await user.save();
