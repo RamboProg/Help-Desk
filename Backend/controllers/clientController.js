@@ -42,7 +42,6 @@ const clientController = {
       const currentDate = new Date();
   
       const allowedIssueTypes = ['network', 'software', 'hardware'];
-      const requestedIssueType = req.body.Issue_Type;
       if (!allowedIssueTypes.includes(requestedIssueType)) {
         return res.status(400).json({ error: 'Invalid Issue_Type. Allowed values are: Network, Software, Hardware.' });
       }
