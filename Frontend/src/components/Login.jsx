@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import OTPPopup from "./OTPPopup";
 import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 
 const Login = ({ theme }) => {
   const [showLogin, setShowLogin] = useState(false);
+  const [showOTPPopup, setShowOTPPopup] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-  const [message, setMessage] = useState(""); // To display success or error messages
-  // State variables to store form inputs
+  const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -15,60 +16,92 @@ const Login = ({ theme }) => {
 
   const navigate = useNavigate();
 
-  // Function to handle login/signup
-  const handleAction = async () => {
-    setMessage(""); // Reset message
+  const handleVerifyOTP = async (enteredOTP) => {
+    try {
+      const verifyOTPResponse = await axios.post("http://localhost:3000/verifyOTP", {
+        email,
+        code: enteredOTP,
+      });
 
-    if (isLogin) {
-      try {
-        const response = await axios.post("http://localhost:3000/login", {
+      if (verifyOTPResponse.data.message === "Multi-factor authentication email sent successfully") {
+        const loginResponse = await axios.post("http://localhost:3000/login", {
           email,
           password,
         });
-        switch (response.data.Role_ID) {
-          case 1:
-            navigate("/AdminHome"); // Redirect to AdminHome component
-            break;
-          case 2:
-            navigate("/ManagerHome"); // Redirect to ManagerHome component
-            break;
-          case 3:
-            navigate("/AgentHome"); // Redirect to AgentHome component
-            break;
-          case 4:
-            navigate("/ClientHome"); // Redirect to ClientHome component
-            break;
-          default:
-            console.log("invalid role");
-            break;
-        }
+
+        handleRoleBasedNavigation(loginResponse);
         setShowLogin(false);
-      } catch (error) {
-        setMessage(`Login failed: ${error.message}`);
+      } else {
+        setMessage("MFA verification failed");
+      }
+    } catch (error) {
+      setMessage(`OTP verification failed: ${error.message}`);
+    } finally {
+      setShowOTPPopup(false);
+      
+    }
+  };
+
+  const handleAction = async () => {
+    setMessage("");
+    try {
+      if (!email) {
+        setMessage("Email is required");
+        return;
+      }
+
+      const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
+
+      if (mfaResponse.data) {
+        const sendOTPResponse = await axios.post("http://localhost:3000/sendOTP", {
+          email,
+        });
+
+        if (sendOTPResponse.data.message === "Multi-factor authentication email sent successfully") {
+          setShowOTPPopup(true);
+        }
+      } else {
+        // Handle login without OTP for cases where MFA is not enabled
+        const loginResponse = await axios.post("http://localhost:3000/login", {
+          email,
+          password,
+        });
+
+        handleRoleBasedNavigation(loginResponse);
+
+        setShowLogin(false);
+      }
+    } catch (error) {
+      setMessage(`Login failed: ${error.message}`);
+    }
+  };
+
+  const handleRoleBasedNavigation = (loginResponse) => {
+    if (loginResponse.data && loginResponse.data.Role_ID) {
+      switch (loginResponse.data.Role_ID) {
+        case 1:
+          navigate("/AdminHome");
+          break;
+        case 2:
+          navigate("/ManagerHome");
+          break;
+        case 3:
+          navigate("/AgentHome");
+          break;
+        case 4:
+          navigate("/ClientHome");
+          break;
+        default:
+          console.log("Invalid role");
+          break;
       }
     } else {
-      try {
-        const response = await axios.post(
-          "http://localhost:3000/api/v1/auth/register",
-          { email, password, username, phoneNumber },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        // Handle successful signup
-        console.log(response.data);
-      } catch (error) {
-        // Handle signup error
-        console.error("Signup failed:", error);
-      }
+      console.log("Invalid login response format");
     }
   };
 
   return (
     <div>
-      {/* Login/Signup Button */}
       <button
         onClick={() => setShowLogin(!showLogin)}
         className={`bg-${theme.colors.primary} text-${theme.colors.text} py-2 px-4 rounded-full mt-4`}
@@ -76,13 +109,11 @@ const Login = ({ theme }) => {
         {isLogin ? "Login" : "Sign up"}
       </button>
 
-      {/* Login/Signup Overlay */}
       {showLogin && (
         <div
           className={`fixed top-0 left-0 w-full h-screen bg-${theme.colors.background}/80 z-20 flex justify-center items-center`}
         >
           <div className="flex justify-center items-center h-full">
-            {/* Login/Signup Box */}
             <div className="bg-white p-8 rounded-lg shadow-lg w-[400px] relative">
               <AiOutlineClose
                 onClick={() => setShowLogin(!showLogin)}
@@ -93,46 +124,39 @@ const Login = ({ theme }) => {
                 {isLogin ? "Welcome back to" : "Join"}{" "}
                 <span className="font-bold">Help Desk</span>
               </h2>
-              {/* Email Input */}
-              <div
-                className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-              >
+
+              <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                 <AiOutlineUser size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                  type="text"
-                  placeholder="Email"
+                  type='text'
+                  placeholder='Email'
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
 
-              {/* Password Input */}
-              <div
-                className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-              >
+              <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                 <AiOutlineLock size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                  type="password"
-                  placeholder="Password"
+                  type='password'
+                  placeholder='Password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
 
-              {/* Signup Username Input */}
               {!isLogin && (
-                <div
-                  className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-                >
+                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
+                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                    type="text"
-                    placeholder="Username"
+                    type='text'
+                    placeholder='Username'
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
@@ -140,16 +164,13 @@ const Login = ({ theme }) => {
                 </div>
               )}
 
-              {/* Signup Phone Number Input */}
               {!isLogin && (
-                <div
-                  className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-                >
+                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                    type="text"
-                    placeholder="Phone Number"
+                    type='text'
+                    placeholder='Phone Number'
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     required
@@ -157,18 +178,15 @@ const Login = ({ theme }) => {
                 </div>
               )}
 
-              {/* Action Button */}
               <button
                 onClick={handleAction}
                 className={`bg-${theme.colors.primary} text-${theme.colors.text} py-2 px-4 rounded-full w-full mb-4`}
               >
                 {isLogin ? "Login" : "Signup"}
               </button>
-              {/* Toggle between Login and Signup */}
+
               <p className="text-center">
-                {isLogin
-                  ? "Don't have an account? "
-                  : "Already have an account? "}
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
                 <span
                   onClick={() => setIsLogin(!isLogin)}
                   className={`text-${theme.colors.primary} cursor-pointer`}
@@ -179,6 +197,13 @@ const Login = ({ theme }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {showOTPPopup && (
+        <OTPPopup
+          onVerifyOTP={handleVerifyOTP}
+          onClose={() => setShowOTPPopup(false)}
+        />
       )}
     </div>
   );
