@@ -112,7 +112,6 @@ const userController = {
         expiresIn: 3 * 60 * 60 // 3 hours
       });
 
-      console.log('Token:', token);
 
       let newSession = new sessionModel({
         userId: new Types.ObjectId(user._id),
@@ -211,7 +210,6 @@ const userController = {
         await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: false } });
       }
       console.log('Email sent successfully');
-      console.log('hi');
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -251,8 +249,6 @@ const userController = {
       console.log(email);
       console.log('Received email:', email); // Add this line for debugging
       const user = await userModel.findOne({ Email: email });
-      console.log(user);
-      console.log(2);
       if (!user) {
         console.log('User not found');
         return res.status(400).json({ message: "User is new or hasn't been found" });
@@ -270,17 +266,24 @@ const userController = {
   sendOTP: async (req, res) => {
     try {
       const { email } = req.body;
-
+      console.log(`Received request to send OTP for email: ${email}`);
+  
+      // Delete existing OTP if any
       await deleteOTP(email);
+      console.log(`Deleted existing OTP for email: ${email}`);
+  
       const OneTimePass = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOTP = await bcrypt.hash(OneTimePass, 10);
+      console.log(`Generated OTP: ${OneTimePass}`);
+  
       const newOTP = new OTP({
         email: email,
         otp: hashedOTP,
         createdAt: Date.now(),
         expiredAt: Date.now() + 1 * 60 * 1000
       });
-
+  
+      // Email configuration
       var mailOptions = {
         from: process.env.MAIL_ADD,
         to: email,
@@ -288,20 +291,28 @@ const userController = {
         text: 'Please click the link below to enable Multi-factor authentication',
         html: `<p>${OneTimePass}</p>`
       };
-
+  
+      // Sending email
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          console.log(error);
+          console.log(`Error sending email: ${error}`);
+          res.status(500).json({ message: 'Failed to send OTP email' });
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log(`Email sent successfully: ${info.response}`);
         }
       });
+  
+      // Save new OTP to the database
       await newOTP.save();
+      console.log('New OTP saved to the database');
+  
       res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
     } catch (error) {
+      console.log(`Error in sendOTP: ${error.message}`);
       res.status(500).json({ message: error.message });
     }
   },
+  
   verifyOTP: async (req, res) => {
     try {
       const { email, code } = req.body;

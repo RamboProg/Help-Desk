@@ -48,8 +48,9 @@ const Login = ({ theme }) => {
       setShowOTPPopup(false);
     }
   };
-
   const handleAction = async () => {
+    console.log('Starting handleAction...'); // <-- Add this log
+  
     setMessage('');
     if (isLogin) {
       try {
@@ -57,37 +58,39 @@ const Login = ({ theme }) => {
           setMessage('Email is required');
           return;
         }
-
-        const mfaResponse = await axios.get(`http://localhost:3000/api/v1/users/getMFA?email=${email}`, { withCredentials: true });
-
+  
+        console.log(`Fetching MFA for email: ${email}`); // <-- Add this log
+        const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
+  
+        console.log('MFA Response:', mfaResponse.data); // <-- Add this log
+  
         if (mfaResponse.data) {
+          console.log('MFA is enabled for the user.'); // <-- Add this log
           const sendOTPResponse = await axios.post(
-            'http://localhost:3000/api/v1/users/sendOTP',
-            {
-              email
-            },
-            { withCredentials: true }
+            'http://localhost:3000/sendOTP',
+            { email },
           );
-
+  
+          console.log('Send OTP Response:', sendOTPResponse.data); // <-- Add this log
+  
           if (sendOTPResponse.data.message === 'Multi-factor authentication email sent successfully') {
             setShowOTPPopup(true);
           }
         } else {
-          // Handle login without OTP for cases where MFA is not enabled
+          console.log('MFA is NOT enabled for the user.'); // <-- Add this log
           const loginResponse = await axios.post(
             'http://localhost:3000/api/v1/login',
-            {
-              email,
-              password
-            },
+            { email, password },
             { withCredentials: true }
           );
-
+  
+          console.log('Login Response:', loginResponse.data); // <-- Add this log
+  
           handleRoleBasedNavigation(loginResponse);
-
           setShowLogin(false);
         }
       } catch (error) {
+        console.error('Error in handleAction:', error); // <-- Add this log
         setMessage(`Login failed: ${error.message}`);
       }
     } else {

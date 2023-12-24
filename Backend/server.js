@@ -20,16 +20,26 @@ const server = http.createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-  })
-);
+// app.use(
+//   cors({
+//     origin: process.env.CLIENT_URL,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     credentials: true
+//   })
+// );
+// app.use(cors());
+
+
+// Enable CORS for all routes
+app.use(cors({
+  origin: 'http://localhost:4000', // specify your frontend's origin
+  credentials: true,
+}));
+const tempRouter = require('./routes/tempRoutes');
+app.use(tempRouter);
 
 app.use('/api/v1', authRouter);
-app.use(authenticationMiddleware);
+app.use(authenticationMiddleware );
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);

@@ -12,8 +12,8 @@ router.get('/profile', authorizationMiddleware([1,2,3,4]), userController.viewUs
 // Other routes...
 router.put('/reset-password', userController.resetPassword);
 router.post('/setMFA', userController.setMFA);
-router.post('/sendOTP', userController.sendOTP);
+// router.post('/sendOTP', userController.sendOTP);
 router.post('/verifyOTP', userController.verifyOTP);
-router.get('/getMFA', userController.getMFA);
+// router.get('/getMFA', userController.getMFA);
 
 module.exports = router;
