@@ -14,8 +14,6 @@ const adminController = {
         try 
         {
             const {userID, roleID} = req.body;
-            console.log(userID);
-            console.log(roleID);
             const user = await userModel.findOne({ _id: userID });
             if (!user) {
                 return res.status(401).json({ message: "User not Found"});
@@ -36,7 +34,6 @@ const adminController = {
                 default: 
                     return res.status(401).json({ message: "Invalid Role"});
             }
-            console.log(oldRole);
             if (!oldRole) {
                 return res.status(401).json({ message: "User not Found"});
             }
@@ -77,15 +74,8 @@ const adminController = {
         }catch(error){return res.status(401).json({message:error.message})}
         
        
-    },
-    getUsers: async (req, res) => {
-        try {
-            const users = await userModel.find({ RoleID: { $ne: 1 }}, 'Email Username PhoneNumber RoleID');
+    }
 
-            return res.status(200).json({ users });
-        } catch (error) {
-            return res.status(401).json({ message: error.message });
-        }
-    },
-};
+    }
+
 module.exports = adminController;

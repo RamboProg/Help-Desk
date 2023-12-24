@@ -1,5 +1,4 @@
 const Ticket = require('../models/ticketModel.js');
-const Agent = require('../models/agentModel.js');
 
 const managerController = {
   // Get all tickets
@@ -15,7 +14,7 @@ const managerController = {
 
   // Get tickets by status
   getTicketsByStatus: async (req, res) => {
-    const status = req.query.status;
+    const { status } = req.params;
     try {
       const tickets = await Ticket.find({ Status: status });
       res.json(tickets);
@@ -27,7 +26,7 @@ const managerController = {
 
   // Get tickets by agent ID
   getTicketsByAgent: async (req, res) => {
-    const agentId = req.params.agentId;
+    const { agentId } = req.params;
     try {
       const tickets = await Ticket.find({ Assigned_AgentID: agentId });
       res.json(tickets);
@@ -39,7 +38,7 @@ const managerController = {
 
   // Get tickets by priority
   getTicketsByPriority: async (req, res) => {
-    const priority = req.params.priority;
+    const { priority } = req.params;
     try {
       const tickets = await Ticket.find({ Priority: priority });
       res.json(tickets);
@@ -66,7 +65,7 @@ const managerController = {
 
   // Get tickets by resolution time
   getTicketsByResolutionTime: async (req, res) => {
-    const ticketId = req.params.ticketId;
+    const { ticketId } = req.params;
     try {
       const ticket = await Ticket.findById(ticketId);
       if (!ticket) {
@@ -86,7 +85,6 @@ const managerController = {
       const seconds = Math.floor(resolutionTimeInSeconds % 60);
 
       const resolutionTime = `${hours}h ${minutes}m ${seconds}s`;
-     //console.log(resolutionTime);
 
       res.json({ resolutionTime });
     } catch (err) {
@@ -97,8 +95,7 @@ const managerController = {
 
   // Get tickets by issue type
   getTicketsByIssueType: async (req, res) => {
-    const issueType = req.params.issueType;
-    console.log(req.params);
+    const { issueType } = req.params;
     try {
       const tickets = await Ticket.find({ Issue_Type: issueType });
       res.json(tickets);
@@ -110,7 +107,7 @@ const managerController = {
 
   // Get tickets by sub issue type
   getTicketsBySubIssueType: async (req, res) => {
-    const subIssueType = req.params.subIssueType;
+    const { subIssueType } = req.params;
     try {
       const tickets = await Ticket.find({ Sub_Issue_Type: subIssueType });
       res.json(tickets);
@@ -120,7 +117,7 @@ const managerController = {
     }
   },
 
-  // Get analytics for tickets by status  
+  // Get analytics for tickets by status
   getTicketAnalyticsByStatus: async (req, res) => {
     try {
       const ticketCountsByStatus = await Ticket.aggregate([{ $group: { _id: '$Status', count: { $sum: 1 } } }]);
