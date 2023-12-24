@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import {
   AiOutlineMenu,
   AiOutlineClose,
+  AiOutlineFileText,
+  AiOutlineMessage,
+  AiOutlineReload, // Change to AiOutlineReload for the circular arrow icon
   AiOutlineUser,
   AiOutlineSetting,
-  AiOutlineTeam,
-  AiOutlinePicture,
-  AiOutlineFileText,
 } from 'react-icons/ai';
 import { LightOceanTheme } from './themes';
 
-const AdminNav = () => {
+const AgentNav = () => {
   const [nav, setNav] = useState(false);
   const theme = LightOceanTheme;
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const AdminNav = () => {
           <div className="flex items-center h-12">
             <img
               src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png"
-              alt="Admin Desk Logo"
+              alt="Help Desk Logo"
               className="h-full w-auto"
               style={{ objectFit: 'contain' }}
             />
@@ -52,29 +52,32 @@ const AdminNav = () => {
             size={30}
             className="absolute right-4 top-4 cursor-pointer"
           />
-          <h2 className="text-2xl p-4">Admin Menu</h2>
+          <h2 className="text-2xl p-4">Agent Menu</h2>
           <nav>
             <ul className="flex flex-col p-4 text-gray-800">
+              {/* Tickets */}
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/AssignRole')}
-              >
-                <AiOutlineTeam size={20} className="mr-2" />
-                Assign Role
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/editAppearance')}
-              >
-                <AiOutlinePicture size={20} className="mr-2" />
-                Appearance
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/logs')}
+                onClick={() => navigate('/ViewTickets')}
               >
                 <AiOutlineFileText size={20} className="mr-2" />
-                Logs
+                Tickets
+              </li>
+              {/* Chats */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate('/ViewChats')}
+              >
+                <AiOutlineMessage size={20} className="mr-2" />
+                Chats
+              </li>
+              {/* Workflows with circular arrow icon */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate('/workflows')}
+              >
+                <AiOutlineReload size={20} className="mr-2" />
+                Workflows
               </li>
               {/* Profile */}
               <li
@@ -100,4 +103,4 @@ const AdminNav = () => {
   );
 };
 
-export default AdminNav;
+export default AgentNav;

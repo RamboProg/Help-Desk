@@ -4,21 +4,21 @@ const Ticket = require('../models/ticketModel');
 const Agent = require('../models/agentModel');
 const Chat = require('../models/chatModel');
 const axios = require('axios');
-const { getUser } = require('../controllers/userController');
 const { PriorityQueue } = require('../utils/PriorityQueue');
-const clientController = {
 
+const clientController = {
   clientTickets: async (req, res) => {
+    const _id = req.user.userId;
+    console.log(_id)
     try {
-      const userId = req.user.id;
-      const client = await Client.findById(userId);
+      const client = await Client.findById(_id);
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
 
-      const tickets = await Ticket.find({ Ticket_Owner: userId });
+      const tickets = await Ticket.find({ Ticket_Owner: _id });
 
-      res.json(tickets);
+      res.status(200).json(tickets);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -27,7 +27,7 @@ const clientController = {
 
   createTicket: async (req, res) => {
     try {
-      const userId = req.user.id;
+      const { userId } = req.user;
       const requestedSubIssueType = req.body.Sub_Issue_Type;
       const requestedIssueType = req.body.Issue_Type;
       let priority;
