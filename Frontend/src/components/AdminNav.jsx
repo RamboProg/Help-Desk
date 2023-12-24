@@ -8,6 +8,7 @@ import {
   AiOutlineTeam,
   AiOutlinePicture,
   AiOutlineFileText,
+  AiOutlineHome, // <-- Import the Home icon
 } from 'react-icons/ai';
 import { LightOceanTheme } from './themes';
 
@@ -55,6 +56,14 @@ const AdminNav = () => {
           <h2 className="text-2xl p-4">Admin Menu</h2>
           <nav>
             <ul className="flex flex-col p-4 text-gray-800">
+              {/* Home */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate('/AdminHome')}
+              >
+                <AiOutlineHome size={20} className="mr-2" />
+                Home
+              </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate('/AssignRole')}
