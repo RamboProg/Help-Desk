@@ -64,7 +64,7 @@ const AdminNav = () => {
   };
 
   const selectedTheme = themes[themeName];
-
+const selectedLogo = logoPath;
   return (
     <div className={`bg-${selectedTheme.colors.background} text-${selectedTheme.colors.text}`}>
      

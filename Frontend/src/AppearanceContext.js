@@ -13,3 +13,5 @@ export const AppearanceContextProvider = ({ children }) => {
     </AppearanceContext.Provider>
   );
 };
+
+export default AppearanceContext;
