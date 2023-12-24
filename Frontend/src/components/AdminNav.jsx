@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AiOutlineMenu,
@@ -8,17 +8,68 @@ import {
   AiOutlineTeam,
   AiOutlinePicture,
   AiOutlineFileText,
-  AiOutlineHome, // <-- Import the Home icon
+  AiOutlineHome,
 } from 'react-icons/ai';
-import { LightOceanTheme } from './themes';
+import { AppearanceContext } from '../AppearanceContext';
+
+
+import axios from 'axios';
+import { 
+  LightOceanTheme, 
+  DarkNebulaTheme, 
+  EarthyForestTheme, 
+  SunsetGlowTheme, 
+  LavenderMistTheme, 
+  CloudySkyTheme 
+} from './themes';
+
+const themes = {
+  light: LightOceanTheme,
+  dark: DarkNebulaTheme,
+  forest: EarthyForestTheme,
+  sunset: SunsetGlowTheme,
+  lavender: LavenderMistTheme,
+  cloudy: CloudySkyTheme,
+};
 
 const AdminNav = () => {
+  const { themeName: contextThemeName, logoPath: contextLogoPath, setThemeName, setLogoPath } = useContext(AppearanceContext);
+  
+  const [themeName, setLocalThemeName] = useState(contextThemeName);
+  const [logoPath, setLocalLogoPath] = useState(contextLogoPath);
   const [nav, setNav] = useState(false);
-  const theme = LightOceanTheme;
   const navigate = useNavigate();
+  
+  // // Use context to get the theme and logo path
+  // const { themeName, logoPath } = useContext(AppearanceContext);
+  // const theme = themes[themeName];
+
+  useEffect(() => {
+    // Fetch appearance settings when the component mounts or whenever it needs to update
+    fetchGlobalSettings();
+  }, []);
+
+  const fetchGlobalSettings = async () => {
+    try {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/api/v1/Appearance/');
+      if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+        setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
+        setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+        setLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching global appearance settings:', error);
+    }
+  };
+
+  const selectedTheme = themes[themeName];
 
   return (
-    <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
+    <div className={`bg-${selectedTheme.colors.background} text-${selectedTheme.colors.text}`}>
+     
+      
+      
       <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
         {/* Left side */}
         <div className="flex items-center">
@@ -73,7 +124,7 @@ const AdminNav = () => {
               </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/appearance')}
+                onClick={() => navigate('/Appearance')}
               >
                 <AiOutlinePicture size={20} className="mr-2" />
                 Appearance

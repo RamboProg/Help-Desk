@@ -1,7 +1,7 @@
 // AppearanceContext.js
 import React, { createContext, useState } from 'react';
 
-const AppearanceContext = createContext();
+export const AppearanceContext = createContext();
 
 export const AppearanceContextProvider = ({ children }) => {
   const [themeName, setThemeName] = useState('light'); // default theme
@@ -13,5 +13,3 @@ export const AppearanceContextProvider = ({ children }) => {
     </AppearanceContext.Provider>
   );
 };
-
-export default AppearanceContext;
