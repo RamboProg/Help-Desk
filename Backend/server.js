@@ -42,7 +42,7 @@ const logger = require('./controllers/loggerController');
 port = process.env.PORT;
 app.listen(port, () => {
   // Log in MongoDB
-  logger.info(`PORTAL Your server is running on port ${port} successfully...`);
+  console.log(`Your server is running on port ${port} successfully...`);
 });
 
 app.get('/test-error', (req, res, next) => {
@@ -53,36 +53,6 @@ app.get('/test-error', (req, res, next) => {
 });
 
 
-
-
-// // Configure Winston with MongoDB Transport
-// const logger = Winston.createLogger({
-//   format: Winston.format.combine(Winston.format.timestamp(), Winston.format.json()),
-//   transports: [
-//     new Winston.transports.Console(),
-//     new Winston.transports.File({ filename: 'error.log', level: 'error' }),
-//     new WinstonMongoDB.MongoDB({
-//       level: 'info', // or your desired level
-//       db: process.env.MONGODB_URI,
-//       options: {
-//         useUnifiedTopology: true
-//       },
-//       collection: 'logs' // Specify the collection name
-//     })
-//   ],
-//   exceptionHandlers: [
-//     new Winston.transports.Console(),
-//     new Winston.transports.File({ filename: 'exceptions.log' }),
-//     new WinstonMongoDB.MongoDB({
-//       level: 'info', // or your desired level
-//       db: process.env.MONGODB_URI,
-//       options: {
-//         useUnifiedTopology: true
-//       },
-//       collection: 'exceptions' // Specify the collection name
-//     })
-//   ]
-// });
 // Enable CORS for all routes
 app.use(cors());
 
@@ -174,12 +144,6 @@ app.use('/', workflowRouter);
 
 const Image = mongoose.model('Image', { imagePath: String });
 
-// io.on('connection', (socket) => {
-//   Logger.info('A user connected');
-// });
-
-// // Start the server
-// const PORT = process.env.PORT || 3000;
-// server.listen(process.env.PORT, () => {
-//   Logger.print('✅ App running');
-// })
+io.on('connection', (socket) => {
+  // logger.info('A user connected');
+});
