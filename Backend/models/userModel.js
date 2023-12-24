@@ -8,11 +8,10 @@ const userSchema = new mongoose.Schema({
     PhoneNumber: { type: String },
     RoleID: { type: Number },
     MFA_Enabled: { type: Boolean },
+    Is_Enabled: { type: Boolean },
     theme: { type: String },
     logoPath: { type: String },
-    salt :{type: String},
-    verified: { type: Boolean, default: false  },
-    is_valid: { type: Boolean, default: false },
+    salt :{type: String}
   });
 
 module.exports = mongoose.model('User', userSchema);
