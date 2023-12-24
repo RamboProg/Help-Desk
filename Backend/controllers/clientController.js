@@ -4,6 +4,7 @@ const Ticket = require('../models/ticketModel');
 const Agent = require('../models/agentModel');
 const Chat = require('../models/chatModel');
 const axios = require('axios');
+const { getUser } = require('../controllers/userController');
 const { PriorityQueue } = require('../utils/PriorityQueue');
 
 const clientController = {
@@ -27,7 +28,7 @@ const clientController = {
 
   createTicket: async (req, res) => {
     try {
-      const { userId } = req.user;
+      const userId = await getUser(req)._id;
       const requestedSubIssueType = req.body.Sub_Issue_Type;
       const requestedIssueType = req.body.Issue_Type;
       let priority;
