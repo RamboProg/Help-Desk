@@ -13,8 +13,6 @@ import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
 import AssignRole from './components/AssignRole';
 import AdminNav from './components/AdminNav';
-import Profile from './components/Profile';
-import Settings from './components/Settings'
 
 function AdminLayout({ children }) {
   return (

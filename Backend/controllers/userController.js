@@ -180,53 +180,45 @@ const userController = {
       user.Password = hash;
       user.salt = salt;
 
-      await user.save();
-      res.status(200).json({ message: 'Password reset successfully' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
+            await user.save();
+            res.status(200).json({ message: "Password reset successfully" });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    // Set MFA get request
+    setMFA: async (req, res) => {
+        try {
+            const {id} = req.body;
+            const user = await userModel.findOne({ _id: id });
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: true } });
+            console.log("Email sent successfully");
+            console.log("hi");
 
-  // Get QR Code
-  getQRImage: async (req, res) => {
-    try {
-      const { id } = req.cookies;
-      const user = await userModel.findById(req.user.userId);
-      const uri = authenticator.keyuri(id, 'Help Desk', process.env.QRCODE_SECRET);
-      const image = await qrcode.toDataURL(uri);
-      user.temp_secret = process.env.QRCODE_SECRET;
-      await user.save();
-      return res.status(200).json({ image });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
-  // Set MFA get request
-  setMFA: async (req, res) => {
-    try {
-      const { id } = req.cookies;
-      const { code } = req.query;
-      const user = await userModel.findById(req.user.userId);
-      const temp_secret = user.temp_secret;
-
-      const verified = authenticator.check(code, temp_secret);
-      if (!verified) {
-        return res.status(401).json({ message: 'Invalid Code' });
-      }
-
-      user.secret = temp_secret;
-      user.MFA_Enabled = true;
-      await user.save();
-      return res.status(200).json({ message: 'MFA Enabled' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-  updateUserCustomization: async (req, res) => {
-    try {
-      const userId = req.params._id;
-      const { theme, logoPath } = req.body;
+            
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    logoutUser: async (req, res) => {
+        try {
+            // Clear the JWT cookie
+            res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
+            await userModel.updateOne({ _id: req.user.id }, { $set: { verified: false } });
+            res.status(200).json({ success: true, message: 'Logout successful' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    
+    
+    updateUserCustomization: async (req, res) => {
+        try {
+            const userId = req.params._id;
+            const { theme, logoPath } = req.body;
 
       // Update or create customization settings for the user
       await Customization.findOneAndUpdate({ userId }, { $set: { theme, logoPath } }, { upsert: true, new: true });

@@ -16,6 +16,11 @@ const AdminNav = () => {
   const theme = LightOceanTheme;
   const navigate = useNavigate();
 
+  const goToAdminHome = () => {
+    navigate('/AdminHome');
+    setNav(false); // Close the navbar after navigation
+  };
+
   return (
     <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
       <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
