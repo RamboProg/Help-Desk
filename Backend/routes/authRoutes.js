@@ -11,6 +11,6 @@ const verifyJWT = require('../middleware/verifyJWT');
 
 router.get('/api/v1/auth/refresh', authController.refresh);
 
-//router.post('/api/v1/auth/logout' , authController.logout);
+router.post('/api/v1/auth/logout' , authController.logout);
 
 module.exports = router;

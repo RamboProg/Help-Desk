@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controllers/adminController'); // Corrected import
+const { AssignRole } = require('../controllers/adminController');
 
-router.post('/api/v1/admin/assignRole', adminController.AssignRole);
-router.get('/api/v1/admin/getUsers', adminController.getUsers);
+router.post('/api/v1/admin/assignRole' , AssignRole);
+
 module.exports = router;
