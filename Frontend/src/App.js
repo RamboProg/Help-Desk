@@ -13,6 +13,7 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
+import Logs from './components/Logs';
 
 function App() {
   return (
@@ -45,6 +46,10 @@ function App() {
         <Route
           path="/KnowledgeBase"
           element={<ClientLayout><KnowledgeBase /></ClientLayout>}
+        />
+        <Route
+          path="/logs"
+          element={<ClientLayout><Logs /></ClientLayout>}
         />
       </Routes>
     </Router>
