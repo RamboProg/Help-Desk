@@ -142,7 +142,5 @@ app.use(function (req, res, next) {
 const Image = mongoose.model('Image', { imagePath: String });
 
 // // Start the server
-// const PORT = process.env.PORT || 3000;
-// server.listen(process.env.PORT, () => {
-//   Logger.print('✅ App running');
-// })
+ server.listen(process.env.PORT, () => {
+console.log("server is running at port" , process.env.PORT) })
