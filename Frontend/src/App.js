@@ -3,6 +3,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainLayout from './MainLayout';
 import ClientLayout from './ClientLayout';
+import AdminLayout from './AdminLayout';
+import AgentLayout from './AgentLayout';
+import ManagerLayout from './ManagerLayout';
 import Login from './components/Login';
 import Homepage from './components/Homepage';
 import ClientHome from './components/ClientHome';
@@ -29,15 +32,15 @@ function App() {
         />
         <Route
           path="/AdminHome"
-          element={<MainLayout><AdminHome /></MainLayout>}
+          element={<AdminLayout><AdminHome /></AdminLayout>}
         />
         <Route
           path="/ManagerHome"
-          element={<MainLayout><ManagerHome /></MainLayout>}
+          element={<ManagerLayout><ManagerHome /></ManagerLayout>}
         />
         <Route
           path="/AgentHome"
-          element={<MainLayout><AgentHome /></MainLayout>}
+          element={<AgentLayout><AgentHome /></AgentLayout>}
         />
         <Route
           path="/KnowledgeBase"
