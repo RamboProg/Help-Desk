@@ -27,11 +27,8 @@ const { PriorityQueue } = require('../utils/PriorityQueue');
 
   createTicket: async (req, res) => {
     try {
-<<<<<<< HEAD
       const { userId } = req.user;
-      const requestedSubIssueType = req.body.Sub_Issue_Type;
       const requestedIssueType = req.body.Issue_Type;
-      let priority;
       let agentId;
 
       // Check if the client exists
@@ -44,7 +41,6 @@ const { PriorityQueue } = require('../utils/PriorityQueue');
       const currentDate = new Date();
       //checking to see if the subissue type is allowed or not
       const allowedIssueTypes = ['Network', 'Software', 'Hardware'];
-      const requestedIssueType = req.body.Issue_Type;
 
       if (!allowedIssueTypes.includes(requestedIssueType)) {
         return res.status(400).json({ error: 'Invalid Sub_Issue_Type. Allowed values are: Network, Software, Hardware.' });

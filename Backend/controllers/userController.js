@@ -1,9 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const authenticator = require('otplib');
 const bcrypt = require('bcryptjs');
-const qrcode = require('qrcode');
-const crypto = require('crypto');
 const userModel = require('../models/userModel.js');
 const adminModel = require('../models/adminModel.js');
 const managerModel = require('../models/managerModel.js');
@@ -11,36 +8,10 @@ const agentModel = require('../models/agentModel.js');
 const clientModel = require('../models/clientModel.js');
 const Customization = require('../models/customizationModel');
 const nodemailer = require("nodemailer");
-//const userVerification = require('../models/userVerification.js');
-const {v4: uuidv4} = require('uuid');
-const { error } = require('console');
 const OTP = require('../models/otpModel.js');
+const sessionModel = require('../models/sessionModel.js');
+const { Types } = require('mongoose');
 
-// Function to generate salt
-// async function generateSalt() {
-//   return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
-// }
-// async function hashPassword(password, salt) {
-//   try {
-//     const hashedPassword = await bcrypt.hash(password, salt);
-//     return hashedPassword;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-
-// const authentication = require('../middleware/authenticationMiddleware');
-//  // Function to get user based on role
-//  async function getUser(req, res) {
-//     try {
-//         const Token = req.header('Authorization');
-//         const decoded = jwt.verify(Token, process.env.SECRET_KEY);
-
-//     } catch (error) {
-//         console.error('Error could not get user', error);
-//         throw error;
-//     }
-// }
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -48,6 +19,7 @@ let transporter = nodemailer.createTransport({
         pass: process.env.MAIL_PASS,
     },
 });
+
 const userController = {
      registerUser: async (req, res) => {
         const { username, email, password , phoneNumber} = req.body;
@@ -76,6 +48,7 @@ const userController = {
             Username: username,
             PhoneNumber: phoneNumber,
             Salt: salt,
+            MFA_Enabled: false,
             RoleID: 4,
             is_valid:true, 
         });
@@ -278,35 +251,9 @@ const userController = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
-
-    getUser: async (req,res) => {
-    // split from token= to the first . and get the second part
-    // console.log(req.headers.cookie.split('token=')[1]);
-    const token = req.headers.cookie.split('token=')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'No token, authorization denied' });
-    }
-
-    let payload = null;
-
-    try {
-        payload = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-        return res.status(401).json({ message: 'Token is not valid' });
-    }
-
-    const user = await userModel.findById(payload.id);
-    // console.log(user)
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    return user;
-  },
+ 
   getMFA: async (req, res) => {
-    const {email}  = req.query;
+    const { email }  = req.query;
     try {
       
       console.log(email);
@@ -316,13 +263,14 @@ const userController = {
       console.log(2);
       if (!user) {
         console.log("User not found");
-        return res.status(404).json({ message: "User not found" });
+        return res.status(400).json({ message: "User is new or hasn't been found" });
       }
   
       console.log("User found. MFA Enabled:", user.MFA_Enabled);
       return res.status(200).json(user.MFA_Enabled);
     } catch (error) {
-      console.error("Error in getMFA:", error.message);
+      // console.error("Error in getMFA:", error.message);
+      console.log("lol L")
       return res.status(500).json({ message: error.message });
     }
   },
@@ -330,36 +278,10 @@ const userController = {
    
   sendOTP : async (req, res) => {
         try {
-            // const cookies = req.cookies;
-            // const token = cookies.jwt;
-
-            // // Check if the token is available
-            // if (!token) {
-            //     return res.status(401).json({ message: 'Unauthorized' });
-            // }
-
-            // // Verify the JWT token
-            // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            // // Get user from the token
-            // const user = await userModel.findById(decoded.id);
-
-            // if (!user) {
-            //     return res.status(404).json({ message: 'User not found' });
-            // }
             const {email} = (req.body);
-            // const cookies =req.cookies;
-            // const token = cookies.jwt;
-            // if(token){
-            //     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            //     const user = await userModel.findById(decoded.id);
-            //     if (!user) {
-            //         return res.status(404).json({ message: 'User not found' });
-            //     }
 
-            // }
             await deleteOTP(email);
-            const OneTimePass = await (Math.floor(100000 + Math.random() * 900000)).toString();
+            const OneTimePass = (Math.floor(100000 + Math.random() * 900000)).toString();
             const hashedOTP = await bcrypt.hash(OneTimePass, 10);
             const newOTP = new OTP({
                 email: email,
@@ -376,7 +298,7 @@ const userController = {
                 html: `<p>${OneTimePass}</p>`,
             };
 
-            await transporter.sendMail(mailOptions, function (error, info) {
+            transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                 console.log(error);
                 } else {
