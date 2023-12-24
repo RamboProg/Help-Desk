@@ -15,12 +15,12 @@ import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
 import Logs from './components/Logs';
 import Appearance from './components/Appearance';
-import { ThemeProvider } from './ThemeContext'; 
+import { AppearanceContextProvider } from './AppearanceContext'; // Updated import
 
 function App() {
   return (
-    <ThemeProvider> 
-    <Router>
+    <AppearanceContextProvider>   
+     <Router>
       <Routes>
         <Route
           path="/"
@@ -62,7 +62,8 @@ function App() {
 
       
     </Router>
-    </ThemeProvider> 
+    </AppearanceContextProvider>
+
 
   );
 }
