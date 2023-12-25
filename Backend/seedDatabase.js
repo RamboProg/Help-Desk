@@ -39,6 +39,9 @@ const seedData = async () => {
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
     await session.deleteMany({});
+    await EmailModel.deleteMany({}); 
+
+    await EmailModel.createCollection(); // Create an empty email table
 
     // Create an empty session table
     await session.createCollection();
@@ -370,8 +373,8 @@ const seedData = async () => {
     // Seed ticket data
     const tickets = [];
     for (let i = 0; i < 5; i++) {
-      const randomSupportAgentIndex = i % existingSupportAgents.length; 
-      const randomClientIndex = i % existingClients.length; 
+      const randomSupportAgentIndex = i % existingSupportAgents.length;
+      const randomClientIndex = i % existingClients.length;
 
       const ticket = new TicketModel({
         _id: i + 1,
@@ -409,7 +412,7 @@ const seedData = async () => {
       _id: 27,
       Status: 'Open',
       Assigned_AgentID: 1,
-      Ticket_Owner: 6,
+      Ticket_Owner: 5,
       Issue_Type: issuesData[0].Issue, // Assuming the first issue type
       Description: 'Ticket description for Open status',
       Priority: 'High', // Just an assumption; you can change as needed
@@ -424,7 +427,7 @@ const seedData = async () => {
       _id: 28,
       Status: 'Closed',
       Assigned_AgentID: 2,
-      Ticket_Owner: 6,
+      Ticket_Owner: 5,
       Issue_Type: issuesData[1].Issue, // Assuming the second issue type
       Description: 'Ticket description for Closed status',
       Priority: 'Low', // Just an assumption; you can change as needed
@@ -439,7 +442,7 @@ const seedData = async () => {
       _id: 29,
       Status: 'Open', // You can set any status you like
       Assigned_AgentID: 3,
-      Ticket_Owner: 6,
+      Ticket_Owner: 5,
       Issue_Type: issuesData[2].Issue, // Assuming the third issue type
       Description: 'Ticket description for Other sub-issue type',
       Priority: 'High', // Just an assumption; you can change as needed
