@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 import { LightOceanTheme } from "./themes"; // Ensure you have this import path correct
 
 const ViewMyTickets = () => {
   const theme = LightOceanTheme;
-
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/v1/clientTickets', { withCredentials: true });
-        setTickets(response.data);
-      } catch (error) {
-        console.error('Error fetching tickets in jsx:', error);
-      }
-    };
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/clientTickets', { withCredentials: true });
+        const response = await axios.get('http://localhost:3000/tickets', { withCredentials: true });
         setTickets(response.data);
       } catch (error) {
         console.error('Error fetching tickets in jsx:', error);
@@ -28,12 +21,23 @@ const ViewMyTickets = () => {
     fetchTickets();
   }, []);
 
+  const canStartChat = (ticket) => {
+    // Check if the ticket is closed or has the sub_issue_type of 'other'
+    return ticket.Status === 'Closed' || ticket.Sub_Issue_Type === 'Other';
+  };
+
+  const handleStartChat = (ticket) => {
+    // Implement the logic to start a chat
+    console.log('Starting chat for ticket:', ticket);
+    navigate('/Chat');
+  };
+
   return (
     <div className="flex min-h-screen">
       <div className="flex-1 p-8">
         <div className="max-w-[1640px] mx-auto bg-gray-200 bg-opacity-50 rounded-lg p-8 flex">
           <div className="w-1/3 pr-8">
-          <img 
+            <img 
               src="https://img.freepik.com/free-vector/flat-people-asking-questions-illustration_23-2148901520.jpg?w=996&t=st=1703180818~exp=1703181418~hmac=25d978773da4d75d494eebaeb3a84d8d87badb403309206e1174101eb499ab39" 
               alt="People asking questions" 
               className="w-full h-auto object-cover rounded-lg"
@@ -52,6 +56,14 @@ const ViewMyTickets = () => {
                   <p className={`text-${theme.colors.text} mb-4`}>
                     {ticket.Description}
                   </p>
+                  {canStartChat(ticket) && (
+                    <button
+                      onClick={() => handleStartChat(ticket)}
+                      className={`bg-${theme.colors.primary} py-2 px-4 rounded-full`}
+                    >
+                      Start Chat
+                    </button>
+                  )}
                 </div>
               ))
             ) : (

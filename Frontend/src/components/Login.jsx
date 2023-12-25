@@ -19,7 +19,7 @@ const Login = ({ theme }) => {
   const handleVerifyOTP = async (enteredOTP) => {
     try {
       const verifyOTPResponse = await axios.post(
-        'http://localhost:3000/api/v1/users/verifyOTP',
+        'http://localhost:3000/verifyOTP',
         {
           email,
           code: enteredOTP

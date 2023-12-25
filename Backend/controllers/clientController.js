@@ -7,18 +7,18 @@ const axios = require('axios');
 const { PriorityQueue } = require('../utils/PriorityQueue');
 
  const clientController = {
-  getMyTickets: async (req, res) => {
+  clientTickets: async (req, res) => {
+    const _id = req.user.userId;
+    // console.log(_id)
     try {
-      const { _id } = await getUser(req);
       const client = await Client.findById(_id);
-
       if (!client) {
-        return res.status(404).json({ error: 'Client not found!' });
+        return res.status(404).json({ error: 'client not found' });
       }
 
       const tickets = await Ticket.find({ Ticket_Owner: _id });
 
-      res.json(tickets);
+      res.status(200).json(tickets);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       res.status(500).json({ error: 'Internal server error' });
