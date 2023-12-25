@@ -39,8 +39,6 @@ router.get('/api/v1/tickets', (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     });
 });
-<<<<<<< HEAD
-=======
 
 router.post('/api/v1/tickets', (req, res) => {
   getUser(req)
@@ -61,7 +59,6 @@ router.put('/api/v1/rateAgent', (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     });
 });
->>>>>>> c37f1eef8a08b7b837d63d186b8084721a32a0ab
 
 
 

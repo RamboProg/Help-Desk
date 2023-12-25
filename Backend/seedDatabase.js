@@ -148,7 +148,7 @@ const seedData = async () => {
 
       await newIssue.save();
       return newIssue;
-    }));
+    });
 
     // Function to generate salt using bcrypt
     async function generateSalt() {
