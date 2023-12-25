@@ -55,7 +55,7 @@ function App() {
           element={<AdminLayout><Logs /></AdminLayout>}
         />
         <Route
-          path="/appearance"
+          path="/Appearance"
           element={<AdminLayout><Appearance /></AdminLayout>}
         />
       </Routes>

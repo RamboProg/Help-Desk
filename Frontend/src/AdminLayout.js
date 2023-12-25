@@ -5,7 +5,7 @@ import AdminNav from './components/AdminNav';
 
 const AdminLayout = ({ children }) => {
     const location = useLocation();
-    const showNavbar = location.pathname === '/AdminHome' || location.pathname === '/logs' || location.pathname === '/appearance';
+    const showNavbar = location.pathname === '/AdminHome' || location.pathname === '/logs' || location.pathname === '/Appearance';
 
     return (
         <div>
