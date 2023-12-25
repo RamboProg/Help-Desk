@@ -12,6 +12,11 @@ const WinstonMongoDB = require('winston-mongodb');
 const axios = require('axios'); // Add this line for Winston MongoDB transport
 const cors = require('cors');
 const FAQ = require('./models/FAQModel');
+const cookieParser = require('cookie-parser');
+const authRouter = require('./routes/auth');
+const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+
+
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -19,7 +24,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
-const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 // const authFile = require('./routes/auth'); //commented because of error
@@ -29,10 +33,9 @@ const clientRoutes = require('./routes/clientRoutes');
 const customizationRoute = require('./routes/customizationRoute');
 const imageRoute = require('./routes/imageRoute');
 const managerRoutes = require('./routes/managerRoutes');
-const userRoutes = require('./routes/userRoutes');
 // const authenticationMiddleware = require('./middleware/authenticationMiddleware');
 // const authorizationMiddleware = require('./middleware/authorizationMiddleware');
-
+const userRouter = require('./routes/userRoutes');
 // Create the Express app
 const app = express();
 const server = http.createServer(app);
@@ -54,7 +57,17 @@ app.get('/test-error', (req, res, next) => {
 
 
 // Enable CORS for all routes
-app.use(cors());
+// Enable CORS for all routes
+app.use(cors({
+  origin: 'http://localhost:4000', // specify your frontend's origin
+  credentials: true,
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+const tempRouter = require('./routes/tempRoutes');
+app.use(tempRouter);
 
 // Multer storage setup
 const storage = multer.diskStorage({
@@ -114,7 +127,6 @@ app.get('/api/logs', async (req, res) => {
 });
 
 
-
 // Add middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -122,7 +134,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(authorizationMiddleware.authorizationMiddlewareFunction);
 
 //use the routes
-app.use(ticketRoutes);
 app.use(agentRoutes);
 app.use(adminRoutes);
 // app.use(authFile);
@@ -132,7 +143,10 @@ app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
-app.use(userRoutes);
+app.use("/api/v1/users", userRouter);
+app.use(authRouter);
+app.use(workflowRouter);
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));

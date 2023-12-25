@@ -29,7 +29,7 @@ const ViewMyTickets = () => {
   const handleStartChat = (ticket) => {
     // Implement the logic to start a chat
     console.log('Starting chat for ticket:', ticket);
-    navigate('/Chat');
+    navigate(`/Chat/${ticket._id}`);
   };
 
   return (
