@@ -16,6 +16,7 @@ import KnowledgeBase from './components/KnowledgeBase';
 import Logs from './components/Logs';
 import Appearance from './components/Appearance';
 import { AppearanceContextProvider } from './AppearanceContext'; // Updated import
+import Workflows from './components/AgentWorkflow';
 
 function App() {
   return (
@@ -57,6 +58,10 @@ function App() {
         <Route
           path="/appearance"
           element={<AdminLayout><Appearance /></AdminLayout>}
+        />
+        <Route
+          path="/Workflows"
+          element={<AgentLayout><Workflows /></AgentLayout>}
         />
       </Routes>
 

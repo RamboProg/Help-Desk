@@ -1,5 +1,5 @@
 
-const Workflow = require('../models/issueModel');
+const { Workflow } = require('../models/issueModel');
 exports.getWorkflow = async (req, res) => {
   const { Issue } = req.query;
   try {
@@ -35,9 +35,21 @@ exports.deleteWorkflow = async (req, res) => {
     if (deleted.deletedCount === 0) {
       return res.status(404).json({ message: 'Workflow not found' });
     }
+    if (!deleted) {
+      return res.status(404).json({ message: 'Workflow not found' });
+    }
     res.status(200).json({ message: 'Workflow deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error; Try Again" });
   }
 };
+
+exports.getAllWorkflows = async (req, res) => { 
+  try {
+    const workflow = await Workflow.find();
+    res.json(workflow);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching workflows', error });
+  }
+}
 
