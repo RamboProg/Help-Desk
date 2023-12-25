@@ -153,7 +153,7 @@ const userController = {
   // Update user profile
   updateUserProfile: async (req, res) => {
     try {
-      const userId = req.user.id; // Use req.user.id to get the user ID from the decoded token
+      const userId = req.user.userId; // Use req.user.id to get the user ID from the decoded token
       const { newEmail, newUsername, newPhoneNumber } = req.body;
 
       const user = await userModel.findById(userId);
