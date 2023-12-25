@@ -15,6 +15,8 @@ import AssignRole from './components/AssignRole';
 import AdminNav from './components/AdminNav';
 import Profile from './components/Profile';
 import Settings from './components/Settings'
+import ViewMyTickets from './components/ClientViewTickets';
+import Chat from './components/Chat';
 
 function AdminLayout({ children }) {
   return (
@@ -39,6 +41,8 @@ function App() {
         <Route path="/AssignRole" element={<AdminLayout><AssignRole /></AdminLayout>} />
         <Route path="/Settings" element={<ClientLayout><Settings /></ClientLayout>} />
         <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
+        <Route path="/ViewMyTickets" element={<ClientLayout><ViewMyTickets /></ClientLayout>} />
+        <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
       </Routes>
     </Router>
   );

@@ -13,7 +13,7 @@ router.put('/api/v1/users/:userId', authorizationMiddleware([1, 2, 3, 4]), userC
 router.put('/reset-password', userController.resetPassword);
 router.post('/setMFA', userController.setMFA);
 // router.post('/sendOTP', userController.sendOTP);
-router.post('/verifyOTP', userController.verifyOTP);
+// router.post('/verifyOTP', userController.verifyOTP);
 // router.get('/getMFA', userController.getMFA);
 
 module.exports = router;
