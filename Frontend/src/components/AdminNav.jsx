@@ -9,6 +9,7 @@ import {
   AiOutlinePicture,
   AiOutlineFileText,
   AiOutlineHome,
+  AiOutlinePlus
 } from 'react-icons/ai';
 import { AppearanceContext } from '../AppearanceContext';
 import axios from 'axios';

@@ -12,25 +12,29 @@ import {
 } from 'react-icons/ai';
 import { LightOceanTheme } from './themes';
 
-const Navbar = ({ isLoggedIn }) => {
+const AgentNav = () => {
   const [nav, setNav] = useState(false);
-  const theme = LightOceanTheme; // Using the default light theme
+  const theme = LightOceanTheme;
+  const navigate = useNavigate();
 
   return (
-    <div style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}>
-      <div className='max-w-[1640px] mx-auto flex justify-between items-center p-4'>
-        {/* Logo on the top left */}
-        <div className='flex items-center h-12'> {/* Set a specific height for the container */}
-      <img 
-        src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png" 
-        alt="Help Desk Logo" 
-        className="h-full w-auto"  // Set the height to 100% of its container
-        style={{ objectFit: 'contain' }} // Ensures the image fits within its container
-      /> 
-    </div>
-    <h1 className='text-2xl sm:text-3xl lg:text-4xl px-2'>
-      Help <span className='font-bold'>Desk</span>
-    </h1>
+    <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
+      <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
+        {/* Left side */}
+        <div className="flex items-center">
+          <div onClick={() => setNav(!nav)} className="cursor-pointer">
+            <AiOutlineMenu size={30} />
+          </div>
+          {/* Logo on the top left */}
+          <div className="flex items-center h-12">
+            <img
+              src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png"
+              alt="Help Desk Logo"
+              className="h-full w-auto"
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+        </div>
 
         <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
           Help <span className="font-bold">Desk</span>
@@ -108,4 +112,4 @@ const Navbar = ({ isLoggedIn }) => {
   );
 };
 
-export default Navbar;
+export default AgentNav;

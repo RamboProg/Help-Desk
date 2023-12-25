@@ -1,6 +1,9 @@
 import React from 'react';
+import { LightOceanTheme } from './themes'; // Ensure you have this import path correct
 
 const AgentHome = () => {
+  const theme = LightOceanTheme; // Using the theme you provided
+  
   return (
     <div 
       className="bg-cover bg-center h-screen flex justify-center items-center" 

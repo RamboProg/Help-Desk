@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import OTPPopup from './OTPPopup';
+import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ theme }) => {
   const [showLogin, setShowLogin] = useState(false);
+  const [showOTPPopup, setShowOTPPopup] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
@@ -170,7 +172,6 @@ const Login = ({ theme }) => {
         {isLogin ? 'Login' : 'Sign up'}
       </button>
 
-      {/* Login/Signup Overlay */}
       {showLogin && (
         <div className={`fixed top-0 left-0 w-full h-screen bg-${theme.colors.background}/80 z-20 flex justify-center items-center`}>
           <div className='flex justify-center items-center h-full'>
@@ -179,10 +180,8 @@ const Login = ({ theme }) => {
               <h2 className='text-2xl mb-4'>
                 {isLogin ? 'Welcome back to' : 'Join'} <span className='font-bold'>Help Desk</span>
               </h2>
-              {/* Email Input */}
-              <div
-                className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-              >
+
+              <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                 <AiOutlineUser size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
@@ -194,10 +193,7 @@ const Login = ({ theme }) => {
                 />
               </div>
 
-              {/* Password Input */}
-              <div
-                className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-              >
+              <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                 <AiOutlineLock size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
@@ -209,7 +205,6 @@ const Login = ({ theme }) => {
                 />
               </div>
 
-              {/* Signup Username Input */}
               {!isLogin && (
                 <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                   <AiOutlineUser size={25} />
@@ -224,11 +219,8 @@ const Login = ({ theme }) => {
                 </div>
               )}
 
-              {/* Signup Phone Number Input */}
               {!isLogin && (
-                <div
-                  className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-                >
+                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}

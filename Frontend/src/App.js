@@ -25,14 +25,6 @@ import Tickets from './components/Tickets'
 import ViewMyTickets from './components/ClientViewTickets';
 import Chat from './components/Chat';
 
-function AdminLayout({ children }) {
-  return (
-    <MainLayout>
-      <AdminNav />
-      {children}
-    </MainLayout>
-  );
-}
 
 function App() {
   return (
