@@ -1,0 +1,9 @@
+# Node.js
+node_modules/
+package.json
+package-lock.json
+
+# Other suitable folders/files (add more if needed)
+dist/
+build/
+.env
