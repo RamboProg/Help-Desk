@@ -13,6 +13,7 @@ const Profile = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
+  const [userId, setUserId] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,8 @@ const Profile = () => {
         setNewEmail(response.data.user.Email);
         setNewUsername(response.data.user.Username);
         setNewPhoneNumber(response.data.user.PhoneNumber);
+        setUserId(response.data.user._id);
+        console.log(userId);
       } catch (error) {
         console.error("Error fetching user profile:", error.message);
       }
@@ -39,12 +42,13 @@ const Profile = () => {
   const handleUpdateProfile = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/v1/users/${user._id}`,
+        `http://localhost:3000/api/v1/users/${userId}`,
         {
           newEmail,
           newUsername,
           newPhoneNumber,
-        }
+        },
+        { withCredentials: true }
       );
 
       console.log(response.data.message);
@@ -56,9 +60,9 @@ const Profile = () => {
     }
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  // if (!user) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="flex">

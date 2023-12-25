@@ -156,21 +156,27 @@ const userController = {
       const userId = req.user.userId; // Use req.user.id to get the user ID from the decoded token
       const { newEmail, newUsername, newPhoneNumber } = req.body;
 
+      // Find the user by ID
       const user = await userModel.findById(userId);
 
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
 
+      // Update user properties
       user.Email = newEmail || user.Email;
       user.Username = newUsername || user.Username;
       user.PhoneNumber = newPhoneNumber || user.PhoneNumber;
 
+      // Save the updated user
       await user.save();
 
+      // Respond with a success message and the updated user
       res.status(200).json({ message: 'Profile updated successfully', user });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      // Handle errors and respond with an error message
+      console.error('Error updating profile:', error.message);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   },
 
@@ -267,22 +273,22 @@ const userController = {
     try {
       const { email } = req.body;
       console.log(`Received request to send OTP for email: ${email}`);
-  
+
       // Delete existing OTP if any
       await deleteOTP(email);
       console.log(`Deleted existing OTP for email: ${email}`);
-  
+
       const OneTimePass = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOTP = await bcrypt.hash(OneTimePass, 10);
       console.log(`Generated OTP: ${OneTimePass}`);
-  
+
       const newOTP = new OTP({
         email: email,
         otp: hashedOTP,
         createdAt: Date.now(),
         expiredAt: Date.now() + 1 * 60 * 1000
       });
-  
+
       // Email configuration
       var mailOptions = {
         from: process.env.MAIL_ADD,
@@ -291,7 +297,7 @@ const userController = {
         text: 'Please click the link below to enable Multi-factor authentication',
         html: `<p>${OneTimePass}</p>`
       };
-  
+
       // Sending email
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
@@ -301,18 +307,18 @@ const userController = {
           console.log(`Email sent successfully: ${info.response}`);
         }
       });
-  
+
       // Save new OTP to the database
       await newOTP.save();
       console.log('New OTP saved to the database');
-  
+
       res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
     } catch (error) {
       console.log(`Error in sendOTP: ${error.message}`);
       res.status(500).json({ message: error.message });
     }
   },
-  
+
   verifyOTP: async (req, res) => {
     try {
       const { email, code } = req.body;

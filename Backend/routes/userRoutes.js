@@ -9,6 +9,7 @@ router.get('/profile', authorizationMiddleware([1, 2, 3, 4]), userController.vie
 router.put('/:userId', userController.updateUserProfile);
 
 
+
 // Other routes...
 router.put('/reset-password', userController.resetPassword);
 router.post('/setMFA', userController.setMFA);

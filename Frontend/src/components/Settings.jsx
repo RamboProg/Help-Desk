@@ -11,14 +11,12 @@ import {
 const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [mfaEnabled, setMFAEnabled] = useState();
-  const [mfaTextColor, setMFATextColor] = useState("");
+  const [mfaEnabled, setMFAEnabled] = useState(false);
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user info when component mounts
     fetchUserInfo();
   }, []);
 
@@ -54,22 +52,21 @@ const Settings = () => {
     }
   };
 
-  const handleSetMFA = async () => {
+  const handleToggleMFA = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/users/setMFA",
+        "http://localhost:3000/api/v1/users/toggleMFA",
         {
-          id: userId, // Replace with the user's ID
+          id: userId,
         },
         { withCredentials: true }
       );
 
-      setMFAEnabled(mfaEnabled);
-      setMFATextColor(mfaEnabled ? "green" : "red");
+      setMFAEnabled(!mfaEnabled);
 
       console.log(response.data.message);
     } catch (error) {
-      console.error("Error setting MFA:", error.message);
+      console.error("Error toggling MFA:", error.message);
     }
   };
 
@@ -146,16 +143,77 @@ const Settings = () => {
             Multi-Factor Authentication
           </h2>
           <div
-            className={`flex items-center justify-center bg-white rounded-full mb-4 p-2 text-${mfaTextColor}`}>
-            {mfaEnabled ? "Enabled" : "Disabled"}
-            <button
-              onClick={handleSetMFA}
-              className="bg-blue-500 text-white py-2 px-4 rounded-full ml-4">
-              Toggle MFA
-            </button>
+            className={`flex items-center justify-center mb-4 switch ${
+              mfaEnabled ? "checked" : ""
+            }`}>
+            <input
+              type="checkbox"
+              checked={mfaEnabled}
+              onChange={handleToggleMFA}
+            />
+            <span className="slider round"></span>
+            {/* <strong>{mfaEnabled ? "Enabled" : "Disabled"}</strong> */}
           </div>
         </div>
       </div>
+      <style>
+        {`
+          /* The switch - the box around the slider */
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+          }
+
+          /* Hide default HTML checkbox */
+          .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+
+          /* The slider */
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+          }
+
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+          }
+
+          input:checked + .slider {
+            background-color: #2196F3;
+          }
+
+          input:checked + .slider:before {
+            transform: translateX(26px);
+          }
+
+          /* Rounded sliders */
+          .slider.round {
+            border-radius: 34px;
+          }
+
+          .slider.round:before {
+            border-radius: 50%;
+          }
+        `}
+      </style>
     </div>
   );
 };
