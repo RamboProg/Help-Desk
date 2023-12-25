@@ -108,7 +108,7 @@ const userController = {
       const currentDateTime = new Date();
       const expiresAt = new Date(+currentDateTime + 1800000); // expire in 3 minutes
 
-      const token = jwt.sign({ user: { userId: user._id, role: user.RoleID } }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ user: { userId: user._id, role: user.RoleID, username: user.Username } }, process.env.JWT_SECRET, {
         expiresIn: 3 * 60 * 60 // 3 hours
       });
 

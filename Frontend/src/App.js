@@ -42,7 +42,7 @@ function App() {
         <Route path="/Settings" element={<ClientLayout><Settings /></ClientLayout>} />
         <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
         <Route path="/ViewMyTickets" element={<ClientLayout><ViewMyTickets /></ClientLayout>} />
-        <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
+        <Route path="/Chat/:ticketId" element={<MainLayout><Chat /></MainLayout>} />
       </Routes>
     </Router>
   );
