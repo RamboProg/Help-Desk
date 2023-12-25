@@ -1,39 +1,33 @@
-// authenticationMiddleware.js
+const jwt = require("jsonwebtoken");
 
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
 
-const authenticationMiddleware = {
+module.exports = function authenticationMiddleware(req, res, next) {
+  try {
+    const cookie = req.cookies;
   
- authenticationMiddlewareFunction: async (req, res, next) => {
-  let token;
+  // console.log(req.headers);
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(' ')[1];
-
-      // Verify token
-      const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-
-      // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password');
-
-      // Log user information for debugging
-      console.log('Authenticated User:', req.user);
-
-      next();
-    } catch (error) {
-      console.error('Error in authentication middleware:', error);
-      res.status(401).json({ message: 'Not authorised' });
-    }
+  if (!cookie) {
+    return res.status(401).json({ message: "No Cookie provided" });
   }
-
+  const token = cookie.token;
   if (!token) {
-    console.error('No token found in the headers');
-    res.status(401).json({ message: 'Not authorised, no token' });
+    return res.status(405).json({ message: "No token provided" });
   }
-},
-};
 
-module.exports = authenticationMiddleware;
+  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(403).json({ message: "Invalid token" });
+    }
+
+    // Attach the decoded user ID to the request object for further use
+    // console.log(decoded.user)
+    
+    req.user = decoded.user;
+    next();
+  });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+  
+};

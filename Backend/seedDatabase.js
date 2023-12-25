@@ -39,6 +39,9 @@ const seedData = async () => {
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
     await session.deleteMany({});
+    await EmailModel.deleteMany({}); 
+
+    await EmailModel.createCollection(); // Create an empty email table
 
     // Create an empty session table
     await session.createCollection();
@@ -58,6 +61,7 @@ const seedData = async () => {
         theme: 'light', // Default theme is light
         logoPath: 'https://placekitten.com/200/200', // Placeholder image
         salt: mysalt,
+        is_valid: true,
       });
 
       const supportAgent = new SupportAgentModel({
@@ -74,6 +78,7 @@ const seedData = async () => {
         Ticket_Count: 0,
         Active_Tickets: 0,
         Salt: user.salt,
+        is_valid: true,
       });
 
       await user.save();
@@ -87,78 +92,66 @@ const seedData = async () => {
     // Seed issue data
     const issueTypes = [
       {
-        Issue: 'Software',
-        Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Operating system',
+        Question: "How do I submit a support ticket?",
+        Answer: "To submit a support ticket, navigate to the 'Support' section in the application dashboard. Click on the 'Submit Ticket' button and fill out the required details, including the issue description. Once submitted, our support team will review and address your request promptly.",
+        Category: "Ticket Submission",
+        Sub_Category: "Process"
       },
       {
-        Issue: 'Software',
-        Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Application software',
+        Question: "What are the operating hours of the helpdesk?",
+        Answer: "Our helpdesk operates from Monday to Friday, 9:00 AM to 5:00 PM local time. During these hours, you can reach out to our support team for assistance with any issues or inquiries related to the application.",
+        Category: "Support Hours",
+        Sub_Category: "Operating Time"
       },
       {
-        Issue: 'Software',
-        Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Custom software',
+        Question: "How can I reset my password?",
+        Answer: "If you need to reset your password, click on the 'Forgot Password' link on the login page. Enter your registered email address, and you will receive a password reset link via email. Follow the instructions in the email to create a new password for your account.",
+        Category: "Account Management",
+        Sub_Category: "Password Reset"
       },
       {
-        Issue: 'Software',
-        Custom_Workflow: 'Software_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Integration issues',
+        Question: "Is there a mobile app available for the helpdesk?",
+        Answer: "Yes, we offer a mobile application for our helpdesk platform, available for both Android and iOS devices. You can download the app from the respective app stores.",
+        Category: "Mobile App",
+        Sub_Category: "Availability"
       },
       {
-        Issue: 'Hardware',
-        Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Desktops',
+        Question: "How long does it typically take to resolve a support ticket?",
+        Answer: "The resolution time for support tickets varies depending on the complexity of the issue and the current workload of our support team. However, we strive to resolve all tickets within 24 to 48 hours.",
+        Category: "Ticket Resolution",
+        Sub_Category: "Timeframe"
       },
       {
-        Issue: 'Hardware',
-        Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Laptops',
+        Question: "Can I track the status of my support ticket?",
+        Answer: "Yes, you can track the status of your support ticket directly from the application dashboard. Once logged in, navigate to the 'My Tickets' section.",
+        Category: "Ticket Tracking",
+        Sub_Category: "Tracking"
       },
       {
-        Issue: 'Hardware',
-        Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Printers',
+        Question: "How do I escalate a ticket if it's not resolved in a timely manner?",
+        Answer: "If you feel that your support ticket is not being addressed adequately or within the expected timeframe, you can escalate the ticket by contacting our customer support manager directly via email or phone.",
+        Category: "Ticket Escalation",
+        Sub_Category: "Process"
       },
       {
-        Issue: 'Hardware',
-        Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Servers',
-      },
-      {
-        Issue: 'Hardware',
-        Custom_Workflow: 'Hardware_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Networking equipment',
-      },
-      {
-        Issue: 'Network',
-        Custom_Workflow: 'Network_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Email issues',
-      },
-      {
-        Issue: 'Network',
-        Custom_Workflow: 'Network_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Internet connection problems',
-      },
-      {
-        Issue: 'Network',
-        Custom_Workflow: 'Network_Workflow_Value', // Provide a value if needed
-        Sub_Issue_Type: 'Website errors',
-      },
+        Question: "Is there a user guide or documentation available for the application?",
+        Answer: "Yes, we provide comprehensive user guides, tutorials, and documentation resources to help you navigate and utilize all features of our helpdesk application effectively.",
+        Category: "Documentation",
+        Sub_Category: "Resource"
+      }
     ];
-
-
-    const issuesData = await Promise.all(issueTypes.map(async (issue) => {
-      const newIssue = new IssueModel({
-        Issue: issue.Issue,
-        Custom_Workflow: issue.Custom_Workflow,
-        Sub_Issue_Type: issue.Sub_Issue_Type,
+    
+    const faqPromises = faqs.map(async (faq) => {
+      const newFaq = new FAQModel({
+        Question: faq.Question,
+        Answer: faq.Answer,
+        Category: faq.Category,
+        Sub_Category: faq.Sub_Category,
       });
 
       await newIssue.save();
       return newIssue;
-    }));
+    });
 
     // Function to generate salt using bcrypt
     async function generateSalt() {
@@ -362,16 +355,6 @@ const seedData = async () => {
       }
     ];
 
-    const faqPromises = faqs.map(async (faq) => {
-      const newFaq = new FAQModel({
-        Question: faq.Question,
-        Answer: faq.Answer,
-        Category: faq.Category,
-        Sub_Category: faq.Sub_Category,
-      });
-      return await newFaq.save();
-    });
-
     // Seed log data
     const logs = [];
     for (let i = 0; i < 5; i++) {
@@ -408,6 +391,7 @@ const seedData = async () => {
       });
       tickets.push(ticket.save());
     }
+   
     // Create a valid ticket
     const ValidTicket = new TicketModel({
       _id: 7,
@@ -428,7 +412,7 @@ const seedData = async () => {
       _id: 27,
       Status: 'Open',
       Assigned_AgentID: 1,
-      Ticket_Owner: 6,
+      Ticket_Owner: 5,
       Issue_Type: issuesData[0].Issue, // Assuming the first issue type
       Description: 'Ticket description for Open status',
       Priority: 'High', // Just an assumption; you can change as needed
@@ -443,7 +427,7 @@ const seedData = async () => {
       _id: 28,
       Status: 'Closed',
       Assigned_AgentID: 2,
-      Ticket_Owner: 6,
+      Ticket_Owner: 5,
       Issue_Type: issuesData[1].Issue, // Assuming the second issue type
       Description: 'Ticket description for Closed status',
       Priority: 'Low', // Just an assumption; you can change as needed
@@ -458,7 +442,7 @@ const seedData = async () => {
       _id: 29,
       Status: 'Open', // You can set any status you like
       Assigned_AgentID: 3,
-      Ticket_Owner: 6,
+      Ticket_Owner: 5,
       Issue_Type: issuesData[2].Issue, // Assuming the third issue type
       Description: 'Ticket description for Other sub-issue type',
       Priority: 'High', // Just an assumption; you can change as needed
@@ -516,7 +500,6 @@ const seedData = async () => {
     }
 
     await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
-
     console.log('Database seeded successfully!');
   } catch (error) {
     console.error('Error seeding database:', error);

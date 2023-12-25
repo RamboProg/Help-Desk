@@ -1,7 +1,10 @@
+const { userController } = require('../controllers/userController');
+const express = require('express');
+const router = express.Router();
 
-const db = require('../connectors/db');
-const roles = require('../constants/roles');
-const { getSessionToken } = require('../utils/session');
+// Registration route does not require authentication
+router.post('/register', userController.registerUser);
+router.post('/login', userController.loginUser);
 
 module.exports = async function(req, res, next) {
   const sessionToken = getSessionToken(req);

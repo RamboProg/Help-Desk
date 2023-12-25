@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaUser, FaRobot } from 'react-icons/fa'; // Import icons from react-icons
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
@@ -37,11 +38,11 @@ const ChatInterface = () => {
             >
               <div className={`flex items-end ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {/* Display user or bot profile image */}
-                <img
-                  src={message.sender === 'user' ? 'user_profile_url' : 'bot_profile_url'}
-                  alt={message.sender}
-                  className="w-6 h-6 rounded-full"
-                />
+                {message.sender === 'user' ? (
+                  <FaUser className="w-6 h-6 rounded-full" />
+                ) : (
+                  <FaRobot className="w-6 h-6 rounded-full" />
+                )}
                 <div className="flex flex-col space-y-2 text-xs max-w-xs mx-2">
                   {/* Display the message */}
                   <div>

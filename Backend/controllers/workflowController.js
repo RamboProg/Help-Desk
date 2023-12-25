@@ -1,20 +1,22 @@
 
 const Workflow = require('../models/issueModel');
+
+
 exports.getWorkflow = async (req, res) => {
-  const { Issue } = req.query;
-  try {
-    // Use findById to fetch the document by its _id
-    const workflow = await Workflow.findById(Issue); // Assuming Issue is the _id value
+    const { Issue } = req.query;
 
-    if (!workflow) {
-      return res.status(404).json({ message: 'Solutions not found' });
+    try {
+      const workflow = await Workflow.findOne({ Issue });
+  
+      if (!workflow) {
+        return res.status(404).json({ message: 'Solutins not found' });
+      }
+  
+      const customWorkflow = workflow.Custom_Workflow;
+      res.json({ Custom_Workflow: customWorkflow });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error; Try Again :(" });
     }
-
-    const customWorkflow = workflow.Custom_Workflow;
-    res.json({ Custom_Workflow: customWorkflow });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error; Try Again" });
-  }
 };
 
 exports.createWorkflow = async (req, res) => {
