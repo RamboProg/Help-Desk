@@ -83,7 +83,7 @@ const AdminNav = () => {
               src={logoPath}
               alt="Admin Desk Logo"
               className="h-full w-auto"
-              style={{ objectFit: 'contain' }}
+              style={{ objectFit: "contain" }}
             />
           </div>
         </div>
@@ -95,8 +95,8 @@ const AdminNav = () => {
         <div
           className={
             nav
-              ? 'fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300 shadow-lg'
-              : 'fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300 shadow-lg'
+              ? "fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
+              : "fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
           }
           style={menuItemStyles}
         >
@@ -122,8 +122,13 @@ const AdminNav = () => {
                 onClick={() => navigate('/AssignRole')}
                 style={menuItemStyles}
               >
-                <AiOutlineTeam size={20} className="mr-2" />
-                Assign Role
+                <AiOutlineHome size={25} className="mr-4" /> Home
+              </li>
+              <li 
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
+                onClick={() => navigate("/AssignRole")}
+              >
+                <AiOutlinePlus size={25} className="mr-4" /> Assign Role
               </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"

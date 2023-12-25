@@ -19,6 +19,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Import routes
 const workflowRouter = require('./routes/workflowRoute');
+const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -44,6 +45,8 @@ app.listen(port, () => {
   // Log in MongoDB
   console.log(`Your server is running on port ${port} successfully...`);
 });
+// Enable CORS for all routes
+app.use(cors());
 
 app.get('/test-error', (req, res, next) => {
   // Simulate an error
@@ -133,6 +136,7 @@ app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
 app.use(userRoutes);
+app.use(authRoutes);
 
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
@@ -156,6 +160,7 @@ io.on('connection', (socket) => {
 
 // Import routes
 app.use('/workflow', workflowRouter);
+app.use('/auth', require('./routes/authRoutes'));
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)

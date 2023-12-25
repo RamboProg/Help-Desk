@@ -17,11 +17,26 @@ const Login = ({ theme }) => {
 
   // Function to handle login/signup
   const handleAction = async () => {
-    setMessage(""); // Reset message
+    setMessage("");
+    try {
+      if (!email) {
+        setMessage("Email is required");
+        return;
+      }
+      if(isLogin){
+      const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
 
-    if (isLogin) {
-      try {
-        const response = await axios.post("http://localhost:3000/login", {
+      if (mfaResponse.data) {
+        const sendOTPResponse = await axios.post("http://localhost:3000/sendOTP", {
+          email,
+        });
+
+        if (sendOTPResponse.data.message === "Multi-factor authentication email sent successfully") {
+          setShowOTPPopup(true);
+        }
+      } else {
+        // Handle login without OTP for cases where MFA is not enabled
+        const loginResponse = await axios.post("http://localhost:3000/login", {
           email,
           password,
         });
@@ -43,8 +58,31 @@ const Login = ({ theme }) => {
             break;
         }
         setShowLogin(false);
-      } catch (error) {
-        setMessage(`Login failed: ${error.message}`);
+      } 
+      }
+    } catch (error) {
+      setMessage(`Login failed: ${error.message}`);
+    }
+  };
+
+  const handleRoleBasedNavigation = (loginResponse) => {
+    if (loginResponse.data && loginResponse.data.Role_ID) {
+      switch (loginResponse.data.Role_ID) {
+        case 1:
+          navigate("/AdminHome");
+          break;
+        case 2:
+          navigate("/ManagerHome");
+          break;
+        case 3:
+          navigate("/AgentHome");
+          break;
+        case 4:
+          navigate("/ClientHome");
+          break;
+        default:
+          console.log("Invalid role");
+          break;
       }
     } else {
       try {
@@ -125,9 +163,7 @@ const Login = ({ theme }) => {
 
               {/* Signup Username Input */}
               {!isLogin && (
-                <div
-                  className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}
-                >
+                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}

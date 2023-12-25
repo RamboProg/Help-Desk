@@ -1,5 +1,5 @@
 const Ticket = require('../models/ticketModel.js');
-
+const AgentModel = require('../models/agentModel.js');
 const managerController = {
   // Get all tickets
   getAllTickets: async (req, res) => {
@@ -18,6 +18,15 @@ const managerController = {
     try {
       const tickets = await Ticket.find({ Status: status });
       res.json(tickets);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  getAgents : async (req, res) => {
+    try {
+      const agents = await AgentModel.find();
+      return res.status(200).json({ agents });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
