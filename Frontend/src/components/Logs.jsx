@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { LightOceanTheme } from './themes';
+import React, { useState, useEffect } from "react";
+import { LightOceanTheme } from "./themes";
 
 const LogsPage = () => {
   const theme = LightOceanTheme;
@@ -13,15 +13,15 @@ const LogsPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch('http://localhost:3000/logs'); // Updated API endpoint URL
+        const response = await fetch("http://localhost:3000/api/logs");
         if (response.ok) {
           const data = await response.json();
           setLogs(data);
         } else {
-          console.error('Failed to fetch logs');
+          console.error("Failed to fetch logs");
         }
       } catch (error) {
-        console.error('Error fetching logs:', error);
+        console.error("Error fetching logs:", error);
       }
     };
 
@@ -38,58 +38,49 @@ const LogsPage = () => {
     setCurrentPage(pageNumber);
   };
 
-  // Table styles
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginTop: '20px',
-  };
-
-  const thStyle = {
-    backgroundColor: theme.colors.background,
-    color: theme.colors.text,
-    padding: '8px',
-    textAlign: 'left',
-    borderBottom: '1px solid #ddd',
-  };
-
-  const tdStyle = {
-    padding: '8px',
-    borderBottom: '1px solid #ddd',
-  };
-
   return (
-    <div>
-      <h1 style={{ textAlign: 'center', margin: '20px' }}>Logs Page</h1>
-      <table style={tableStyle}>
+    <div className="flex-1">
+      <div className="flex justify-center items-center flex-1 h-full">
+        <h2
+          className={`text-${theme.colors.primary} font-extrabold text-4xl mb-8 border-b-4 border-${theme.colors.primary} pb-4`}
+        >
+          Logs
+        </h2>
+      </div>{" "}
+      <table className="w-full border-collapse mt-5">
         <thead>
-          <tr>
-            <th style={thStyle}>Level</th>
-            <th style={thStyle}>Message</th>
-            <th style={thStyle}>Timestamp</th>
+          <tr
+            className={`bg-${theme.colors.background} text-${theme.colors.text}`}
+          >
+            <th className="p-4 text-left border-b">Level</th>
+            <th className="p-4 text-left border-b">Message</th>
+            <th className="p-4 text-left border-b">Timestamp</th>
           </tr>
         </thead>
         <tbody>
           {currentLogs.map((log, index) => (
             <tr key={index}>
-              <td style={tdStyle}>{log.level}</td>
-              <td style={tdStyle}>{log.message}</td>
-              <td style={tdStyle}>{log.timestamp}</td>
+              <td className="p-4 border-b">{log.level}</td>
+              <td className="p-4 border-b">{log.message}</td>
+              <td className="p-4 border-b">{log.timestamp}</td>
             </tr>
           ))}
         </tbody>
       </table>
       {/* Pagination */}
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        {Array.from({ length: Math.ceil(logs.length / logsPerPage) }, (_, i) => (
-          <button 
-            key={i} 
-            onClick={() => handlePageChange(i + 1)}
-            style={{ margin: '5px', padding: '8px 12px', cursor: 'pointer' }}
-          >
-            {i + 1}
-          </button>
-        ))}
+      <div className="text-center mt-8">
+        {Array.from(
+          { length: Math.ceil(logs.length / logsPerPage) },
+          (_, i) => (
+            <button
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className="m-2 px-4 py-2 bg-blue-300 text-white rounded hover:bg-blue-600"
+            >
+              {i + 1}
+            </button>
+          )
+        )}
       </div>
     </div>
   );
