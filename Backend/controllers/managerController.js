@@ -11,6 +11,18 @@ const managerController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  getTicketsByAgent : async (req, res) => {
+    try {
+      const {agentId} = req.params.agentId;
+      console.log(agentId);
+      console.log("helloAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+      const tickets = await Ticket.find({ Assigned_AgentID: agentId });
+      res.json(tickets);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
 
   // Get tickets by status
   getTicketsByStatus: async (req, res) => {
