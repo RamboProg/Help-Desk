@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
+import { FaUserFriends } from 'react-icons/fa';
 import Login from './Login'; // Assuming you have a Login component
 import { CloudySkyTheme, LavenderMistTheme , SunsetGlowTheme, EarthyForestTheme, DarkNebulaTheme, LightOceanTheme} from './themes'; // Assuming you want a default theme
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn }) => {
   const [nav, setNav] = useState(false);
   const theme = LightOceanTheme; // Using the default light theme
 
@@ -21,11 +23,6 @@ const Navbar = () => {
     <h1 className='text-2xl sm:text-3xl lg:text-4xl px-2'>
       Help <span className='font-bold'>Desk</span>
     </h1>
-
-        {/* Login/Signup Button on the Very Right */}
-        <div className='flex items-center'>
-          <Login theme={theme} /> {/* Pass the theme as a prop to the Login component */}
-        </div>
 
       </div>
     </div>

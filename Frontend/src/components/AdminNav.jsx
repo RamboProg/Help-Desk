@@ -80,23 +80,23 @@ const selectedLogo = logoPath;
           <div className="flex items-center h-12">
             <img
               src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png"
-              alt="Admin Desk Logo"
+              alt="Help Desk Logo"
               className="h-full w-auto"
-              style={{ objectFit: 'contain' }}
+              style={{ objectFit: "contain" }}
             />
           </div>
         </div>
 
         <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
-          Help <span className="font-bold">Desk</span>
+          Admin <span className="font-bold">Dashboard</span>
         </h1>
 
         {/* Side drawer menu */}
         <div
           className={
             nav
-              ? 'fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300 shadow-lg'
-              : 'fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300 shadow-lg'
+              ? "fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
+              : "fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
           }
         >
           <AiOutlineClose
@@ -119,38 +119,25 @@ const selectedLogo = logoPath;
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate('/AssignRole')}
               >
-                <AiOutlineTeam size={20} className="mr-2" />
-                Assign Role
+                <AiOutlineHome size={25} className="mr-4" /> Home
               </li>
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate('/Appearance')}
               >
-                <AiOutlinePicture size={20} className="mr-2" />
-                Appearance
+                <AiOutlinePlus size={25} className="mr-4" /> Assign Role
               </li>
               <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/logs')}
-              >
-                <AiOutlineFileText size={20} className="mr-2" />
-                Logs
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"              
+                onClick={()=> navigate("/Profile")}
+                >
+                <AiOutlinePlus size ={25} className="mr-4"/> Profile
               </li>
-              {/* Profile */}
               <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/profile')}
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"              
+              onClick={()=> navigate("/Settings")}
               >
-                <AiOutlineUser size={20} className="mr-2" />
-                Profile
-              </li>
-              {/* Settings */}
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/settings')}
-              >
-                <AiOutlineSetting size={20} className="mr-2" />
-                Settings
+                <AiOutlinePlus size ={25} className="mr-4"/> Settings
               </li>
             </ul>
           </nav>

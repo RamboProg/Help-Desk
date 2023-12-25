@@ -3,10 +3,13 @@ const Client = require('../models/clientModel');
 const Ticket = require('../models/ticketModel');
 const Agent = require('../models/agentModel');
 const Chat = require('../models/chatModel');
-const { getUser } = require('../controllers/userController');
- const clientController = {
+const axios = require('axios');
+const { PriorityQueue } = require('../utils/PriorityQueue');
 
-  getMyTickets: async (req, res) => {
+ const clientController = {
+  clientTickets: async (req, res) => {
+    const _id = req.user.userId;
+    // console.log(_id)
     try {
       const { _id } = await getUser(req);
       const client = await Client.findById(_id);
@@ -26,18 +29,20 @@ const { getUser } = require('../controllers/userController');
 
   createTicket: async (req, res) => {
     try {
-      const { _id } = getUser(req)
-      // check if the client exists
-      const client = await Client.findById(_id);
+      const { userId } = req.user;
+      const requestedIssueType = req.body.Issue_Type;
+      let agentId;
 
+      // Check if the client exists
+      const client = await Client.findById(userId);
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
+
       //getting current date for start date
       const currentDate = new Date();
       //checking to see if the subissue type is allowed or not
       const allowedIssueTypes = ['Network', 'Software', 'Hardware'];
-      const requestedIssueType = req.body.Issue_Type;
 
       if (!allowedIssueTypes.includes(requestedIssueType)) {
         return res.status(400).json({ error: 'Invalid Sub_Issue_Type. Allowed values are: Network, Software, Hardware.' });
@@ -67,6 +72,7 @@ const { getUser } = require('../controllers/userController');
       const requestedSubIssueType = req.body.Sub_Issue_Type;
       if (highPriority.includes(requestedSubIssueType)) {
         priority = 'high';
+
       } else if (mediumPriority.includes(requestedSubIssueType)) {
         priority = 'medium';
       } else {
@@ -86,10 +92,37 @@ const { getUser } = require('../controllers/userController');
         Start_Date: currentDate.getTime(),
         End_Date: null, //needs a function close ticket
         Sub_Issue_Type: req.body.Sub_Issue_Type,
-      })
+      });
+
+      if (highPriority.includes(requestedSubIssueType)) {
+        priority = 'high';
+        highPriorityQueue.enqueue(newTicket);
+      } else if (mediumPriority.includes(requestedSubIssueType)) {
+        priority = 'medium';
+        mediumPriorityQueue.enqueue(newTicket);
+      } else {
+        priority = 'low';
+        lowPriorityQueue.enqueue(newTicket);
+      }
+
+      newTicket.Priority = priority;
+
+      const reenqueueTicketAtFront = (newTicket) => {
+        if (newTicket.Priority === 'high') {
+          highPriorityQueue.enqueueFront(newTicket);
+        } else if (newTicket.Priority === 'medium') {
+          mediumPriorityQueue.enqueueFront(newTicket);
+        } else {
+          lowPriorityQueue.enqueueFront(newTicket);
+        }
+      };
 
       let newChat;
-      if (requestedSubIssueType.toLowerCase() == 'other') {
+      let otherTicket = false;
+      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); 
+      const lastChatId = lastChat ? lastChat._id : 0; 
+      const newChatId = lastChatId + 1; 
+      if (requestedSubIssueType == 'other') {
         newChat = new Chat({
           _id: new mongoose.Types.ObjectId(),
           Client_ID: _id,

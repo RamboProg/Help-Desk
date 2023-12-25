@@ -2,7 +2,6 @@
 // import Chat from '../models/chatModel.js';
 const io = require('socket.io');
 const Chat = require('../models/chatModel');
-const jwt = require('jsonwebtoken');
 const { getUser } = require('./userController');
 
 // const saveChat = async (message, fromId, toId) => { //function for saving chats
@@ -29,62 +28,55 @@ const { getUser } = require('./userController');
 
  const chatController = {
   // Controller function to start a new chat
-  startNewChat: async (req, res) => {
+  getChatIfExists: async (req, res) => {
+    const { TicketId } = req.query;
     try {
-      const { Message } = req.body;
+      const chat = await Chat.findOne({ TicketID: TicketId });
 
-      // Extract user information from the JWT
-      const { _id } = await getUser(req);
-      // console.log(_id);
+      if (chat) {
+        res.status(200).json(chat.Messages);
+      } else {
+        const userId = req.user.userId;
+        const agentId = await Ticket.findById(TicketId).select('Assigned_AgentID');
+        // console.log(_id);
 
-      // Create a new chat instance
-      const newChat = new Chat({
-        Support_AgentID: _id, // Assuming userId is the Support Agent ID from JWT
-        TicketID: 456, // Replace with the actual Ticket ID
-        Messages: Message,
-        Chat_Start_Time: new Date(),
-        Final_Message_Time: new Date(),
-        Message_Count: 1
-      });
-      // // Emit a socket event to inform connected clients about the new chat
-      req.io.emit('newChat', newChat);
-      
+        // Create a new chat instance
+        const newChat = new Chat({
+          Support_AgentID: agentId, // Assuming userId is the Support Agent ID from JWT
+          TicketID: TicketId, // Replace with the actual Ticket ID
+          Messages: "",
+          Chat_Start_Time: new Date(),
+          Final_Message_Time: new Date(),
+          Message_Count: 0
+        });
+      }
 
-      // // For demonstration purposes, let's just send a response with the saved chat details
-      // res.json({ success: true, chat: saveChat });
-      
       // Save the chat to the database
       await newChat.save();
-      res.status(200).json({ success: true });
-
+      res.status(200).json(newChat);
     } catch (error) {
       console.error('Error creating new chat:', error);
       res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
   },
-  send_message: async (req, res) => {
+  sendMessage: async (req, res) => {
     try {
-      const { chatId } = req.params;
-      const { Username } = await getUser(req);
-      const { message } = req.body;
-
-      // Save the message to the database
-      const chat = await Chat.findById(chatId);
-      chat.Messages.push({ message, Username });
-      await chat.save();
-
-      // Update the final message time and message count
-      chat.Final_Message_Time = new Date();
-      chat.Message_Count += 1;
-      await chat.save();
-
-      // Emit the message to all connected clients in the chat room
-      io.emit(`chat_${chatId}`, { message, Username });
-
-      res.status(200).json({ success: true });
+      const chat = await Chat.findById(req.params.chatID);
+  
+      if (chat) {
+        // Assuming the request body contains a 'message' field
+        chat.Messages.push(req.body.message);
+        chat.Message_Count += 1;
+        chat.Final_Message_Time = new Date();
+        // Update other fields as needed
+  
+        const updatedChat = await chat.save();
+        res.status(200).json(updatedChat);
+      } else {
+        res.status(404).json({ message: 'Chat not found.' });
+      }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, error: 'Internal Server Error' });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 

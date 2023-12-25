@@ -13,10 +13,25 @@ import AdminHome from './components/AdminHome';
 import ManagerHome from './components/ManagerHome';
 import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
+import AssignRole from './components/AssignRole';
+import AdminNav from './components/AdminNav';
+import Profile from './components/Profile';
+import Settings from './components/Settings'
+import ViewMyTickets from './components/ClientViewTickets';
+import Chat from './components/Chat';
 import Logs from './components/Logs';
 import Appearance from './components/Appearance';
 import { AppearanceContextProvider } from './AppearanceContext'; // Updated import
 import Workflows from './components/AgentWorkflow';
+
+function AdminLayout({ children }) {
+  return (
+    <MainLayout>
+      <AdminNav />
+      {children}
+    </MainLayout>
+  );
+}
 
 function App() {
   return (
@@ -59,10 +74,8 @@ function App() {
           path="/appearance"
           element={<AdminLayout><Appearance /></AdminLayout>}
         />
-        <Route
-          path="/Workflows"
-          element={<AgentLayout><Workflows /></AgentLayout>}
-        />
+        <Route path="/Workflows" element={<AgentLayout><Workflows /></AgentLayout>} />
+        <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
       </Routes>
 
       
