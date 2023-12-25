@@ -11,6 +11,7 @@ const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
 const CustomizationModel = require('./models/customizationModel.js');
+const EmailModel = require('./models/emailModel.js');
 const session = require('./models/sessionModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
@@ -39,9 +40,12 @@ const seedData = async () => {
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
     await session.deleteMany({});
-
+    await EmailModel.deleteMany({});
     // Create an empty session table
     await session.createCollection();
+    // Create an empty email table
+    await EmailModel.createCollection();
+    
     const supportAgents = [];
     for (let i = 1; i <= 3; i++) {
       let mysalt = await generateSalt();
@@ -363,7 +367,7 @@ const seedData = async () => {
         Sub_Category: "Resource"
       }
     ];
-
+    
     const faqPromises = faqs.map(async (faq) => {
       const newFaq = new FAQModel({
         Question: faq.Question,
@@ -410,6 +414,7 @@ const seedData = async () => {
       });
       tickets.push(ticket.save());
     }
+   
     // Create a valid ticket
     const ValidTicket = new TicketModel({
       _id: 7,

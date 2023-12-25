@@ -12,7 +12,7 @@ const ticketSchema = new Schema({
     Resolution_Details: { type: String },
     Start_Date : {type: Date},
     End_Date : {type: Date},
-    Sub_Issue_Type: { type: String, required: true }
+    Sub_Issue_Type: { type: String, required: true },
   });
 
   const Ticket = model('Ticket', ticketSchema);

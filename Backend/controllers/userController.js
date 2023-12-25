@@ -15,7 +15,7 @@ const nodemailer = require("nodemailer");
 const {v4: uuidv4} = require('uuid');
 const { error } = require('console');
 const OTP = require('../models/otpModel.js');
-
+const emailModel = require('../models/emailModel.js');
 // Function to generate salt
 // async function generateSalt() {
 //   return bcrypt.genSalt(10); // 10 is the number of rounds for the salt generation
@@ -396,51 +396,6 @@ const userController = {
         return res.status(500).json({ message: error.message });
       }
     },
-    // getUser: async (req,res) => {
-    //     // split from token= to the first . and get the second part
-    //     // console.log(req.headers.cookie.split('token=')[1]);
-    //     const token = req.headers.cookie.split('token=')[1];
-    
-    //     if (!token) {
-    //       return res.status(401).json({ message: 'No token, authorization denied' });
-    //     }
-    
-    //     let payload = null;
-    
-    //     try {
-    //         payload = jwt.verify(token, process.env.JWT_SECRET);
-    //     } catch (err) {
-    //         return res.status(401).json({ message: 'Token is not valid' });
-    //     }
-    
-    //     const user = await userModel.findById(payload.id);
-    //     // console.log(user)
-    
-    //     if (!user) {
-    //       return res.status(404).json({ message: 'User not found' });
-    //     }
-    
-    //     return user;
-    //   }
-    
-  // verifyOTPforLogin: async (req, res) => {
-  //   try {
-  //     const { email,code } = req.body;
-  //     console.log(email,code);
-  //     const validOTP = await verifyOTP(email,code);
-      
-  //       if(!validOTP){
-  //           throw Error("Invalid OTP")
-  //       }
-  //       await userModel.updateOne({Email:email},{verified:true});
-  //       await deleteOTP(email);
-        
-  //     res.status(200).json({ message: 'Multi-factor authentication email sent successfully' });
-  //   }catch (error) {
-  //       res.status(500).json({ message: error.message });
-  //   } 
-  // },
-
 
 };
 const verifyOTP = async (email,otp) => {
