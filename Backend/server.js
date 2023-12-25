@@ -2,6 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const socketio = require('socket.io'); // Add this line for socket.io
 const http = require('http');
 const mongoose = require('mongoose');
 const multer = require('multer'); // Move multer import to here
@@ -165,8 +167,6 @@ app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
-app.use(userRoutes);
-app.use(authRoutes);
 
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
@@ -187,7 +187,3 @@ app.use(function (req, res, next) {
 });
 
 const Image = mongoose.model('Image', { imagePath: String });
-
-io.on('connection', (socket) => {
-  // logger.info('A user connected');
-});
