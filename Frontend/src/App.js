@@ -5,7 +5,7 @@ import MainLayout from './MainLayout';
 import ClientLayout from './ClientLayout';
 import AdminLayout from './AdminLayout';
 import AgentLayout from './AgentLayout';
-import ManagerLayout from './ManagerLayout';
+import ManagerLayout from './ManagerLayout.js';
 import Login from './components/Login';
 import Homepage from './components/Homepage';
 import ClientHome from './components/ClientHome';
@@ -23,15 +23,6 @@ import Logs from './components/Logs';
 import Appearance from './components/Appearance';
 import { AppearanceContextProvider } from './AppearanceContext'; // Updated import
 import Workflows from './components/AgentWorkflow';
-
-function AdminLayout({ children }) {
-  return (
-    <MainLayout>
-      <AdminNav />
-      {children}
-    </MainLayout>
-  );
-}
 
 function App() {
   return (

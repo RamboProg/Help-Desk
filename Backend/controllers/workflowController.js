@@ -1,6 +1,14 @@
 
 const Workflow = require('../models/issueModel');
 
+exports.getAllWorkflows = async (req, res) => {
+    try {
+      const workflows = await Workflow.find({});
+      res.json({ workflows });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error; Try Again :(" });
+    }
+}
 
 exports.getWorkflow = async (req, res) => {
     const { Issue } = req.query;
@@ -29,10 +37,20 @@ exports.createWorkflow = async (req, res) => {
     }
 }
 
-exports.updateWorkflow = async (req, res) => {
-    const { Issue, Custom_Workflow } = req.body;
+// exports.updateWorkflow = async (req, res) => {
+//     const { Issue, Custom_Workflow } = req.body;
+//     try {
+//       const workflow = await Workflow.findOneAndUpdate({ Issue }, { Custom_Workflow });
+//       res.status(201).json({ workflow });
+//     } catch (err) {
+//       res.status(500).json({ message: "Internal Server Error; Try Again :(" });
+//     }
+// }
+
+exports.deleteWorkflow = async (req, res) => {
+    const { Issue } = req.query;
     try {
-      const workflow = await Workflow.findOneAndUpdate({ Issue }, { Custom_Workflow });
+      const workflow = await Workflow.findOneAndDelete({ Issue });
       res.status(201).json({ workflow });
     } catch (err) {
       res.status(500).json({ message: "Internal Server Error; Try Again :(" });
