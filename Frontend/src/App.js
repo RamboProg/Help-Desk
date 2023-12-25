@@ -18,12 +18,12 @@ import Appearance from './components/Appearance';
 // import CreateTicket from './components/CreateTicket';
 import { AppearanceContextProvider } from './AppearanceContext'; // Updated import
 import AssignRole from './components/AssignRole';
-import AdminNav from './components/AdminNav';
 import Profile from './components/Profile';
 import Settings from './components/Settings'
 import Tickets from './components/Tickets'
 import ViewMyTickets from './components/ClientViewTickets';
 import Chat from './components/Chat';
+import AgentWorkflow from './components/AgentWorkflow';
 
 
 function App() {
@@ -73,6 +73,7 @@ function App() {
           <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
         <Route path="/ViewMyTickets" element={<ClientLayout><ViewMyTickets /></ClientLayout>} />
         <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
+        <Route path="/AgentWorkflow" element={<AgentLayout><AgentWorkflow /></AgentLayout>} />
           {/* <Route
           path="/CreateTicket"
           element={<ClientLayout><CreateTicket /></ClientLayout>}

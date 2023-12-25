@@ -8,7 +8,7 @@ const AdminLayout = ({children}) =>{
 
     return(
         <div>
-            {showNavbar && <AdminLayout/>}
+            {showNavbar && <AdminNav/>}
             {children}
         </div>
     );

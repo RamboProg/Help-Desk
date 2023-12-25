@@ -4,11 +4,11 @@ import AgentNav from './components/AgentNav';
 
 const AgentLayout = ({children}) =>{
     const location = useLocation();
-    const showNavbar = location.pathname ==='/AgentHome' || location.pathname === '/Tcikets';
+    const showNavbar = location.pathname ==='/AgentHome' || location.pathname === '/ViewTickets'|| location.pathname === '/workflows';
 
     return(
         <div>
-            {showNavbar && <AgentLayout/>}
+            {showNavbar && <AgentNav/>}
             {children}
         </div>
     );
