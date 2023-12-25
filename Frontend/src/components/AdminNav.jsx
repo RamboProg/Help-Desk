@@ -16,6 +16,11 @@ const AdminNav = () => {
   const theme = LightOceanTheme;
   const navigate = useNavigate();
 
+  const goToAdminHome = () => {
+    navigate('/AdminHome');
+    setNav(false); // Close the navbar after navigation
+  };
+
   return (
     <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
       <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
@@ -55,43 +60,14 @@ const AdminNav = () => {
           <h2 className="text-2xl p-4">Admin Menu</h2>
           <nav>
             <ul className="flex flex-col p-4 text-gray-800">
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/AssignRole')}
+              <li 
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
+                onClick={goToAdminHome}
               >
                 <AiOutlineTeam size={20} className="mr-2" />
                 Assign Role
               </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/editAppearance')}
-              >
-                <AiOutlinePicture size={20} className="mr-2" />
-                Appearance
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/logs')}
-              >
-                <AiOutlineFileText size={20} className="mr-2" />
-                Logs
-              </li>
-              {/* Profile */}
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/profile')}
-              >
-                <AiOutlineUser size={20} className="mr-2" />
-                Profile
-              </li>
-              {/* Settings */}
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/settings')}
-              >
-                <AiOutlineSetting size={20} className="mr-2" />
-                Settings
-              </li>
+              {/* Add more menu items as needed */}
             </ul>
           </nav>
         </div>

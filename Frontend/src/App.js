@@ -13,8 +13,6 @@ import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
 import AssignRole from './components/AssignRole';
 import AdminNav from './components/AdminNav';
-import Profile from './components/Profile';
-import Settings from './components/Settings'
 
 function AdminLayout({ children }) {
   return (
@@ -39,16 +37,6 @@ function App() {
         <Route path="/AgentHome" element={<MainLayout><AgentHome /></MainLayout>} />
         <Route path="/KnowledgeBase" element={<ClientLayout><KnowledgeBase /></ClientLayout>} />
         <Route path="/AssignRole" element={<AdminLayout><AssignRole /></AdminLayout>} />
-        <Route path="/Settings" element={<ClientLayout><Settings /></ClientLayout>} />
-        <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
-        <Route
-          path="/ViewMyTickets"
-          element={<ClientLayout><ViewMyTickets /></ClientLayout>}
-        />
-        <Route
-          path="/CreateTicket"
-          element={<ClientLayout><CreateTicket /></ClientLayout>}
-        />
       </Routes>
     </Router>
   );
