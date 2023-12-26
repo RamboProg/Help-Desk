@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineSetting, AiOutlineUser } from "react-icons/ai";
+import { AiOutlineSetting, AiOutlineUser, AiOutlineHome, AiOutlineTool } from "react-icons/ai";
 
 const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -60,10 +60,8 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-
-      setMFAEnabled(mfaEnabled);
+      setMFAEnabled(!mfaEnabled); // Toggle MFA status
       setMFATextColor(mfaEnabled ? "red" : "green");
-
 
       console.log(response.data.message);
     } catch (error) {
@@ -72,13 +70,15 @@ const Settings = () => {
   };
 
   return (
+    <div className="flex">
       <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
         <ul className="space-y-4">
           <li className="flex items-center">
             <AiOutlineHome className="mr-2" />
             <button
               onClick={() => navigate("/AdminHome")}
-              className="hover:underline focus:outline-none">
+              className="hover:underline focus:outline-none"
+            >
               Home
             </button>
           </li>
@@ -86,7 +86,8 @@ const Settings = () => {
             <AiOutlineTool className="mr-2" />
             <button
               onClick={() => navigate("/AssignRole")}
-              className="hover:underline focus:outline-none">
+              className="hover:underline focus:outline-none"
+            >
               AssignRole
             </button>
           </li>
@@ -94,70 +95,76 @@ const Settings = () => {
             <AiOutlineUser className="mr-2" />
             <button
               onClick={() => navigate("/Profile")}
-              className="hover:underline focus:outline-none">
+              className="hover:underline focus:outline-none"
+            >
               Profile
             </button>
           </li>
         </ul>
       </div>
-    <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
-      <button
-        onClick={() => navigate(-1)} // Go back to the previous page
-        className="bg-blue-500 text-white py-2 px-4 rounded-full mt-4 ml-4">
-        Go Back
-      </button>
-
-      <h1 className="text-4xl font-bold mb-8"></h1>
-
-      <div className="p-8 rounded-lg shadow-md max-w-md mx-auto">
-        <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
-        <div className="flex items-center justify-center bg-white rounded-full mb-4 p-2">
-          <AiOutlineUser className="mr-2" />
-          <label htmlFor="email" className="bg-transparent p-2 ml-2">
-            {email}
-          </label>
-        </div>
-        <div className="flex items-center bg-white rounded-full mb-4 p-2">
-          <AiOutlineSetting className="mr-2" />
-          <input
-            className="bg-transparent p-2 w-full focus:outline-none ml-2"
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center bg-white rounded-full mb-4 p-2">
-          <AiOutlineSetting className="mr-2" />
-          <input
-            className="bg-transparent p-2 w-full focus:outline-none ml-2"
-            type="password"
-            placeholder="Confirm New Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
+      <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
         <button
-          onClick={handleResetPassword}
-          className="bg-blue-500 text-white py-2 px-4 rounded-full w-full mb-4">
-          Reset Password
+          onClick={() => navigate(-1)} // Go back to the previous page
+          className="bg-blue-500 text-white py-2 px-4 rounded-full mt-4 ml-4"
+        >
+          Go Back
         </button>
-      </div>
 
-      <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8">
-        <h2 className="font-extrabold text-2xl mb-4">
-          Multi-Factor Authentication
-        </h2>
-        <div className={`flex items-center justify-center bg-white rounded-full mb-4 p-4`}>
+        <h1 className="text-4xl font-bold mb-8"></h1>
+
+        <div className="p-8 rounded-lg shadow-md max-w-md mx-auto">
+          <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
+          <div className="flex items-center justify-center bg-white rounded-full mb-4 p-2">
+            <AiOutlineUser className="mr-2" />
+            <label htmlFor="email" className="bg-transparent p-2 ml-2">
+              {email}
+            </label>
+          </div>
+          <div className="flex items-center bg-white rounded-full mb-4 p-2">
+            <AiOutlineSetting className="mr-2" />
+            <input
+              className="bg-transparent p-2 w-full focus:outline-none ml-2"
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center bg-white rounded-full mb-4 p-2">
+            <AiOutlineSetting className="mr-2" />
+            <input
+              className="bg-transparent p-2 w-full focus:outline-none ml-2"
+              type="password"
+              placeholder="Confirm New Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
           <button
-            onClick={handleSetMFA}
-            className={`mfa-toggle-button focus:outline-none bg-blue-500 text-white py-2 px-4 rounded-full mr-4`}
+            onClick={handleResetPassword}
+            className="bg-blue-500 text-white py-2 px-4 rounded-full w-full mb-4"
           >
-            {mfaEnabled ? "Disable MFA" : "Enable MFA"}
+            Reset Password
           </button>
-          <span className={`text-lg font-semibold text-${mfaTextColor}`}>
-            {mfaEnabled ? "Enabled" : "Disabled"}
-          </span>
+        </div>
+
+        <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8">
+          <h2 className="font-extrabold text-2xl mb-4">
+            Multi-Factor Authentication
+          </h2>
+          <div
+            className={`flex items-center justify-center bg-white rounded-full mb-4 p-4`}
+          >
+            <button
+              onClick={handleSetMFA}
+              className={`mfa-toggle-button focus:outline-none bg-blue-500 text-white py-2 px-4 rounded-full mr-4`}
+            >
+              {mfaEnabled ? "Disable MFA" : "Enable MFA"}
+            </button>
+            <span className={`text-lg font-semibold text-${mfaTextColor}`}>
+              {mfaEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
         </div>
       </div>
     </div>
