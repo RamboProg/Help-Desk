@@ -12,10 +12,12 @@ const axios = require('axios'); // Add this line for Winston MongoDB transport
 const cors = require('cors');
 const authRouter = require('./routes/auth');
 const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+const socketIo = require('socket.io')
 
 // Create the Express app
 const app = express();
 const server = http.createServer(app);
+const io = socketIo(server)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -35,6 +37,9 @@ app.use(cors({
   origin: 'http://localhost:4000', // specify your frontend's origin
   credentials: true,
 }));
+
+
+
 const tempRouter = require('./routes/tempRoutes');
 app.use(tempRouter);
 
@@ -157,4 +162,18 @@ const Image = mongoose.model('Image', { imagePath: String });
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   logger.info(`Server is running on port ${PORT}`);
+});
+
+// Socket.io
+io.on('connection', (socket) => {
+  console.log('New client connected');
+
+  // Handle messages
+  socket.on('sendMessage', (data) => {
+    io.emit(`chat_${data.ticketId}`, { text: data.message, sender: data.userId });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
 });
