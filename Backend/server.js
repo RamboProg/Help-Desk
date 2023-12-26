@@ -12,48 +12,25 @@ const axios = require('axios'); // Add this line for Winston MongoDB transport
 const cors = require('cors');
 const authRouter = require('./routes/auth');
 const authenticationMiddleware = require('./middleware/authenticationMiddleware');
+const socketIo = require('socket.io');
 
 // Create the Express app
 const app = express();
 const server = http.createServer(app);
+const io = socketIo(server);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-// app.use(
-//   cors({
-//     origin: process.env.CLIENT_URL,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true
-//   })
-// );
-// app.use(cors());
-
 
 // Enable CORS for all routes
-app.use(cors({
-  origin: 'http://localhost:4000', // specify your frontend's origin
-  credentials: true,
-}));
-// Route for ML model prediction
-app.post('/predict', async (req, res) => {
-  try {
-    const response = await axios.post('http://localhost:3000/predict', req.body);
-    res.json(response.data);
-  } catch (error) {
-    logger.error('Error calling Flask service:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true
+  })
+);
 
-app.get('/api/faqs', async (req, res) => {
-  try {
-    const faqs = await FAQ.find();
-    res.json(faqs);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching FAQs', error });
-  }
-});
 const tempRouter = require('./routes/tempRoutes');
 app.use(tempRouter);
 
@@ -134,8 +111,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-
-// Import routes
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -146,11 +121,10 @@ mongoose
     console.log(err);
   });
 
-  app.use(function (err, req, res, next) {
-    console.error(err.stack);
-    res.status(500).send(`Something broke! Error: ${err.message}`);
-  });
-  
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send(`Something broke! Error: ${err.message}`);
+});
 
 const Image = mongoose.model('Image', { imagePath: String });
 
@@ -158,4 +132,21 @@ const Image = mongoose.model('Image', { imagePath: String });
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// Socket.io
+io.on('connection', (socket) => {
+  console.log('New client connected');
+
+  // Handle messages
+  socket.on('sendMessage', (data) => {
+    socket.broadcast.emit(`chat_${data.ticketId}`, {
+      Message: data.message,
+      SenderID: data.userId
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
 });

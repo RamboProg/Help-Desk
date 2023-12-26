@@ -15,6 +15,8 @@ const session = require('./models/sessionModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 // const notificationModel = require('./models/notificationModel.js');
+// const EmailModel = require('./models/emailModel.js');
+const messageModel = require('./models/msgModel.js');
 
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -40,6 +42,7 @@ const seedData = async () => {
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
     await session.deleteMany({});
+    await messageModel.deleteMany({});
     // await EmailModel.deleteMany({}); 
     // await notificationModel.deleteMany({});
 
@@ -492,7 +495,6 @@ const seedData = async () => {
       const chat = new ChatModel({
         Client_ID: existingClients[randomClientIndex]._id, // Use existing client ID
         Support_AgentID: existingSupportAgents[randomSupportAgentIndex]._id, // Use existing support agent ID
-        Messages: [{ text: `Message ${i + 1}`, sender: 'Client' }],
         Start_Time: new Date(), // Current date as the start time
         End_Time: new Date(), // Current date as the end time
         Message_Count: i + 1, // Increment message count

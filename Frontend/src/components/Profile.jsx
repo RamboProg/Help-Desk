@@ -37,7 +37,7 @@ const Profile = () => {
     };
 
     fetchUserProfile();
-  }, []);
+  }, [userId]);
 
   const handleUpdateProfile = async () => {
     try {
@@ -53,8 +53,6 @@ const Profile = () => {
 
       // console.log(response.data.message);
       setUser(response.data.user);
-
-      navigate("/AdminHome");
     } catch (error) {
       console.error("Profile update failed:", error.message);
     }
@@ -68,14 +66,6 @@ const Profile = () => {
     <div className="flex">
       <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
         <ul className="space-y-4">
-          <li className="flex items-center">
-            <AiOutlineHome className="mr-2" />
-            <button
-              onClick={() => navigate("/AdminHome")}
-              className="hover:underline focus:outline-none">
-              Home
-            </button>
-          </li>
           <li className="flex items-center">
             <AiOutlineTool className="mr-2" />
             <button
