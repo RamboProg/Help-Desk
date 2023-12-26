@@ -1,13 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import {
-  AiOutlineMenu,
-  AiOutlineClose,
-  AiOutlineUser,
-  AiOutlineSetting,
-  AiOutlineHome,
-} from "react-icons/ai";
+import { AiOutlineMenu, AiOutlineClose, AiOutlineUser, AiOutlineSetting, AiOutlineHome, AiOutlineBug } from "react-icons/ai";
 import { LightOceanTheme } from "./themes";
 
 const ManagerNavbar = () => {
@@ -61,30 +54,39 @@ const ManagerNavbar = () => {
           <h2 className="text-2xl p-4">Manager Menu</h2>
           <nav>
             <ul className="flex flex-col p-4 text-gray-800">
-            {/* Home */}
-            <li
-              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-              onClick={() => navigate("/ManagerHome")}
-            >
-              <AiOutlineHome size={20} className="mr-2" />
-              Home
-            </li>
+              {/* Home */}
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate("/ManagerHome")}
+              >
+                <AiOutlineHome size={20} className="mr-2" />
+                Home
+              </li>
+              <li
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate("/ManagerTickets")}
+              >
+                <AiOutlineBug size={20} className="mr-2" />
+                Tickets
+              </li>
               {/* Profile */}
               <li
-              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-              onClick={() => navigate("/Profile")}
-            >
-              <AiOutlineUser size={20} className="mr-2" />
-              Profile
-            </li>
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate("/Profile")}
+              >
+                <AiOutlineUser size={20} className="mr-2" />
+                Profile
+              </li>
               {/* Settings */}
               <li
-              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-              onClick={() => navigate("/Settings")}
-            >
-              <AiOutlineSetting size={20} className="mr-2" />
-              Settings
-            </li>
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+                onClick={() => navigate("/Settings")}
+              >
+                <AiOutlineSetting size={20} className="mr-2" />
+                Settings
+              </li>
+              
+             
             </ul>
           </nav>
         </div>

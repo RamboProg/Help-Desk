@@ -1,7 +1,8 @@
+// ChatInterface.js
 import React, { useState, useEffect, useRef } from 'react';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const ChatInterface = () => {
@@ -9,8 +10,8 @@ const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('');
   const { ticketId } = useParams();
   const socketRef = useRef();
+  const navigate = useNavigate();  // Use useNavigate for version 6
 
-  // Gonna use Yahia's implementation of get user info
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState();
 
@@ -49,7 +50,7 @@ const ChatInterface = () => {
   }, [userId, ticketId]);
 
   useEffect(() => {
-    if (!userId) return; // Skip if userId is not available yet
+    if (!userId) return;
 
     socketRef.current = io('http://localhost:3000', { withCredentials: true, transports: ['websocket'] });
 
@@ -68,7 +69,7 @@ const ChatInterface = () => {
         await axios.put(`http://localhost:3000/chat?ticketId=${ticketId}`, { message: inputMessage }, { withCredentials: true });
 
         const newMessage = {
-          SenderID: userId, // or use the appropriate sender ID
+          SenderID: userId,
           Message: inputMessage
         };
 
@@ -82,21 +83,31 @@ const ChatInterface = () => {
     }
   };
 
-  useEffect(() => {
-    if (userId) {
-      console.log('userId: ', userId);
-    }
-  }, [userId]);
+  const backgroundImageStyle = {
+    backgroundImage: `url('https://media.istockphoto.com/id/1311966784/photo/chat-speech-bubble-on-smart-phone-screen.jpg?s=170667a&w=0&k=20&c=TNWz88qi-m1ifi9ft_IaoEtJWEm7PEu9XFfGY9t5RME=')`,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+  };
 
   return (
-    <div className='flex flex-col h-screen'>
-      <div className='flex-1 p-2 sm:p-6 justify-between flex flex-col h-screen'>
-        <div id='messages' className='flex flex-col space-y-4 p-3 overflow-y-auto'>
+    <div className='flex flex-col h-screen' style={backgroundImageStyle}>
+      <div className='flex-1 p-4 sm:p-6 flex flex-col h-screen'>
+        <button className='bg-blue-500 text-white p-2 rounded-md mb-4 self-start' onClick={() => navigate(-1)}>
+          Back to Tickets
+        </button>
+        <div id='messages' className='flex flex-col space-y-4 p-3 bg-opacity-75 bg-white rounded-md overflow-y-auto flex-1'>
           {messages.map((message, index) => (
-            <div key={index} className={`chat-message ${message.SenderID === userId ? 'justify-end' : 'justify-start'}`}>
+            <div
+              key={index}
+              className={`flex ${message.SenderID === userId ? 'justify-end' : 'justify-start'}`}
+            >
               <div className={`flex items-end ${message.SenderID === userId ? 'justify-end' : 'justify-start'}`}>
-                {message.SenderID === userId ? <FaUser className='w-6 h-6 rounded-full' /> : <FaRobot className='w-6 h-6 rounded-full' />}
-                <div className='flex flex-col space-y-2 text-xs max-w-xs mx-2'>
+                {message.SenderID === userId ? (
+                  <FaUser className='w-6 h-6 rounded-full' />
+                ) : (
+                  <FaRobot className='w-6 h-6 rounded-full' />
+                )}
+                <div className='flex flex-col space-y-2 text-xs max-w-md mx-2'>
                   <div>
                     <span
                       className={`px-4 py-2 rounded-lg inline-block ${
