@@ -70,19 +70,21 @@ const ManagerNavbar = () => {
               Home
             </li>
               {/* Profile */}
-              <li className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer">
-                <Link to="/manager/profile" className="flex items-center">
-                  <AiOutlineUser size={20} className="mr-2" />
-                  Profile
-                </Link>
-              </li>
+              <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/Profile")}
+            >
+              <AiOutlineUser size={20} className="mr-2" />
+              Profile
+            </li>
               {/* Settings */}
-              <li className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer">
-                <Link to="/manager/settings" className="flex items-center">
-                  <AiOutlineSetting size={20} className="mr-2" />
-                  Settings
-                </Link>
-              </li>
+              <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/Settings")}
+            >
+              <AiOutlineSetting size={20} className="mr-2" />
+              Settings
+            </li>
             </ul>
           </nav>
         </div>

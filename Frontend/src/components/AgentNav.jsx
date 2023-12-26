@@ -67,18 +67,10 @@ const AgentNav = () => {
               {/* Tickets */}
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/ViewTickets')}
+                onClick={() => navigate('/Tickets')}
               >
                 <AiOutlineFileText size={20} className="mr-2" />
                 Tickets
-              </li>
-              {/* Chats */}
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate('/ViewChats')}
-              >
-                <AiOutlineMessage size={20} className="mr-2" />
-                Chats
               </li>
               {/* Workflows */}
               <li
