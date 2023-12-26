@@ -15,22 +15,34 @@ const CreateTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate form data
+    if (
+      formData.Issue_Type === "default" ||
+      formData.Sub_Issue_Type.trim() === "" ||
+      formData.description.trim() === ""
+    ) {
+      alert("Please fill out all fields correctly.");
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/tickets", formData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/tickets",
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       console.log("Server Response:", response.data);
-      
-      
-      console.log("Server Response:", response.data);
-      
+      alert("Ticket created successfully!");
       // Handle success, e.g., show a success message or redirect to another page
     } catch (error) {
       console.error("Error creating ticket:", error);
+      alert("Failed to create ticket. Please try again later.");
       // Handle error, e.g., show an error message to the user
     }
   };
@@ -54,13 +66,31 @@ const CreateTicket = () => {
 
       switch (value) {
         case "hardware":
-          setValidSubIssueTypes(['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment', 'other']);
+          setValidSubIssueTypes([
+            "Desktops",
+            "Laptops",
+            "Printers",
+            "Servers",
+            "Networking equipment",
+            "other",
+          ]);
           break;
         case "software":
-          setValidSubIssueTypes(['Operating system', 'Application software', 'Custom software', 'Integration issues', 'other']);
+          setValidSubIssueTypes([
+            "Operating system",
+            "Application software",
+            "Custom software",
+            "Integration issues",
+            "other",
+          ]);
           break;
         case "network":
-          setValidSubIssueTypes(['Email issues', 'Internet connection problems', 'Website errors', 'other']);
+          setValidSubIssueTypes([
+            "Email issues",
+            "Internet connection problems",
+            "Website errors",
+            "other",
+          ]);
           break;
         default:
           setValidSubIssueTypes([]);
@@ -73,9 +103,9 @@ const CreateTicket = () => {
       <div className="flex-1 p-8">
         <div className={`max-w-[1640px] mx-auto bg-gray-200 bg-opacity-50 rounded-lg p-8 flex`}>
           <div className="w-1/3 pr-8">
-            <img 
-              src="https://img.freepik.com/free-vector/flat-people-asking-questions-illustration_23-2148901520.jpg?w=996&t=st=1703180818~exp=1703181418~hmac=25d978773da4d75d494eebaeb3a84d8d87badb403309206e1174101eb499ab39" 
-              alt="People asking questions" 
+            <img
+              src="https://img.freepik.com/free-vector/flat-people-asking-questions-illustration_23-2148901520.jpg?w=996&t=st=1703180818~exp=1703181418~hmac=25d978773da4d75d494eebaeb3a84d8d87badb403309206e1174101eb499ab39"
+              alt="People asking questions"
               className="w-full h-auto object-cover rounded-lg"
             />
           </div>
