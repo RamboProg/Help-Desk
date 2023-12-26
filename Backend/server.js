@@ -22,19 +22,11 @@ const io = socketIo(server);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-// app.use(
-//   cors({
-//     origin: process.env.CLIENT_URL,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true
-//   })
-// );
-// app.use(cors());
 
 // Enable CORS for all routes
 app.use(
   cors({
-    origin: 'http://localhost:4000', // specify your frontend's origin
+    origin: process.env.CLIENT_URL,
     credentials: true
   })
 );
@@ -119,8 +111,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-
-// Import routes
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -150,7 +140,6 @@ io.on('connection', (socket) => {
 
   // Handle messages
   socket.on('sendMessage', (data) => {
-    // io.emit(`chat_${data.ticketId}`, { text: data.message, sender: data.userId });
     socket.broadcast.emit(`chat_${data.ticketId}`, {
       Message: data.message,
       SenderID: data.userId
