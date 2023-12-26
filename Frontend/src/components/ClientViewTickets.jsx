@@ -38,7 +38,7 @@ const ViewMyTickets = () => {
         <div className="max-w-[1640px] mx-auto bg-gray-200 bg-opacity-50 rounded-lg p-8 flex">
           <div className="w-1/3 pr-8">
             <img 
-              src="https://img.freepik.com/free-vector/flat-people-asking-questions-illustration_23-2148901520.jpg?w=996&t=st=1703180818~exp=1703181418~hmac=25d978773da4d75d494eebaeb3a84d8d87badb403309206e1174101eb499ab39" 
+              src="https://img.freepik.com/free-vector/flat-design-illustration-customer-support_23-2148887720.jpg?w=826&t=st=1703601129~exp=1703601729~hmac=56a715895e2952692f1f869a9ed91e8d7136ad68fa591b71ef4c45a842201c13" 
               alt="People asking questions" 
               className="w-full h-auto object-cover rounded-lg"
             />
