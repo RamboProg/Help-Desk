@@ -2,7 +2,7 @@
 const express = require('express');
 const multer = require('multer');
 const imageController = require('../controllers/imageController');
-
+const authorizationMiddleware = require('../middleware/authorizationMiddleware');
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' }); // Specify the destination for Multer
 

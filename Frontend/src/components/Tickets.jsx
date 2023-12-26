@@ -6,7 +6,7 @@ import TicketResolvePopup from "./TicketResolvePopup";
 const AgentTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [showResolvePopup, setShowResolvePopup] = useState(false);
-  const [selectedTicketId, setSelectedTicketId] = useState("");
+  const [ticketId, setticketId] = useState("");
 
   useEffect(() => {
     // Fetch tickets on component mount
@@ -15,8 +15,9 @@ const AgentTickets = () => {
 
   const getTickets = async () => {
     try {
-      const agentId = 1; // Replace with the actual agent ID
-      const response = await axios.get(`http://localhost:3000/api/v1/agent/getTickets?agentId=${agentId}`);
+      console.log("hello")
+      //const agentId = 1; // Replace with the actual agent ID
+      const response = await axios.get(`http://localhost:3000/api/v1/agent/getTickets`,{withCredentials: true}  );
 
       console.log("Response data:", response.data);
 
@@ -33,7 +34,7 @@ const AgentTickets = () => {
   const handleResolveClick = (ticketId) => {
     const selectedTicket = tickets.find((ticket) => ticket._id === ticketId);
     if (selectedTicket && selectedTicket.Status !== "Closed") {
-      setSelectedTicketId(ticketId);
+      setticketId(ticketId);
       setShowResolvePopup(true);
     }
   };
@@ -42,8 +43,8 @@ const AgentTickets = () => {
     setShowResolvePopup(false);
   };
 
-  const handleResolveSave = () => {
-    // Implement the logic you need after resolving the ticket
+  const handleResolveSave = async () => {
+ 
     getTickets(); // Refresh the ticket list or any other action
     setShowResolvePopup(false);
   };
@@ -143,7 +144,7 @@ const AgentTickets = () => {
       <TicketResolvePopup
         isOpen={showResolvePopup}
         onClose={handleClosePopup}
-        ticketId={selectedTicketId}
+        ticketId={ticketId}
         onResolve={handleResolveSave}
       />
     </div>

@@ -24,10 +24,9 @@ const agentController = {
       if (!req.body || !req.body.status || !req.body.resolutionDetails) {
         return res.status(400).json({ message: 'Invalid request body' });
       }
-      console.log(2);
-      const ticketId = parseInt(req.params.ticketId);
+      const {ticketId} = req.query;
+      console.log(ticketId);
       const resolutionDetails = req.body.resolutionDetails;
-      console.log(resolutionDetails);
       const tempTicket= await ticket.findOne({ _id: ticketId });
       const ticketOwner = tempTicket.Ticket_Owner;
       const Client = await user.findById(ticketOwner);
@@ -182,7 +181,10 @@ const agentController = {
   },
   getTickets: async (req, res) => {
     try {
-      const { agentId } = req.query; // Use req.query to access query parameters
+    
+      const  agentId  = req.user.userId; // Use req.query to access query parameters
+      console.log(agentId);
+      
       const tickets = await ticket.find({ Assigned_AgentID: agentId });
   
       if (!tickets || tickets.length === 0) {

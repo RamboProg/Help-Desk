@@ -4,7 +4,7 @@ const highPriorityQueue = ticketController.highPriorityQueue;
 const mediumPriorityQueue = ticketController.mediumPriorityQueue;
 const lowPriorityQueue = ticketController.lowPriorityQueue;
 const Ticket = require('../models/ticketModel');
-
+const authorizationMiddleware = require('../middleware/authorizationMiddleware');
 
 const express = require('express');
 const router = express.Router();

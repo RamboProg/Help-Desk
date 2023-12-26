@@ -70,12 +70,12 @@ function App() {
             element={<AdminLayout><Appearance /></AdminLayout>}
           />
           <Route path="/AssignRole" element={<AdminLayout><AssignRole /></AdminLayout>} />
-          <Route path="/Tickets" element={<AgentLayout><Tickets /></AgentLayout>} />
+          <Route path="/ViewTickets" element={<AgentLayout><Tickets /></AgentLayout>} />
           <Route path="/Settings" element={<ClientLayout><Settings /></ClientLayout>} />
           <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
-        <Route path="/ViewMyTickets" element={<ClientLayout><ViewMyTickets /></ClientLayout>} />
-        <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
-        <Route path="/AgentWorkflow" element={<AgentLayout><AgentWorkflow /></AgentLayout>} />
+          <Route path="/ViewMyTickets" element={<ClientLayout><ViewMyTickets /></ClientLayout>} />
+          <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
+          <Route path="/AgentWorkflow" element={<AgentLayout><AgentWorkflow /></AgentLayout>} />
           <Route
           path="/CreateTicket"
           element={<ClientLayout><CreateTicket /></ClientLayout>}
