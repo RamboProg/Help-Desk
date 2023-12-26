@@ -15,7 +15,7 @@ function WorkflowList() {
   }, []);
 
   const fetchWorkflows = () => {
-    axios.get('http://localhost:3000/getWorkflows')
+    axios.get('http://localhost:3000/getWorkflows', { withCredentials: true })
       .then(response => {
         if (response.status !== 200) {
           throw new Error('Network response was not ok');
@@ -35,7 +35,7 @@ function WorkflowList() {
   };
 
   const handleCreateWorkflow = () => {
-    axios.post('http://localhost:3000/workflows', newWorkflow)
+    axios.post('http://localhost:3000/workflows', newWorkflow , { withCredentials: true })
       .then(() => {
         fetchWorkflows();
         setNewWorkflow({
@@ -50,7 +50,7 @@ function WorkflowList() {
   };
 
   const handleDeleteWorkflow = (issuesid) => {
-    axios.delete(`http://localhost:3000/workflows/${issuesid}`)
+    axios.delete(`http://localhost:3000/workflows/${issuesid}` , { withCredentials: true })
       .then(() => {
         fetchWorkflows();
       })
