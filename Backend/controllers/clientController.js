@@ -286,8 +286,6 @@ rateAgent: async (req, res) => {
       agent.Average_Rating = ((agent.Average_Rating * agent.Ticket_Count) + rating) / (agent.Ticket_Count + 1);
     }
 
-    // Increment ticket count
-    agent.Ticket_Count += 1;
 
     await agent.save();
 
