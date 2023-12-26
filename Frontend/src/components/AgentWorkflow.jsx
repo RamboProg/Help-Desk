@@ -37,6 +37,7 @@ function WorkflowList() {
   const handleCreateWorkflow = () => {
     axios.post('http://localhost:3000/workflows', newWorkflow , { withCredentials: true })
       .then(() => {
+        alert('Workflow created successfully!');
         fetchWorkflows();
         setNewWorkflow({
           Issue: '',
@@ -45,6 +46,7 @@ function WorkflowList() {
         }); // Reset the form fields after successful creation
       })
       .catch(error => {
+        alert('Failed to create workflow. Error: ' + error.message);
         setError(error.message);
       });
   };
@@ -52,9 +54,11 @@ function WorkflowList() {
   const handleDeleteWorkflow = (issuesid) => {
     axios.delete(`http://localhost:3000/workflows/${issuesid}` , { withCredentials: true })
       .then(() => {
+        alert('Workflow deleted successfully!');
         fetchWorkflows();
       })
       .catch(error => {
+        alert('Error deleting Workflow' + error.message);
         setError(error.message);
       });
   };

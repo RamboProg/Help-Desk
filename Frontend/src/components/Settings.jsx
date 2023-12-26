@@ -34,7 +34,7 @@ const Settings = () => {
 
   const handleResetPassword = async () => {
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         "http://localhost:3000/api/v1/users/reset-password",
         {
           email: email,
@@ -44,6 +44,7 @@ const Settings = () => {
       );
 
       console.log(response.data.message);
+      alert('Password Reset successfully!');
     } catch (error) {
       console.error("Password reset failed:", error.message);
     }
@@ -59,8 +60,10 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-      setMFAEnabled(!mfaEnabled);
+
+      setMFAEnabled(mfaEnabled);
       setMFATextColor(mfaEnabled ? "red" : "green");
+
 
       console.log(response.data.message);
     } catch (error) {
@@ -69,6 +72,34 @@ const Settings = () => {
   };
 
   return (
+      <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
+        <ul className="space-y-4">
+          <li className="flex items-center">
+            <AiOutlineHome className="mr-2" />
+            <button
+              onClick={() => navigate("/AdminHome")}
+              className="hover:underline focus:outline-none">
+              Home
+            </button>
+          </li>
+          <li className="flex items-center">
+            <AiOutlineTool className="mr-2" />
+            <button
+              onClick={() => navigate("/AssignRole")}
+              className="hover:underline focus:outline-none">
+              AssignRole
+            </button>
+          </li>
+          <li className="flex items-center">
+            <AiOutlineUser className="mr-2" />
+            <button
+              onClick={() => navigate("/Profile")}
+              className="hover:underline focus:outline-none">
+              Profile
+            </button>
+          </li>
+        </ul>
+      </div>
     <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
       <button
         onClick={() => navigate(-1)} // Go back to the previous page

@@ -48,6 +48,7 @@ const ViewMyTickets = () => {
       );
 
       console.log('Agent rated successfully:', response.data);
+      alert('Agent rated successfully!');
       setRatedTickets((prev) => [...prev, ticketId]); // Add the rated ticket to the list
     } catch (error) {
       console.error('Error rating agent:', error);

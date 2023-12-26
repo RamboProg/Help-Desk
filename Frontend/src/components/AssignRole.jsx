@@ -45,8 +45,10 @@ const AssignRole = () => {
 
       if (response.data) {
         console.log('Role updated successfully');
+        alert('Role updated successfully!');
       } else {
         console.error('Failed to update user role:', response.data.message);
+        alert('Failed to update user role');
       }
 
       // Refresh the user list
