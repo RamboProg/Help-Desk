@@ -39,7 +39,7 @@ const Settings = () => {
 
   const handleResetPassword = async () => {
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         "http://localhost:3000/api/v1/users/reset-password",
         {
           email: email,
