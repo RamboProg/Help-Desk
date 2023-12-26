@@ -1,8 +1,14 @@
+// logger.js
+require('dotenv').config(); // Load environment variables from .env file
 const { createLogger, format, transports } = require('winston');
-require('winston-mongodb');
+const winstonMongoDB = require('winston-mongodb');
+
 
 const logger = createLogger({
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1fb4084c67f1dd3a3834d8df26ec188505b416be
     format: format.combine(
       format.timestamp(),
       format.json()
@@ -40,6 +46,7 @@ const logger = createLogger({
   });
   
   module.exports = logger;
+<<<<<<< HEAD
 =======
   transports: [
     // Log both errors and exceptions to the same 'logs' collection in MongoDB
@@ -54,3 +61,7 @@ const logger = createLogger({
 
 module.exports = logger;
 >>>>>>> 7292eb3ce3bdd482f8e45edcbac12597a4aa9386
+=======
+
+
+>>>>>>> 1fb4084c67f1dd3a3834d8df26ec188505b416be

@@ -29,4 +29,8 @@ const Navbar = ({ isLoggedIn }) => {
   );
 };
 
+<<<<<<< HEAD
 export default Navbar;
+=======
+export default Navbar;
+>>>>>>> 1fb4084c67f1dd3a3834d8df26ec188505b416be

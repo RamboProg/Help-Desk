@@ -7,15 +7,21 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.2",
-    "cors": "^2.8.5",
+    "chart.js": "^4.4.1",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "react-router-dom": "^6.21.1",
     "react-scripts": "^3.0.1",
 =======
     "react-router-dom": "^6.21.0",
+=======
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.21.1",
+>>>>>>> 1fb4084c67f1dd3a3834d8df26ec188505b416be
     "react-scripts": "5.0.1",
 >>>>>>> 7292eb3ce3bdd482f8e45edcbac12597a4aa9386
     "web-vitals": "^2.1.4"

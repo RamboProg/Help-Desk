@@ -4,6 +4,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainLayout from './MainLayout';
 import ClientLayout from './ClientLayout';
+import AgentLayout from './AgentLayout';
+import ManagerLayout from './ManagerLayout';
 import Login from './components/Login';
 import Homepage from './components/Homepage';
 import ClientHome from './components/ClientHome';
@@ -15,6 +17,9 @@ import AssignRole from './components/AssignRole';
 import AdminNav from './components/AdminNav';
 import Profile from './components/Profile';
 import Settings from './components/Settings'
+import Tickets from './components/Tickets'
+import AgentIssuesCharts from './components/AgentIssuesCharts'
+import ManagerTickets from './components/ManagerTickets'
 
 function AdminLayout({ children }) {
   return (
@@ -24,8 +29,6 @@ function AdminLayout({ children }) {
     </MainLayout>
   );
 }
-
-import ViewMyTickets from './components/ClientViewTickets';
 
 function App() {
   return (
@@ -41,10 +44,9 @@ function App() {
         <Route path="/AssignRole" element={<AdminLayout><AssignRole /></AdminLayout>} />
         <Route path="/Settings" element={<ClientLayout><Settings /></ClientLayout>} />
         <Route path="/Profile" element={<ClientLayout><Profile /></ClientLayout>} />
-        <Route
-          path="/ViewMyTickets"
-          element={<ClientLayout><ViewMyTickets /></ClientLayout>}
-        />
+        <Route path ="/Tickets" element ={<AgentLayout><Tickets/></AgentLayout>}/>
+        <Route path = "/AgentIssuesCharts" element = {<ManagerLayout><AgentIssuesCharts/></ManagerLayout>}/>
+        <Route path = "/ManagerTickets" element = {<ManagerLayout><ManagerTickets/></ManagerLayout>}/>
       </Routes>
     </Router>
   );

@@ -38,6 +38,9 @@ router.post('/api/v1/tickets', (req, res) => {
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1fb4084c67f1dd3a3834d8df26ec188505b416be
 router.put('/api/v1/rateAgent', (req, res) => {
   getUser(req)
     .then(({ _id }) => clientController.rateAgent(req, _id))
@@ -47,10 +50,13 @@ router.put('/api/v1/rateAgent', (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     });
 });
+<<<<<<< HEAD
 =======
 router.get('/api/v1/clientTickets', clientController.clientTickets);
 router.post('/api/v1/tickets', clientController.createTicket);
 router.put('/api/v1/rateAgent', clientController.rateAgent);
 >>>>>>> 7292eb3ce3bdd482f8e45edcbac12597a4aa9386
+=======
+>>>>>>> 1fb4084c67f1dd3a3834d8df26ec188505b416be
 
 module.exports = router;

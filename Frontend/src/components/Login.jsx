@@ -49,7 +49,7 @@ const Login = ({ theme }) => {
         setMessage("Email is required");
         return;
       }
-
+      if(isLogin){
       const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
 
       if (mfaResponse.data) {
@@ -70,6 +70,7 @@ const Login = ({ theme }) => {
         handleRoleBasedNavigation(loginResponse);
 
         setShowLogin(false);
+      } 
       }
     } catch (error) {
       setMessage(`Login failed: ${error.message}`);
@@ -129,8 +130,8 @@ const Login = ({ theme }) => {
                 <AiOutlineUser size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                  type='text'
-                  placeholder='Email'
+                  type="text"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -141,8 +142,8 @@ const Login = ({ theme }) => {
                 <AiOutlineLock size={25} />
                 <input
                   className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                  type='password'
-                  placeholder='Password'
+                  type="password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -151,12 +152,11 @@ const Login = ({ theme }) => {
 
               {!isLogin && (
                 <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
-                <div className={`flex items-center bg-${theme.colors.background} rounded-full mb-4 p-2`}>
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                    type='text'
-                    placeholder='Username'
+                    type="text"
+                    placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
@@ -169,8 +169,8 @@ const Login = ({ theme }) => {
                   <AiOutlineUser size={25} />
                   <input
                     className={`bg-transparent p-2 w-full focus:outline-none ml-2 text-${theme.colors.text}`}
-                    type='text'
-                    placeholder='Phone Number'
+                    type="text"
+                    placeholder="Phone Number"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     required
