@@ -1,12 +1,13 @@
 // AgentTickets.js
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import TicketResolvePopup from "./TicketResolvePopup";
 
 const AgentTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [showResolvePopup, setShowResolvePopup] = useState(false);
-  const [ticketId, setticketId] = useState("");
+  const [ticketId, setTicketId] = useState("");
 
   useEffect(() => {
     // Fetch tickets on component mount
@@ -15,9 +16,7 @@ const AgentTickets = () => {
 
   const getTickets = async () => {
     try {
-      console.log("hello")
-      //const agentId = 1; // Replace with the actual agent ID
-      const response = await axios.get(`http://localhost:3000/api/v1/agent/getTickets`,{withCredentials: true}  );
+      const response = await axios.get("http://localhost:3000/api/v1/agent/getTickets", { withCredentials: true });
 
       console.log("Response data:", response.data);
 
@@ -34,7 +33,7 @@ const AgentTickets = () => {
   const handleResolveClick = (ticketId) => {
     const selectedTicket = tickets.find((ticket) => ticket._id === ticketId);
     if (selectedTicket && selectedTicket.Status !== "Closed") {
-      setticketId(ticketId);
+      setTicketId(ticketId);
       setShowResolvePopup(true);
     }
   };
@@ -43,18 +42,12 @@ const AgentTickets = () => {
     setShowResolvePopup(false);
   };
 
-  const handleResolveSave = async () => {
- 
-    getTickets(); // Refresh the ticket list or any other action
-    setShowResolvePopup(false);
-  };
-
   const centerStyle = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100vh', // This makes the content take the full height of the viewport
+    height: '100vh',
     backgroundImage: 'url("https://images.unsplash.com/photo-1600134637836-9d015f520941?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODZ8fFRpY2tldHN8ZW58MHx8MHx8fDA%3D")',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -62,23 +55,23 @@ const AgentTickets = () => {
   };
 
   const containerStyle = {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: '8px',
     padding: '20px',
-    margin: 'auto', // Center the container
-    width: '80%', // Adjust as needed
-    textAlign: 'center', // Center the text within the container
+    margin: 'auto',
+    width: '80%',
+    textAlign: 'center',
   };
 
   const tableStyle = {
-    width: '100%', // Full width of the container
+    width: '100%',
     borderCollapse: 'collapse',
     marginTop: '20px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     borderRadius: '8px',
     overflow: 'hidden',
-    backgroundColor: 'white', // Background color for the table itself
-    margin: 'auto', // Center the table
+    backgroundColor: 'white',
+    margin: 'auto',
   };
 
   const thTdStyle = {
@@ -88,7 +81,7 @@ const AgentTickets = () => {
   };
 
   const thStyle = {
-    backgroundColor: 'rgba(33, 150, 243, 1)', // Change the background color without transparency
+    backgroundColor: 'rgba(33, 150, 243, 1)',
     color: '#fff',
     padding: '16px',
     textAlign: 'left',
@@ -102,6 +95,7 @@ const AgentTickets = () => {
     cursor: 'pointer',
     borderRadius: '4px',
     transition: 'background-color 0.3s',
+    marginRight: '10px',
   };
 
   return (
@@ -130,11 +124,10 @@ const AgentTickets = () => {
                 <td style={thTdStyle}>{ticket.Priority}</td>
                 <td style={thTdStyle}>{ticket.Ticket_Owner}</td>
                 <td style={thTdStyle}>
-                  {ticket.Status !== "Closed" ? (
-                    <button style={actionButtonStyle} onClick={() => handleResolveClick(ticket._id)}>Resolve</button>
-                  ) : (
-                    <span style={{ color: '#888' }}>Closed</span>
-                  )}
+                  <button style={actionButtonStyle} onClick={() => handleResolveClick(ticket._id)}>Resolve</button>
+                  <Link to={`/chat/${ticket._id}`}>
+                    <button style={actionButtonStyle}>Open Chats</button>
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -145,7 +138,7 @@ const AgentTickets = () => {
         isOpen={showResolvePopup}
         onClose={handleClosePopup}
         ticketId={ticketId}
-        onResolve={handleResolveSave}
+        onResolve={handleResolveClick}
       />
     </div>
   );

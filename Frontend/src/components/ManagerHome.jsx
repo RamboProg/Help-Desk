@@ -34,7 +34,7 @@ const Manager = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/manager/getAgents');
+        const response = await axios.get('http://localhost:3000/api/v1/manager/getAgents', {withCredentials: true});
         console.log('Agent Data:', response.data.agents);
         setAgents(response.data.agents);
       } catch (error) {
@@ -48,7 +48,7 @@ const Manager = () => {
   useEffect(() => {
     const fetchTicketData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/reports/tickets');
+        const response = await axios.get('http://localhost:3000/api/v1/reports/tickets', {withCredentials: true});
         const tickets = response.data;
         const issueTypes = tickets.map((ticket) => ticket.Issue_Type);
         const subIssueTypes = tickets.map((ticket) => ticket.Sub_Issue_Type);

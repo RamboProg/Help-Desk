@@ -58,6 +58,7 @@ const Appearance = () => {
         withCredentials: true,
       });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        console.log('Global appearance settings:', globalSettingsResponse.data)
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
         setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
         setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
@@ -68,7 +69,7 @@ const Appearance = () => {
     }
   };
 
-  const selectedTheme = themes[themeName];
+  // const selectedTheme = themes[themeName];
 
   return (
     <div
@@ -131,7 +132,7 @@ const Appearance = () => {
             style={{
               width: '200px',
               marginBottom: '20px',
-              padding: selectedTheme.spacing.sm,
+              padding: themes[themeName].spacing.sm,
               borderRadius: '4px',
               border: `1px solid ${selectedTheme.colors.primary}`,
               fontSize: '1em',
