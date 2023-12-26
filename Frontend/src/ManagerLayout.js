@@ -4,7 +4,7 @@ import ManagerNav from './components/ManagerNav';
 
 const ManagerLayout = ({ children }) => {
   const location = useLocation();
-  const showNavbar = location.pathname === '/ManagerHome'|| location.pathname === '/AgentIssuesCharts';
+  const showNavbar = location.pathname === '/ManagerHome'|| location.pathname === '/AgentIssuesCharts'| location.pathname === '/ManagerTickets';
 
   return (
     <div>
