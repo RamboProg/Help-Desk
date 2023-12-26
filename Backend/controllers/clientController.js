@@ -118,25 +118,7 @@ const clientController = {
         }
       };
 
-      let newChat;
-      let otherTicket = false;
-      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } });
-      const lastChatId = lastChat ? lastChat._id : 0;
-      const newChatId = lastChatId + 1;
-      if (requestedSubIssueType == 'other') {
-        newChat = new Chat({
-          _id: newChatId,
-          Client_ID: user,
-          Support_AgentID: null, // Initialize to null, you'll set it later
-          Messages: null,
-          Start_Time: currentDate.getTime(),
-          End_Time: null,
-          Message_Count: 0,
-          TicketID: newTicket._id,
-        });
-        otherTicket = true;
-      }
-
+      
       const url = "http://127.0.0.1:5000/predict";
       const response = await axios.post(url, {
         Priority: priority,
@@ -189,11 +171,7 @@ const clientController = {
       if (assignedAgent && assignedAgent.Active_Tickets < 5) {
         newTicket.Assigned_AgentID = assignedAgent._id;
 
-        if (otherTicket) {
-
-          newChat.Support_AgentID = assignedAgent._id;
-        }
-
+       
       } else {
         if (!newTicket.Assigned_AgentID) {
           let alternativeAgentId;
@@ -212,9 +190,7 @@ const clientController = {
           if (alternativeAgentId) {
             newTicket.Assigned_AgentID = alternativeAgentId;
 
-            if (otherTicket) {
-              newChat.Support_AgentID = alternativeAgentId;
-            }
+        
 
             try {
               const assignedAgent = await Agent.findOne({ _id: alternativeAgentId });
@@ -261,9 +237,7 @@ const clientController = {
       result = {
         ticket: newTicket,
       };
-      if (newChat) {
-        result.Chat = newChat;
-      }
+     
       res.json(result);
 
     } catch (error) {
