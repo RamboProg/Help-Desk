@@ -248,8 +248,8 @@ const clientController = {
 
   rateAgent: async (req, res) => {
     try {
-      const userId = req.user.id;
-      const client = await Client.findById(userId);
+      const _id = req.user.userId; 
+      const client = await Client.findById(_id);
       if (!client) {
         return res.status(404).json({ error: 'client not found' });
       }
@@ -263,7 +263,6 @@ const clientController = {
         return res.status(400).json({ error: 'This ticket is not closed yet and cannot be rated' });
       }
 
-      const currentDate = new Date();
       // get the agent id from the ticket
       const agentId = ticket.Assigned_AgentID;
 
@@ -271,33 +270,11 @@ const clientController = {
       if (!agent) {
         return res.status(404).json({ error: 'Agent not found' });
       }
-
-      ticket.Rating = rating;
-      const updatedTicket = await ticket.save();
-
       //update the agent's avg rating
       //the ticket count is updated 
       agent.Average_Rating = (rating + (agent.Average_Rating * (agent.Ticket_Count - 1))) / agent.Ticket_Count
-      let newChat = null;
-
-      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); // Find the last user
-      const lastChatId = lastChat ? lastChat._id : 0; // Get the last _id or default to 0 if non exists
-      const newChatId = lastChatId + 1; // Increment the last _id
-
-      if (rating <= 1) {
-        newChat = new Chat({
-          _id: newChatId,
-          Client_ID: userId,
-          Support_AgentID: ticket.Support_AgentID, //needs a function
-          Messages: null,
-          Start_Time: currentDate.getTime(),
-          End_Time: null,
-          Message_Count: 0,
-          TicketID: new mongoose.Types.ObjectId()
-        })
-      }
       await agent.save();
-      res.json({ ticket: updatedTicket, Chat: newChat });
+      res.json({ ticket: updatedTicket });
 
     } catch (error) {
       console.error('Error Inserting Rating:', error);

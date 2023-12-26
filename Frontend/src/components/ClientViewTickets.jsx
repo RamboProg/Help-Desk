@@ -23,7 +23,7 @@ const ViewMyTickets = () => {
 
   const canStartChat = (ticket) => {
     // Check if the ticket is closed or has the sub_issue_type of 'other'
-    return ticket.Status === 'Closed' || ticket.Sub_Issue_Type === 'Other';
+    return ticket.Status.toLowerCase() === 'closed' || ticket.Sub_Issue_Type.toLowerCase() === 'other';
   };
 
   const handleStartChat = (ticket) => {
@@ -51,7 +51,7 @@ const ViewMyTickets = () => {
               tickets.map((ticket, index) => (
                 <div key={index} className="mb-2 bg-white p-4 rounded-md shadow-md">
                   <h5 className={`text-${theme.colors.text} font-semibold text-lg mb-2`}>
-                    {ticket.Status}
+                    Ticket ID {ticket._id}: {ticket.Status}
                   </h5>
                   <p className={`text-${theme.colors.text} mb-4`}>
                     {ticket.Description}
