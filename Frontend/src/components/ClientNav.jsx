@@ -10,6 +10,7 @@ import {
   AiOutlineUser,
   AiOutlineCheck,
   AiOutlineHome,
+  AiOutlineBell,
 } from "react-icons/ai";
 import { LightOceanTheme } from "./themes";
 
