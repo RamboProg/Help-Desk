@@ -5,11 +5,9 @@ import {
   AiOutlineClose,
   AiOutlineUser,
   AiOutlineSetting,
-  AiOutlineTeam,
   AiOutlinePicture,
   AiOutlineFileText,
   AiOutlineHome,
-  AiOutlinePlus,
   AiOutlineBell
 } from 'react-icons/ai';
 import { AppearanceContext } from '../AppearanceContext';
@@ -40,7 +38,6 @@ const AdminNav = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [nav, setNav] = useState(false);
-  const theme = LightOceanTheme;
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -53,11 +50,11 @@ const AdminNav = () => {
       { _id: '3', message: 'Reminder: Complete tasks', read: false },
     ];
     setNotifications(mockNotifications);
-  }, [themeName]);
+  });
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('http://localhost:3000/api/v1/Appearance/');
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
         setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
@@ -69,19 +66,19 @@ const AdminNav = () => {
     }
   };
 
-  const selectedTheme = themes[themeName];
+  // const selectedTheme = themes[themeName];
 
   const navStyles = {
-    backgroundColor: selectedTheme.colors.background,
-    color: selectedTheme.colors.text
+    backgroundColor: themes[themeName].colors.background,
+    color: themes[themeName].colors.text
   };
 
   const menuItemStyles = {
-    backgroundColor: selectedTheme.colors.secondary,
-    color: selectedTheme.colors.text,
-    padding: selectedTheme.spacing.sm,
+    backgroundColor: themes[themeName].colors.secondary,
+    color: themes[themeName].colors.text,
+    padding: themes[themeName].spacing.sm,
     borderRadius: '4px',
-    border: `1px solid ${selectedTheme.colors.primary}`
+    border: `1px solid ${themes[themeName].colors.primary}`
   };
 
   const handleCheckboxChange = async (notificationId) => {
@@ -114,8 +111,8 @@ const AdminNav = () => {
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2" style={{ color: selectedTheme.colors.secondary }}>
-          Help <span className="font-bold" style={{ color: selectedTheme.colors.primary }}>Desk</span>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2" style={{ color: themes[themeName].colors.secondary }}>
+          Help <span className="font-bold" style={{ color: themes[themeName].colors.primary }}>Desk</span>
         </h1>
 
         <div className="flex items-center">

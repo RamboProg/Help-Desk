@@ -30,7 +30,7 @@ const Profile = () => {
         setNewUsername(response.data.user.Username);
         setNewPhoneNumber(response.data.user.PhoneNumber);
         setUserId(response.data.user._id);
-        // console.log(userId);
+        console.log(userId);
       } catch (error) {
         console.error("Error fetching user profile:", error.message);
       }

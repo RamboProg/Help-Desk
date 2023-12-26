@@ -27,11 +27,11 @@ const Appearance = () => {
 
   useEffect(() => {
     fetchGlobalSettings();
-  }, []);
+  });
 
   const handleThemeChange = async () => {
     try {
-      await axios.post('http://localhost:3000/api/v1/editAppearance/', { theme: themeName, logoPath });
+      await axios.post('http://localhost:3000/editAppearance/', { theme: themeName, logoPath }, { withCredentials: true });
       await fetchGlobalSettings();
       setThemeName(themeName);
       setLogoPath(logoPath);
@@ -44,8 +44,9 @@ const Appearance = () => {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('http://localhost:3000/api/v1/Appearance/');
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        console.log('Global appearance settings:', globalSettingsResponse.data)
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
         setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
         setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
@@ -56,7 +57,7 @@ const Appearance = () => {
     }
   };
 
-  const selectedTheme = themes[themeName];
+  // const selectedTheme = themes[themeName];
 
   return (
     <div 
@@ -65,9 +66,9 @@ const Appearance = () => {
       flexDirection: 'column',
       alignItems: 'center',
       minHeight: '100vh',
-      backgroundColor: selectedTheme.colors.background,
-      color: selectedTheme.colors.text,
-      padding: selectedTheme.spacing.md 
+      backgroundColor: themes[themeName].colors.background,
+      color: themes[themeName].colors.text,
+      padding: themes[themeName].spacing.md 
     }}
     >
       {/* Header */}
@@ -90,9 +91,9 @@ const Appearance = () => {
           style={{ 
             width: '200px',
             marginRight: '10px',
-            backgroundColor: selectedTheme.colors.secondary,
-            color: selectedTheme.colors.text,
-            padding: selectedTheme.spacing.sm,
+            backgroundColor: themes[themeName].colors.secondary,
+            color: themes[themeName].colors.text,
+            padding: themes[themeName].spacing.sm,
             borderRadius: '4px' 
           }}
           value={themeName} 
@@ -113,9 +114,9 @@ const Appearance = () => {
             style={{ 
               width: '200px',
               marginBottom: '20px',
-              padding: selectedTheme.spacing.sm,
+              padding: themes[themeName].spacing.sm,
               borderRadius: '4px',
-              border: `1px solid ${selectedTheme.colors.primary}`
+              border: `1px solid ${themes[themeName].colors.primary}`
             }}
             type="text" 
             placeholder="Enter logo URL"
@@ -128,9 +129,9 @@ const Appearance = () => {
       {/* Button to update appearance */}
       <button 
         style={{ 
-          padding: selectedTheme.spacing.sm,
-          backgroundColor: selectedTheme.colors.primary,
-          color: selectedTheme.colors.background,
+          padding: themes[themeName].spacing.sm,
+          backgroundColor: themes[themeName].colors.primary,
+          color: themes[themeName].colors.background,
           borderRadius: '4px',
           border: 'none',
           cursor: 'pointer'

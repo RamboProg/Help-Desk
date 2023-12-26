@@ -11,14 +11,12 @@ import {
 const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [mfaEnabled, setMFAEnabled] = useState();
-  const [mfaTextColor, setMFATextColor] = useState("");
+  const [mfaEnabled, setMFAEnabled] = useState(false);
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user info when component mounts
     fetchUserInfo();
   }, []);
 
@@ -54,55 +52,23 @@ const Settings = () => {
     }
   };
 
-  const handleSetMFA = async () => {
+  const handleToggleMFA = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/users/setMFA",
-        {
-          id: userId, // Replace with the user's ID
-        },
+        "http://localhost:3000/api/v1/users/setMFA",{},
         { withCredentials: true }
       );
+      setMFAEnabled(!mfaEnabled);
 
-      setMFAEnabled(mfaEnabled);
-      setMFATextColor(mfaEnabled ? "green" : "red");
-
-      console.log(response.data.message);
+      //refresh page
+      navigate("/Settings");
     } catch (error) {
-      console.error("Error setting MFA:", error.message);
+      console.error("Error toggling MFA:");
     }
   };
 
   return (
     <div className="flex">
-      <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
-        <ul className="space-y-4">
-          <li className="flex items-center">
-            <AiOutlineHome className="mr-2" />
-            <button
-              onClick={() => navigate("/AdminHome")}
-              className="hover:underline focus:outline-none">
-              Home
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineTool className="mr-2" />
-            <button
-              onClick={() => navigate("/AssignRole")}
-              className="hover:underline focus:outline-none">
-              AssignRole
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineUser className="mr-2" />
-            <button
-              onClick={() => navigate("/Profile")}
-              className="hover:underline focus:outline-none">
-              Profile
-            </button>
-          </li>
-        </ul>
-      </div>
       <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
         <h1 className="text-4xl font-bold mb-8"></h1>
 
@@ -141,21 +107,38 @@ const Settings = () => {
           </button>
         </div>
 
-        <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8">
-          <h2 className="font-extrabold text-2xl mb-4">
+        <div className="checkbox-container">
+          <input
+            id="mfaToggle"
+            className="checkbox-input"
+            type="checkbox"
+            checked={mfaEnabled}
+            onChange={handleToggleMFA}
+          />
+          <label htmlFor="mfaToggle" className="checkbox-label">
             Multi-Factor Authentication
-          </h2>
-          <div
-            className={`flex items-center justify-center bg-white rounded-full mb-4 p-2 text-${mfaTextColor}`}>
-            {mfaEnabled ? "Enabled" : "Disabled"}
-            <button
-              onClick={handleSetMFA}
-              className="bg-blue-500 text-white py-2 px-4 rounded-full ml-4">
-              Toggle MFA
-            </button>
-          </div>
+          </label>
         </div>
       </div>
+      <style>
+        {`
+    /* Style for the checkbox container */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Style for the checkbox input */
+    .checkbox-input {
+      margin-right: 8px; /* Adjust spacing */
+    }
+
+    /* Style for the checkbox label */
+    .checkbox-label {
+      user-select: none;
+    }
+  `}
+      </style>
     </div>
   );
 };
