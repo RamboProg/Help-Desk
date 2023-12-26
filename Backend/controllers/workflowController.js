@@ -15,23 +15,25 @@ const workflowController = {
       res.status(500).json({ message: "Internal Server Error; Try Again :(" });
     }
   },
-
-getWorkflow: async (req, res) => {
-    const { Issue } = req.query;
-
+  getWorkflow: async (req, res) => {
+    let { issueName } = req.params; // Extracting issueName from route parameters
+    issueName = issueName.charAt(0).toUpperCase() + issueName.slice(1).toLowerCase(); // Convert to Proper Case
+    
     try {
-      const workflow = await Workflow.findOne({ Issue });
-  
+      const workflow = await Workflow.findOne({ Issue: issueName }); // Querying the database
+      
       if (!workflow) {
-        return res.status(404).json({ message: 'Solutins not found' });
+        return res.status(404).json({ message: 'Solutions not found' });
       }
-  
+      
       const customWorkflow = workflow.Custom_Workflow;
       res.json({ Custom_Workflow: customWorkflow });
     } catch (err) {
       res.status(500).json({ message: "Internal Server Error; Try Again :(" });
     }
-},
+  },
+  
+  
 
 createWorkflow: async (req, res) => {
   const { Issue, Custom_Workflow, Sub_Issue_Type } = req.body;
