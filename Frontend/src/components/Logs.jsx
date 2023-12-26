@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LightOceanTheme } from "./themes";
+import axios from "axios";
 
 const LogsPage = () => {
   const theme = LightOceanTheme;
@@ -13,7 +14,7 @@ const LogsPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/logs" , { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/api/logs" , { withCredentials: true });
         if (response.ok) {
           const data = await response.json();
           setLogs(data);
