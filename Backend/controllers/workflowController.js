@@ -2,7 +2,21 @@
 const Workflow = require('../models/issueModel');
 
 
-exports.getWorkflow = async (req, res) => {
+const workflowController = {
+  getAllWorkflows: async (req, res) => {
+    try {
+      const workflows = await Workflow.find({});
+      // Set the content type explicitly to application/json (though res.json() does this by default)
+      res.setHeader('Content-Type', 'application/json');
+      // Send the JSON response with the workflows array
+      res.send(JSON.stringify({ workflows }));
+    } catch (err) {
+      // Handle any errors
+      res.status(500).json({ message: "Internal Server Error; Try Again :(" });
+    }
+  },
+
+getWorkflow: async (req, res) => {
     const { Issue } = req.query;
 
     try {
@@ -17,9 +31,9 @@ exports.getWorkflow = async (req, res) => {
     } catch (err) {
       res.status(500).json({ message: "Internal Server Error; Try Again :(" });
     }
-};
+},
 
-exports.createWorkflow = async (req, res) => {
+createWorkflow: async (req, res) => {
   const { Issue, Custom_Workflow, Sub_Issue_Type } = req.body;
   try {
     const workflow = await Workflow.create({ Issue, Custom_Workflow, Sub_Issue_Type });
@@ -29,8 +43,8 @@ exports.createWorkflow = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error; Try Again" });
   }
 
-}
-exports.deleteWorkflow = async (req, res) => {
+},
+deleteWorkflow: async (req, res) => {
   const { issuesid } = req.query; // Destructure the issuesid from req.params
   try {
     const deleted = await Workflow.deleteOne({ _id: issuesid }); // Use _id to match the ObjectId
@@ -41,6 +55,7 @@ exports.deleteWorkflow = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error; Try Again" });
   }
+},
 };
 
-
+module.exports = workflowController;

@@ -57,8 +57,6 @@ app.get('/api/faqs', async (req, res) => {
 const tempRouter = require('./routes/tempRoutes');
 app.use(tempRouter);
 
-app.use('/api/v1', authRouter);
-app.use(authenticationMiddleware );
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -113,9 +111,9 @@ app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
+app.use(workflowRouter);
 app.use("/api/v1/users", userRouter);
 app.use(authRouter);
-app.use(workflowRouter);
 
 const logger = require('./controllers/loggerController');
 
@@ -134,6 +132,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
+app.use('/api/v1', authRouter);
+app.use(authenticationMiddleware );
 // Import routes
 // Connect to MongoDB
 mongoose
