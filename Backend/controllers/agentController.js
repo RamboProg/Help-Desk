@@ -6,6 +6,7 @@ const Email = require("../models/emailModel");
 const nodemailer = require("nodemailer");
 const SMTPTransport = require("nodemailer/lib/smtp-transport");
 const user = require("../models/userModel");
+const Notifications = require("../models/notificationModel");
 
 let transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -17,39 +18,30 @@ let transporter = nodemailer.createTransport({
 
 const agentController = {
 
-  closeTicket: async (req, res) => {
+  closeTicket: async (req, res) => {  
     try {
-      console.log(1);
+
       if (!req.body || !req.body.status || !req.body.resolutionDetails) {
         return res.status(400).json({ message: 'Invalid request body' });
       }
       console.log(2);
       const ticketId = parseInt(req.params.ticketId);
-      console.log(ticketId);
-      console.log(3);
       const resolutionDetails = req.body.resolutionDetails;
-      console.log(4);
       console.log(resolutionDetails);
       const tempTicket= await ticket.findOne({ _id: ticketId });
-      console.log(tempTicket)
-      console.log(5);
       const ticketOwner = tempTicket.Ticket_Owner;
-      console.log(ticketOwner)
       const Client = await user.findById(ticketOwner);
-      console.log(6);
-      console.log(Client);
+      const Agent = await user.findById(tempTicket.Assigned_AgentID);
       // Find and update the ticket by its ID
       const updatedTicket = await ticket.findByIdAndUpdate(
         ticketId,
         { $set: { Status: "Closed", Resolution_Details: resolutionDetails } },
         { new: true } // Return the updated document
       );
-      console.log(7);
         
       if (!updatedTicket) {
         return res.status(404).json({ message: 'Ticket not found' });
       }
-      console.log(8);
       console.log(Client.Email);
       console.log(process.env.MAIL_ADD);
         var mailOptions = {
@@ -58,7 +50,6 @@ const agentController = {
           subject: "Your Ticket Status Has Been Closed",
           text: resolutionDetails,
         };
-        console.log(9)
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error);
@@ -66,15 +57,33 @@ const agentController = {
           console.log("Email sent: " + info.response);
         }
       });
-      console.log(10);
-  
-      return res.status(201).json(updatedTicket);
+      const newNotification = new Notifications({
+        Sender: Agent._id,
+        Receiver: Client._id,
+        Message: "Your Ticket Has Been Closed, Check Your Email For More Details",
+        Date: Date.now(),
+      });
+      await newNotification.save();
+      
+      return res.status(200).json(updatedTicket);
     } catch (e) {
       console.log("Could not close ticket", e.message);
       return res.status(400).send(e.message);
     }
   
   },
+  getMyNotications: async (req, res) => {
+    try {
+        const { userID } = req.query; 
+        const notifications = await Notifications.find({ Receiver: userID });
+        if (!notifications) {
+            return res.status(401).json({ message: "No Notifications Found"});
+        }
+        return res.status(200).json({ notifications });
+    } catch (error) {
+        return res.status(401).json({ message: error.message });
+    }
+},
 
   updateTicket: async (req, res) => {
     try {

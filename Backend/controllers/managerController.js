@@ -1,5 +1,6 @@
 const Ticket = require('../models/ticketModel.js');
 const AgentModel = require('../models/agentModel.js');
+const Notifications = require('../models/notificationModel.js');
 const managerController = {
   // Get all tickets
   getAllTickets: async (req, res) => {
@@ -11,6 +12,60 @@ const managerController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  // Get ticket by ID
+  getTicketById: async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const ticket = await Ticket.findById(ticketId);
+      if (!ticket) {
+        return res.status(404).json({ message: 'Ticket not found' });
+      }
+      res.json(ticket);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  // Get agent by ID
+  getAgentById: async (req, res) => {
+    try {
+      const { agentId } = req.params;
+      const agent = await AgentModel.findById(agentId);
+      if (!agent) {
+        return res.status(404).json({ message: 'Agent not found' });
+      }
+      res.json(agent);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  getMyNotications: async (req, res) => {
+    try {
+        const { userID } = req.query; 
+        const notifications = await Notifications.find({ Receiver: userID });
+        if (!notifications) {
+            return res.status(401).json({ message: "No Notifications Found"});
+        }
+        return res.status(200).json({ notifications });
+    } catch (error) {
+        return res.status(401).json({ message: error.message });
+    }
+},
+  
+
+  // Corrected code
+getTicketsByAgent: async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const tickets = await Ticket.find({ Assigned_AgentID: agentId });
+    res.json(tickets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
+
 
   // Get tickets by status
   getTicketsByStatus: async (req, res) => {

@@ -24,6 +24,8 @@ import Tickets from './components/Tickets'
 import ViewMyTickets from './components/ClientViewTickets';
 import Chat from './components/Chat';
 import AgentWorkflow from './components/AgentWorkflow';
+import AgentIssuesCharts from './components/AgentIssuesCharts'
+import ManagerTickets from './components/ManagerTickets'
 
 
 function App() {
@@ -78,6 +80,8 @@ function App() {
           path="/CreateTicket"
           element={<ClientLayout><CreateTicket /></ClientLayout>}
         /> */}
+        <Route path = "/AgentIssuesCharts" element = {<ManagerLayout><AgentIssuesCharts/></ManagerLayout>}/>
+        <Route path = "/ManagerTickets" element = {<ManagerLayout><ManagerTickets/></ManagerLayout>}/>
         </Routes>
 
 

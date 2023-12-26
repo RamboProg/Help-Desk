@@ -36,9 +36,11 @@ router.put('/api/v1/rateAgent', (req, res) => {
       console.error('Error:', error);
       res.status(500).json({ error: 'Internal server error' });
     });
+    
 });
 
 
 
 
+//router.get('/api/v1/client/getMyNotications', clientController.getMyNotications);
 module.exports = router;
