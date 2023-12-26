@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
 import { LightOceanTheme } from "./themes";
@@ -11,11 +11,11 @@ const CreateTicket = () => {
   });
 
   const [validSubIssueTypes, setValidSubIssueTypes] = useState([]);
+  const [workflowResponse, setWorkflowResponse] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form data
     if (
       formData.Issue_Type === "default" ||
       formData.Sub_Issue_Type.trim() === "" ||
@@ -39,29 +39,25 @@ const CreateTicket = () => {
 
       console.log("Server Response:", response.data);
       alert("Ticket created successfully!");
-      // Handle success, e.g., show a success message or redirect to another page
     } catch (error) {
       console.error("Error creating ticket:", error);
       alert("Failed to create ticket. Please try again later.");
-      // Handle error, e.g., show an error message to the user
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Only update the description field
     if (name === "description") {
       setFormData((prevFormData) => ({
         ...prevFormData,
         [name]: value,
       }));
     } else {
-      // Update validSubIssueTypes based on the selected Issue_Type
       setFormData((prevFormData) => ({
         ...prevFormData,
         [name]: value,
-        Sub_Issue_Type: "", // Reset Sub_Issue_Type when Issue_Type changes
+        Sub_Issue_Type: "",
       }));
 
       switch (value) {
@@ -98,13 +94,31 @@ const CreateTicket = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchWorkflow = async () => {
+      if (formData.Issue_Type !== "default") {
+        try {
+          const response = await axios.get(`http://localhost:3000/workflows/${formData.Issue_Type}` , { withCredentials: true });
+          setWorkflowResponse(response.data.Custom_Workflow);
+        } catch (error) {
+          console.error("Error fetching workflow:", error);
+          setWorkflowResponse("Failed to fetch workflow. Please try again later.");
+        }
+      } else {
+        setWorkflowResponse("");
+      }
+    };
+
+    fetchWorkflow();
+  }, [formData.Issue_Type]);
+
   return (
     <div className="flex min-h-screen">
       <div className="flex-1 p-8">
         <div className={`max-w-[1640px] mx-auto bg-gray-200 bg-opacity-50 rounded-lg p-8 flex`}>
           <div className="w-1/3 pr-8">
             <img
-              src="https://img.freepik.com/free-vector/flat-people-asking-questions-illustration_23-2148901520.jpg?w=996&t=st=1703180818~exp=1703181418~hmac=25d978773da4d75d494eebaeb3a84d8d87badb403309206e1174101eb499ab39"
+              src="https://img.freepik.com/free-vector/organic-flat-customer-support-illustration_23-2148899174.jpg?w=1380&t=st=1703599026~exp=1703599626~hmac=73f223ce6fcbfe2db7282b50aeb152b046702091d447294f52a731f70e4ba1cf"
               alt="People asking questions"
               className="w-full h-auto object-cover rounded-lg"
             />
@@ -157,6 +171,19 @@ const CreateTicket = () => {
                 Create Ticket
               </button>
             </form>
+
+            {/* Display the workflowResponse if it's not empty */}
+            {workflowResponse && (
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold mb-4">Automated Workflow:</h3>
+                <textarea
+                  value={workflowResponse}
+                  readOnly
+                  className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+                  rows={4}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
