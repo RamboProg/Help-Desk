@@ -12,12 +12,12 @@ const axios = require('axios'); // Add this line for Winston MongoDB transport
 const cors = require('cors');
 const authRouter = require('./routes/auth');
 const authenticationMiddleware = require('./middleware/authenticationMiddleware');
-const socketIo = require('socket.io')
+const socketIo = require('socket.io');
 
 // Create the Express app
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server)
+const io = socketIo(server);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -31,20 +31,19 @@ app.use(cookieParser());
 // );
 // app.use(cors());
 
-
 // Enable CORS for all routes
-app.use(cors({
-  origin: 'http://localhost:4000', // specify your frontend's origin
-  credentials: true,
-}));
-
-
+app.use(
+  cors({
+    origin: 'http://localhost:4000', // specify your frontend's origin
+    credentials: true
+  })
+);
 
 const tempRouter = require('./routes/tempRoutes');
 app.use(tempRouter);
 
 app.use('/api/v1', authRouter);
-app.use(authenticationMiddleware );
+app.use(authenticationMiddleware);
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -72,7 +71,7 @@ app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
 app.use(managerRoutes);
-app.use("/api/v1/users", userRouter);
+app.use('/api/v1/users', userRouter);
 app.use(authRouter);
 app.use(workflowRouter);
 
@@ -150,11 +149,10 @@ mongoose
     console.log(err);
   });
 
-  app.use(function (err, req, res, next) {
-    console.error(err.stack);
-    res.status(500).send(`Something broke! Error: ${err.message}`);
-  });
-  
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send(`Something broke! Error: ${err.message}`);
+});
 
 const Image = mongoose.model('Image', { imagePath: String });
 
@@ -170,7 +168,11 @@ io.on('connection', (socket) => {
 
   // Handle messages
   socket.on('sendMessage', (data) => {
-    io.emit(`chat_${data.ticketId}`, { text: data.message, sender: data.userId });
+    // io.emit(`chat_${data.ticketId}`, { text: data.message, sender: data.userId });
+    socket.broadcast.emit(`chat_${data.ticketId}`, {
+      Message: data.message,
+      SenderID: data.userId
+    });
   });
 
   socket.on('disconnect', () => {
