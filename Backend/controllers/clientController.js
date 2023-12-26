@@ -3,6 +3,7 @@ const Client = require('../models/clientModel');
 const Ticket = require('../models/ticketModel');
 const Agent = require('../models/agentModel');
 const Chat = require('../models/chatModel');
+const Notifications = require('../models/notificationModel');
 const { getUser } = require('../controllers/userController');
  const clientController = {
 
@@ -119,6 +120,18 @@ const { getUser } = require('../controllers/userController');
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+  getMyNotications: async (req, res) => {
+    try {
+        const { userID } = req.query; 
+        const notifications = await Notifications.find({ Receiver: userID });
+        if (!notifications) {
+            return res.status(401).json({ message: "No Notifications Found"});
+        }
+        return res.status(200).json({ notifications });
+    } catch (error) {
+        return res.status(401).json({ message: error.message });
+    }
+},
 
   rateAgent: async (req, res) => {
     try {

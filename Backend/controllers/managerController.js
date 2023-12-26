@@ -1,5 +1,6 @@
 const Ticket = require('../models/ticketModel.js');
 const AgentModel = require('../models/agentModel.js');
+const Notifications = require('../models/notificationModel.js');
 const managerController = {
   // Get all tickets
   getAllTickets: async (req, res) => {
@@ -39,6 +40,18 @@ const managerController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  getMyNotications: async (req, res) => {
+    try {
+        const { userID } = req.query; 
+        const notifications = await Notifications.find({ Receiver: userID });
+        if (!notifications) {
+            return res.status(401).json({ message: "No Notifications Found"});
+        }
+        return res.status(200).json({ notifications });
+    } catch (error) {
+        return res.status(401).json({ message: error.message });
+    }
+},
   
 
   // Corrected code

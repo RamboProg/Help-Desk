@@ -11,10 +11,11 @@ const ManagerModel = require('./models/managerModel.js');
 const TicketModel = require('./models/ticketModel.js');
 const ChatModel = require('./models/chatModel.js');
 const CustomizationModel = require('./models/customizationModel.js');
-const EmailModel = require('./models/emailModel.js');
+// const EmailModel = require('./models/emailModel.js');
 const session = require('./models/sessionModel.js');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const notificationModel = require('./models/notificationModel.js');
 
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -40,12 +41,12 @@ const seedData = async () => {
     await ChatModel.deleteMany({});
     await CustomizationModel.deleteMany({});
     await session.deleteMany({});
-    await EmailModel.deleteMany({});
+    await notificationModel.deleteMany({});
     // Create an empty session table
     await session.createCollection();
     // Create an empty email table
-    await EmailModel.createCollection();
-    
+
+    await notificationModel.createCollection();
     const supportAgents = [];
     for (let i = 1; i <= 3; i++) {
       let mysalt = await generateSalt();

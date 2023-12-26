@@ -11,7 +11,7 @@ router.post('/api/v1/agent/tickets/close/:ticketId', agentController.closeTicket
 router.post('/api/v1/agent/tickets/update/:ticketId', agentController.updateTicket);
 router.post('/sendEmail', agentController.sendEmail);
 router.get('/api/v1/agent/getTickets', agentController.getTickets);
-
+router.get('/api/v1/agent/getMyNotications', agentController.getMyNotications);
 
 module.exports = router;
 

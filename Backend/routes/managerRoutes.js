@@ -20,5 +20,6 @@ router.get('/api/v1/reports/tickets/TicketAnalytics/subIssueType/:subIssueType',
 
 router.get('/api/v1/reports/tickets/ticketsId/:ticketId', managerController.getTicketById);
 router.get('/api/v1/reports/tickets/agentId/:agentId', managerController.getAgentById);
+router.get('/api/v1/manager/getMyNotications', managerController.getMyNotications);
 
 module.exports = router;

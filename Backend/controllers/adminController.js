@@ -7,6 +7,7 @@ require('dotenv').config();
 const authenticator = require('otplib');
 const bcrypt = require('bcryptjs');
 const express = require('express');
+const Notifications = require('../models/notificationModel');
 
 
 const adminController = {
@@ -83,6 +84,18 @@ const adminController = {
             const users = await userModel.find({ RoleID: { $ne: 1 }}, 'Email Username PhoneNumber RoleID');
 
             return res.status(200).json({ users });
+        } catch (error) {
+            return res.status(401).json({ message: error.message });
+        }
+    },
+    getMyNotications: async (req, res) => {
+        try {
+            const { userID } = req.query; 
+            const notifications = await Notifications.find({ Receiver: userID });
+            if (!notifications) {
+                return res.status(401).json({ message: "No Notifications Found"});
+            }
+            return res.status(200).json({ notifications });
         } catch (error) {
             return res.status(401).json({ message: error.message });
         }
