@@ -226,17 +226,18 @@ const { Types } = require('mongoose');
     setMFA: async (req, res) => {
       try {
         const id = req.user.userId;
-        console.log(id);
+        
         const user = await userModel.findOne({ _id: id });
         if (!user) {
           return res.status(404).json({ message: 'User not found' });
         }
+        var updatedMFA= null;
         if (user.MFA_Enabled === false) {
-          await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: true } });
+          updatedMFA = await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: true } });
         } else {
-          await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: false } });
+          updatedMFA= await userModel.updateOne({ _id: id }, { $set: { MFA_Enabled: false } });
         }
-        console.log('Email sent successfully');
+        res.status(200).json({ message: 'MFA updated successfully' });
       } catch (error) {
         res.status(500).json({ message: error.message });
       }

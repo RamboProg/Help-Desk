@@ -54,20 +54,16 @@ const Settings = () => {
 
   const handleToggleMFA = async () => {
     try {
-      console.log("lol")
       const response = await axios.post(
-        "http://localhost:3000/api/v1/users/setMFA",
+        "http://localhost:3000/api/v1/users/setMFA",{},
         { withCredentials: true }
       );
-      console.log("lol2")
       setMFAEnabled(!mfaEnabled);
 
       //refresh page
       navigate("/Settings");
-
-      console.log(response.data.message);
     } catch (error) {
-      console.error("Error toggling MFA:", error.message);
+      console.error("Error toggling MFA:");
     }
   };
 
