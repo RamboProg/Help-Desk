@@ -247,42 +247,58 @@ const clientController = {
     }
   },
 
-  rateAgent: async (req, res) => {
-    try {
-      const _id = req.user.userId; 
-      const client = await Client.findById(_id);
-      if (!client) {
-        return res.status(404).json({ error: 'client not found' });
-      }
-      const ticketId = req.body.ticketId;
-      const rating = req.body.Rating;
-      const ticket = await Ticket.findById(ticketId);
-      if (!ticket) {
-        return res.status(404).json({ error: 'Ticket does not exist' });
-      }
-      if (ticket.Status != 'Closed') {
-        return res.status(400).json({ error: 'This ticket is not closed yet and cannot be rated' });
-      }
-
-      // get the agent id from the ticket
-      const agentId = ticket.Assigned_AgentID;
-
-      const agent = await Agent.findById(agentId);
-      if (!agent) {
-        return res.status(404).json({ error: 'Agent not found' });
-      }
-      //update the agent's avg rating
-      //the ticket count is updated 
-      agent.Average_Rating = (rating + (agent.Average_Rating * (agent.Ticket_Count - 1))) / agent.Ticket_Count
-      await agent.save();
-      res.json({ ticket: updatedTicket });
-
-    } catch (error) {
-      console.error('Error Inserting Rating:', error);
-      res.status(500).json({ error: 'Internal server error' });
-
+rateAgent: async (req, res) => {
+  try {
+    const _id = req.user.userId; 
+    const client = await Client.findById(_id);
+    if (!client) {
+      return res.status(404).json({ error: 'client not found' });
     }
-  },
+
+    const ticketId = req.body.ticketId;
+    const rating = parseInt(req.body.Rating); // Convert the rating to an integer
+    if (isNaN(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Invalid rating value' });
+    }
+
+    const ticket = await Ticket.findById(ticketId);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket does not exist' });
+    }
+
+    if (ticket.Status !== 'Closed') {
+      return res.status(400).json({ error: 'This ticket is not closed yet and cannot be rated' });
+    }
+
+    // Get the agent id from the ticket
+    const agentId = ticket.Assigned_AgentID;
+
+    const agent = await Agent.findById(agentId);
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+
+    // Update the agent's avg rating
+    // Check for zero ticket count to avoid division by zero
+    if (agent.Ticket_Count === 0) {
+      agent.Average_Rating = rating;
+    } else {
+      agent.Average_Rating = ((agent.Average_Rating * agent.Ticket_Count) + rating) / (agent.Ticket_Count + 1);
+    }
+
+    // Increment ticket count
+    agent.Ticket_Count += 1;
+
+    await agent.save();
+
+    res.json({ message: 'Agent rated successfully', agent });
+
+  } catch (error) {
+    console.error('Error Inserting Rating:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+,
 
 
 };
