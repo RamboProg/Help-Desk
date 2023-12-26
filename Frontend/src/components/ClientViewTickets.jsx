@@ -24,8 +24,12 @@ const ViewMyTickets = () => {
 
     fetchTickets();
   }, []);
+const isTicketRated = (ticketId) => ratedTickets.includes(ticketId);
 
-  const isTicketRated = (ticketId) => ratedTickets.includes(ticketId);
+  const canStartChat = (ticket) => {
+    // Check if the ticket is closed or has the sub_issue_type of 'other'
+    return ticket.Status === 'Closed' || ticket.Sub_Issue_Type === 'Other';
+  };
 
   const handleStartChat = (ticket) => {
     console.log('Starting chat for ticket:', ticket);

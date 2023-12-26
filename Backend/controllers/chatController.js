@@ -1,37 +1,32 @@
 // chatController.js
 const Chat = require('../models/chatModel');
 const Ticket = require('../models/ticketModel');
+const Message = require('../models/msgModel');
 
 const chatController = {
-  // Controller function to start a new chat
   getChatIfExists: async (req, res) => {
     const { ticketId } = req.query;
-    // const ticketId = 28;
-    console.log('ticketId', ticketId);
     try {
       const chat = await Chat.findOne({ TicketID: ticketId });
 
       if (chat) {
-        res.status(200).json(chat.Messages);
+        const messages = await Message.find({ ChatID: chat._id });
+        res.status(200).json(messages);
       } else {
         const userId = req.user.userId;
         const agentId = await Ticket.findById(ticketId).select('Assigned_AgentID');
-        console.log(agentId)
 
-        // Create a new chat instance
         const newChat = new Chat({
           Client_ID: userId,
           Support_AgentID: agentId,
           TicketID: ticketId,
-          Messages: [],
-          Chat_Start_Time: new Date(),
-          Final_Message_Time: new Date(),
+          Start_Time: new Date(),
+          End_Time: null, // You may set the end time based on your logic
           Message_Count: 0
         });
 
-        // Save the chat to the database
         await newChat.save();
-        res.status(200).json(newChat.Messages); // Return the messages of the new chat
+        res.status(200).json([]); // Return an empty array if no messages initially
       }
     } catch (error) {
       console.error('Error creating or retrieving chat:', error);
@@ -47,14 +42,19 @@ const chatController = {
       if (chat) {
         const { message } = req.body;
 
-        // Assuming the request body contains a 'message' field
-        chat.Messages.push({ text: message, sender: req.user.username });
-        chat.Message_Count += 1;
-        chat.Final_Message_Time = new Date();
+        const newMessage = new Message({
+          ChatID: chat._id,
+          SenderID: req.user.userId,
+          Message: message
+        });
 
-        // Update other fields as needed
-        const updatedChat = await chat.save();
-        res.status(200).json(updatedChat.Messages);
+        await newMessage.save();
+
+        chat.Message_Count += 1;
+        chat.End_Time = new Date(); // Update end time when sending a message
+        await chat.save();
+
+        res.status(200).json(newMessage);
       } else {
         res.status(404).json({ message: 'Chat not found.' });
       }
