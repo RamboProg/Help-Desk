@@ -1,37 +1,47 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import AppearanceContext from '../AppearanceContext'; // Assuming you have this context
-import { 
-  LightOceanTheme, 
-  DarkNebulaTheme, 
-  EarthyForestTheme, 
-  SunsetGlowTheme, 
-  LavenderMistTheme, 
-  CloudySkyTheme 
+import AppearanceContext from '../AppearanceContext';
+
+import {
+  LightOceanTheme,
+  DarkNebulaTheme,
+  EarthyForestTheme,
+  SunsetGlowTheme,
+  LavenderMistTheme,
+  CloudySkyTheme,
 } from './themes';
 
 const themes = {
-  light: LightOceanTheme,
-  dark: DarkNebulaTheme,
-  forest: EarthyForestTheme,
-  sunset: SunsetGlowTheme,
-  lavender: LavenderMistTheme,
-  cloudy: CloudySkyTheme,
+  Light: LightOceanTheme,
+  Dark: DarkNebulaTheme,
+  Forest: EarthyForestTheme,
+  Sunset: SunsetGlowTheme,
+  Lavender: LavenderMistTheme,
+  Cloudy: CloudySkyTheme,
 };
 
 const Appearance = () => {
-  const { themeName: contextThemeName, logoPath: contextLogoPath, setThemeName, setLogoPath } = useContext(AppearanceContext);
-  
+  const {
+    themeName: contextThemeName,
+    logoPath: contextLogoPath,
+    setThemeName,
+    setLogoPath,
+  } = useContext(AppearanceContext);
+
   const [themeName, setLocalThemeName] = useState(contextThemeName);
   const [logoPath, setLocalLogoPath] = useState(contextLogoPath);
 
   useEffect(() => {
     fetchGlobalSettings();
-  }, []);
+  }, []); // Empty dependency array to run the effect only once
 
   const handleThemeChange = async () => {
     try {
-      await axios.post('http://localhost:3000/api/v1/editAppearance/', { theme: themeName, logoPath });
+      await axios.post(
+        'http://localhost:3000/editAppearance/',
+        { theme: themeName, logoPath },
+        { withCredentials: true }
+      );
       await fetchGlobalSettings();
       setThemeName(themeName);
       setLogoPath(logoPath);
@@ -44,7 +54,9 @@ const Appearance = () => {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('http://localhost:3000/api/v1/Appearance/');
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
+        withCredentials: true,
+      });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
         setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
@@ -59,24 +71,25 @@ const Appearance = () => {
   const selectedTheme = themes[themeName];
 
   return (
-    <div 
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundColor: selectedTheme.colors.background,
-      color: selectedTheme.colors.text,
-      padding: selectedTheme.spacing.md 
-    }}
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: selectedTheme.colors.background,
+        color: selectedTheme.colors.text,
+        padding: selectedTheme.spacing.md,
+        fontFamily: 'Arial, sans-serif', // Adjust the font family
+      }}
     >
       {/* Header */}
-      <h1 
-        style={{ 
-          fontSize: '2.5em',  // Larger text size
-          fontWeight: 'bold',  // Bold font weight
-          marginBottom: '20px', 
-          textAlign: 'center'
+      <h1
+        style={{
+          fontSize: '2.5em', // Larger text size
+          fontWeight: 'bold', // Bold font weight
+          marginBottom: '20px',
+          textAlign: 'center',
         }}
       >
         Appearance
@@ -84,18 +97,21 @@ const Appearance = () => {
 
       {/* Label and Dropdown for selecting theme */}
       <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <label htmlFor="themeDropdown" style={{ marginBottom: '10px' }}>Selected Theme</label>
-        <select 
+        <label htmlFor="themeDropdown" style={{ marginBottom: '10px', fontSize: '1.2em', fontWeight: 'bold' }}>
+          Selected Theme
+        </label>
+        <select
           id="themeDropdown"
-          style={{ 
+          style={{
             width: '200px',
-            marginRight: '10px',
+            marginBottom: '20px',
             backgroundColor: selectedTheme.colors.secondary,
             color: selectedTheme.colors.text,
             padding: selectedTheme.spacing.sm,
-            borderRadius: '4px' 
+            borderRadius: '4px',
+            fontSize: '1em',
           }}
-          value={themeName} 
+          value={themeName}
           onChange={(e) => setLocalThemeName(e.target.value)}
         >
           {Object.keys(themes).map((themeKey) => (
@@ -107,17 +123,20 @@ const Appearance = () => {
 
         {/* Label and Textbox for logoPath */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <label htmlFor="logoPathInput" style={{ marginBottom: '10px' }}>Logo Image Path</label>
-          <input 
+          <label htmlFor="logoPathInput" style={{ marginBottom: '10px', fontSize: '1.2em', fontWeight: 'bold' }}>
+            Logo Image Path
+          </label>
+          <input
             id="logoPathInput"
-            style={{ 
+            style={{
               width: '200px',
               marginBottom: '20px',
               padding: selectedTheme.spacing.sm,
               borderRadius: '4px',
-              border: `1px solid ${selectedTheme.colors.primary}`
+              border: `1px solid ${selectedTheme.colors.primary}`,
+              fontSize: '1em',
             }}
-            type="text" 
+            type="text"
             placeholder="Enter logo URL"
             value={logoPath}
             onChange={(e) => setLocalLogoPath(e.target.value)}
@@ -126,14 +145,16 @@ const Appearance = () => {
       </div>
 
       {/* Button to update appearance */}
-      <button 
-        style={{ 
+      <button
+        style={{
           padding: selectedTheme.spacing.sm,
           backgroundColor: selectedTheme.colors.primary,
           color: selectedTheme.colors.background,
           borderRadius: '4px',
           border: 'none',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontSize: '1.2em',
+          fontWeight: 'bold',
         }}
         onClick={handleThemeChange}
       >

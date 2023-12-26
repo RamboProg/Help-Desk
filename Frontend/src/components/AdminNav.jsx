@@ -5,31 +5,30 @@ import {
   AiOutlineClose,
   AiOutlineUser,
   AiOutlineSetting,
-  AiOutlineTeam,
   AiOutlinePicture,
   AiOutlineFileText,
   AiOutlineHome,
-  AiOutlinePlus,
   AiOutlineBell
 } from 'react-icons/ai';
 import { AppearanceContext } from '../AppearanceContext';
 import axios from 'axios';
-import { 
-  LightOceanTheme, 
-  DarkNebulaTheme, 
-  EarthyForestTheme, 
-  SunsetGlowTheme, 
-  LavenderMistTheme, 
-  CloudySkyTheme 
+
+import {
+  LightOceanTheme,
+  DarkNebulaTheme,
+  EarthyForestTheme,
+  SunsetGlowTheme,
+  LavenderMistTheme,
+  CloudySkyTheme,
 } from './themes';
 
 const themes = {
-  light: LightOceanTheme,
-  dark: DarkNebulaTheme,
-  forest: EarthyForestTheme,
-  sunset: SunsetGlowTheme,
-  lavender: LavenderMistTheme,
-  cloudy: CloudySkyTheme,
+  Light: LightOceanTheme,
+  Dark: DarkNebulaTheme,
+  Forest: EarthyForestTheme,
+  Sunset: SunsetGlowTheme,
+  Lavender: LavenderMistTheme,
+  Cloudy: CloudySkyTheme,
 };
 
 const AdminNav = () => {
@@ -40,7 +39,6 @@ const AdminNav = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [nav, setNav] = useState(false);
-  const theme = LightOceanTheme;
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -57,8 +55,9 @@ const AdminNav = () => {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('http://localhost:3000/api/v1/Appearance/');
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        console.log(globalSettingsResponse);
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
         setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
         setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
@@ -79,9 +78,8 @@ const AdminNav = () => {
   const menuItemStyles = {
     backgroundColor: selectedTheme.colors.secondary,
     color: selectedTheme.colors.text,
-    padding: selectedTheme.spacing.sm,
+    padding: selectedTheme.spacing.md,
     borderRadius: '4px',
-    border: `1px solid ${selectedTheme.colors.primary}`
   };
 
   const handleCheckboxChange = async (notificationId) => {

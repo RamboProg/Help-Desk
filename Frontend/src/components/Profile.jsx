@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {
-  AiOutlineHome,
-  AiOutlineUser,
-  AiOutlineTool,
-  AiOutlineProfile,
-} from "react-icons/ai";
+import { AiOutlineTool } from "react-icons/ai";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -17,6 +12,8 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(userId); // Log the initial state
+
     // Fetch user profile data
     const fetchUserProfile = async () => {
       try {
@@ -30,18 +27,17 @@ const Profile = () => {
         setNewUsername(response.data.user.Username);
         setNewPhoneNumber(response.data.user.PhoneNumber);
         setUserId(response.data.user._id);
-        console.log(userId);
       } catch (error) {
         console.error("Error fetching user profile:", error.message);
       }
     };
 
     fetchUserProfile();
-  }, [userId]);
+  }, [userId]); // Add an empty dependency array to run the effect only once
 
   const handleUpdateProfile = async () => {
     try {
-      const response = await axios.put(
+      await axios.put(
         `http://localhost:3000/api/v1/users/${userId}`,
         {
           newEmail,
@@ -50,17 +46,10 @@ const Profile = () => {
         },
         { withCredentials: true }
       );
-
-      // console.log(response.data.message);
-      setUser(response.data.user);
     } catch (error) {
       console.error("Profile update failed:", error.message);
     }
   };
-
-  // if (!user) {
-  //   return <div>Loading...</div>;
-  // }
 
   return (
     <div className="flex">
