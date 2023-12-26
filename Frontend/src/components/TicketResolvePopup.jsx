@@ -13,6 +13,7 @@ const TicketResolvePopup = ({ isOpen, onClose, ticketId, onResolve }) => {
       },{withCredentials: true});
 
       if (response.data) {
+        alert('Ticket closed successfully!');
         console.log("Ticket closed successfully");
         // Close the popup and trigger the parent component's onResolve callback
         onClose();
