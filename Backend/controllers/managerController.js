@@ -11,18 +11,48 @@ const managerController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-  getTicketsByAgent : async (req, res) => {
+  // Get ticket by ID
+  getTicketById: async (req, res) => {
     try {
-      const {agentId} = req.params.agentId;
-      console.log(agentId);
-      console.log("helloAaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-      const tickets = await Ticket.find({ Assigned_AgentID: agentId });
-      res.json(tickets);
+      const { ticketId } = req.params;
+      const ticket = await Ticket.findById(ticketId);
+      if (!ticket) {
+        return res.status(404).json({ message: 'Ticket not found' });
+      }
+      res.json(ticket);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  // Get agent by ID
+  getAgentById: async (req, res) => {
+    try {
+      const { agentId } = req.params;
+      const agent = await AgentModel.findById(agentId);
+      if (!agent) {
+        return res.status(404).json({ message: 'Agent not found' });
+      }
+      res.json(agent);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  
+
+  // Corrected code
+getTicketsByAgent: async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const tickets = await Ticket.find({ Assigned_AgentID: agentId });
+    res.json(tickets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
+
 
   // Get tickets by status
   getTicketsByStatus: async (req, res) => {

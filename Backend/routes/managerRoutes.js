@@ -17,7 +17,8 @@ router.get('/api/v1/reports/tickets/TicketAnalytics/Priority/:Priority', manager
 router.get('/api/v1/reports/tickets/TicketAnalytics/IssueType/:Issue_Type', managerController.getTicketAnalyticsByIssueType);
 router.get('/api/v1/reports/tickets/TicketAnalytics/subIssueType/:subIssueType', managerController.getTicketAnalyticsBySubIssueType);
 
-// New route for fetching ticket data for a specific agent
-router.get('/api/v1/reports/tickets/agent/:agentId', managerController.getTicketsByAgent);
+
+router.get('/api/v1/reports/tickets/ticketsId/:ticketId', managerController.getTicketById);
+router.get('/api/v1/reports/tickets/agentId/:agentId', managerController.getAgentById);
 
 module.exports = router;
