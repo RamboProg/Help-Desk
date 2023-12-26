@@ -180,11 +180,11 @@ const userController = {
     }
   },
 
-  // Reset password
   resetPassword: async (req, res) => {
     try {
       const userEmail = req.body.email;
       const password = req.body.password;
+
       const user = await userModel.findOne({ Email: userEmail });
 
       if (!user) {
@@ -193,19 +193,24 @@ const userController = {
 
       const salt = await bcrypt.genSalt(10);
       const hash = bcrypt.hashSync(password, salt);
+
+      // Update the user document with the new password hash and salt
       user.Password = hash;
       user.salt = salt;
 
       await user.save();
       res.status(200).json({ message: 'Password reset successfully' });
     } catch (error) {
+      console.error('Error in resetPassword:', error);
       res.status(500).json({ message: error.message });
     }
   },
+
   // Set MFA get request
   setMFA: async (req, res) => {
     try {
-      const { id } = req.body;
+      // const { id } = req.body;
+      const id = req.user.userId;
       const user = await userModel.findOne({ _id: id });
       if (!user) {
         return res.status(404).json({ message: 'User not found' });

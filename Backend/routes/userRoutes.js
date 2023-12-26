@@ -11,7 +11,7 @@ router.put('/:userId', userController.updateUserProfile);
 
 
 // Other routes...
-router.put('/reset-password', userController.resetPassword);
+router.post('/reset-password', userController.resetPassword);
 router.post('/setMFA', userController.setMFA);
 // router.post('/sendOTP', userController.sendOTP);
 // router.post('/verifyOTP', userController.verifyOTP);

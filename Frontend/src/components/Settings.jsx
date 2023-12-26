@@ -37,7 +37,7 @@ const Settings = () => {
 
   const handleResetPassword = async () => {
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         "http://localhost:3000/api/v1/users/reset-password",
         {
           email: email,
@@ -45,6 +45,8 @@ const Settings = () => {
         },
         { withCredentials: true }
       );
+
+      navigate("/AdminHome");
 
       console.log(response.data.message);
     } catch (error) {
@@ -55,16 +57,16 @@ const Settings = () => {
   const handleToggleMFA = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/users/toggleMFA",
-        {
-          id: userId,
-        },
+        "http://localhost:3000/api/v1/users/setMFA",
+        {},
         { withCredentials: true }
       );
 
       setMFAEnabled(!mfaEnabled);
-
       console.log(response.data.message);
+
+      // Reload the page after toggling MFA
+      window.location.reload();
     } catch (error) {
       console.error("Error toggling MFA:", error.message);
     }
@@ -102,7 +104,6 @@ const Settings = () => {
       </div>
       <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
         <h1 className="text-4xl font-bold mb-8"></h1>
-
         <div className="p-8 rounded-lg shadow-md max-w-md mx-auto">
           <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
           <div className="flex items-center justify-center bg-white rounded-full mb-4 p-2">
@@ -137,82 +138,50 @@ const Settings = () => {
             Reset Password
           </button>
         </div>
-
-        <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8">
-          <h2 className="font-extrabold text-2xl mb-4">
-            Multi-Factor Authentication
-          </h2>
-          <div
-            className={`flex items-center justify-center mb-4 switch ${
-              mfaEnabled ? "checked" : ""
-            }`}>
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="font-extrabold text-2xl mb-4 mt-8">MFA Settings</h2>
+          <div className={`mfa-toggle ${mfaEnabled ? "checked" : ""}`}>
             <input
               type="checkbox"
               checked={mfaEnabled}
               onChange={handleToggleMFA}
             />
             <span className="slider round"></span>
-            {/* <strong>{mfaEnabled ? "Enabled" : "Disabled"}</strong> */}
+            <strong>{mfaEnabled ? "Enabled" : "Disabled"}</strong>
           </div>
         </div>
       </div>
       <style>
         {`
-          /* The switch - the box around the slider */
-          .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-          }
+    /* The MFA toggle button container */
+    .mfa-toggle {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      border: 2px solid #2196F3;
+      color: #2196F3;
+      background-color: #fff;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-          /* Hide default HTML checkbox */
-          .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-          }
+    /* Style for checked state */
+    .mfa-toggle.checked {
+      background-color: #2196F3;
+      color: #fff;
+    }
 
-          /* The slider */
-          .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-          }
-
-          .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-          }
-
-          input:checked + .slider {
-            background-color: #2196F3;
-          }
-
-          input:checked + .slider:before {
-            transform: translateX(26px);
-          }
-
-          /* Rounded sliders */
-          .slider.round {
-            border-radius: 34px;
-          }
-
-          .slider.round:before {
-            border-radius: 50%;
-          }
-        `}
+    /* Hide default HTML checkbox */
+    .mfa-toggle input {
+      display: none;
+      margin-right: 8px; /* Adjust the margin to separate checkbox and text */
+    }
+  `}
       </style>
     </div>
   );
