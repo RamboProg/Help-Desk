@@ -6,8 +6,16 @@ const Chat = require('../models/chatModel');
 const axios = require('axios');
 const { getUser } = require('../controllers/userController');
 const { PriorityQueue } = require('../utils/PriorityQueue');
-const clientController = {
+const nodemailer = require('nodemailer');
 
+var transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.MAIL_ADD,
+    pass: process.env.MAIL_PASS,
+  },
+});
+const clientController = {
   getMyTickets: async (req, res) => {
     const _id = req.user.userId;
     // console.log(_id)
@@ -234,11 +242,28 @@ const clientController = {
       }
       newTicket.save();
       // newChat.save();
-
-      result = {
+      console.log(1)
+      var result = {
         ticket: newTicket,
       };
-     
+      console.log(2)
+      const mailOptions = {
+        from: process.env.MAIL_ADD,
+        to: user.Email,
+        subject: 'Ticket Created',
+        text: 'Your ticket has been created successfully',
+      };
+      console.log(3)
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+          res.status(500).json({ error: 'Internal server error' });
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+      console.log(4)
+      console.log('Email sent successfully no need to check inbox')
       res.json(result);
 
     } catch (error) {

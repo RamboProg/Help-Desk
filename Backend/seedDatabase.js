@@ -296,14 +296,14 @@ const seedData = async () => {
       Password: hashedPassword,
       Username: 'zaidqarxoy',
       PhoneNumber: '123-456-7890',
-      RoleID: 2,
+      RoleID: 4,
       MFA_Enabled: false, // Every other user has MFA enabled
       Is_Enabled: false,
       salt: salt,
       is_valid: true,
     });
     await validUser.save(); // Save UserModel
-    const validClient = new ManagerModel({
+    const validClient = new ClientModel({
       _id: validUser._id,
       Email: validUser.Email,
       Password: validUser.Password,
