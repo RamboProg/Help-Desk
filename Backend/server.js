@@ -20,6 +20,7 @@ const server = http.createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+<<<<<<< HEAD
 // app.use(
 //   cors({
 //     origin: process.env.CLIENT_URL,
@@ -40,6 +41,18 @@ app.use(tempRouter);
 
 app.use('/api/v1', authRouter);
 app.use(authenticationMiddleware );
+=======
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  })
+);
+
+app.use('/api/v1', authRouter);
+app.use(authenticationMiddleware);
+>>>>>>> 7292eb3ce3bdd482f8e45edcbac12597a4aa9386
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', reason);
@@ -151,8 +164,16 @@ app.use(function (req, res, next) {
 
 const Image = mongoose.model('Image', { imagePath: String });
 
+<<<<<<< HEAD
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   logger.info(`Server is running on port ${PORT}`);
 });
+=======
+// // Start the server
+// const PORT = process.env.PORT || 3000;
+// server.listen(process.env.PORT, () => {
+//   Logger.print('✅ App running');
+// })
+>>>>>>> 7292eb3ce3bdd482f8e45edcbac12597a4aa9386

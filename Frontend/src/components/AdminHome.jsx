@@ -13,13 +13,10 @@ const AdminHome = () => {
     >
       <div className='max-w-[1640px] mx-auto px-4 py-12 text-center bg-white bg-opacity-50 rounded-lg p-8'>
         <h1 className={`text-${theme.colors.primary} font-bold text-4xl mb-8`}>
-          Welcome to Admin Dashboard
+          Welcome Back Admin!
         </h1>
         <p className={`text-${theme.colors.text} text-xl mb-4`}>
-          Manage and oversee the operations of your Help Desk.
-        </p>
-        <p className={`text-${theme.colors.text} text-lg mb-4`}>
-          Access tools and features to administer users, handle tickets, and analyze support data.
+          Admin Duties are There on the Left. Good luck!
         </p>
       </div>
     </div>
