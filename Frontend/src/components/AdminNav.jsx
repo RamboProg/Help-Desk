@@ -165,11 +165,13 @@ const AdminNav = () => {
             >
               <AiOutlineHome size={25} className="mr-4" /> Home
             </li>
-            <li 
-              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer" 
-              onClick={() => navigate("/AssignRole")}
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate('/Assign Role')}
+              style={menuItemStyles}
             >
-              <AiOutlinePlus size={25} className="mr-4" /> Assign Role
+              <AiOutlineFileText size={20} className="mr-2" />
+              Assign Role
             </li>
             <li
               className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
