@@ -82,6 +82,7 @@ function App() {
         /> */}
         <Route path = "/AgentIssuesCharts" element = {<ManagerLayout><AgentIssuesCharts/></ManagerLayout>}/>
         <Route path = "/ManagerTickets" element = {<ManagerLayout><ManagerTickets/></ManagerLayout>}/>
+        <Route path="/Chat/:ticketId" element={<MainLayout><Chat /></MainLayout>} />
         </Routes>
 
 

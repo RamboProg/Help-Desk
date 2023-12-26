@@ -5,6 +5,6 @@ const { getChatIfExists, sendMessage } = require('../controllers/chatController'
 
 // Define the chat endpoint
 router.get('/chat', getChatIfExists);
-router.put('/chat/:chatId', sendMessage);
+router.put('/chat', sendMessage);
 
 module.exports = router;

@@ -285,14 +285,14 @@ const seedData = async () => {
       Password: hashedPassword,
       Username: 'zaidqarxoy',
       PhoneNumber: '123-456-7890',
-      RoleID: 4,
-      MFA_Enabled: true, // Every other user has MFA enabled
+      RoleID: 2,
+      MFA_Enabled: false, // Every other user has MFA enabled
       Is_Enabled: false,
       salt: salt,
       is_valid: true,
     });
     await validUser.save(); // Save UserModel
-    const validClient = new ClientModel({
+    const validClient = new ManagerModel({
       _id: validUser._id,
       Email: validUser.Email,
       Password: validUser.Password,
@@ -470,10 +470,9 @@ const seedData = async () => {
       const randomSupportAgentIndex = i % existingSupportAgents.length;
 
       const chat = new ChatModel({
-        _id: i + 1,
         Client_ID: existingClients[randomClientIndex]._id, // Use existing client ID
         Support_AgentID: existingSupportAgents[randomSupportAgentIndex]._id, // Use existing support agent ID
-        Messages: `Chat message ${i + 1}`,
+        Messages: [{ text: `Message ${i + 1}`, sender: 'Client' }],
         Start_Time: new Date(), // Current date as the start time
         End_Time: new Date(), // Current date as the end time
         Message_Count: i + 1, // Increment message count
