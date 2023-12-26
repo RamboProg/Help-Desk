@@ -15,7 +15,7 @@ import AgentHome from './components/AgentHome';
 import KnowledgeBase from './components/KnowledgeBase';
 import Logs from './components/Logs';
 import Appearance from './components/Appearance';
-// import CreateTicket from './components/CreateTicket';
+import CreateTicket from './components/CreateTicket';
 import { AppearanceContextProvider } from './AppearanceContext'; // Updated import
 import AssignRole from './components/AssignRole';
 import Profile from './components/Profile';
@@ -74,10 +74,10 @@ function App() {
         <Route path="/ViewMyTickets" element={<ClientLayout><ViewMyTickets /></ClientLayout>} />
         <Route path="/Chat" element={<MainLayout><Chat /></MainLayout>} />
         <Route path="/AgentWorkflow" element={<AgentLayout><AgentWorkflow /></AgentLayout>} />
-          {/* <Route
+          <Route
           path="/CreateTicket"
           element={<ClientLayout><CreateTicket /></ClientLayout>}
-        /> */}
+        />
         </Routes>
 
 

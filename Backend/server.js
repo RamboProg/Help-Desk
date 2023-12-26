@@ -107,6 +107,9 @@ app.use(ticketRoutes);
 app.use(agentRoutes);
 app.use(adminRoutes);
 app.use(chatRoutes);
+
+app.use('/api/v1', authRouter);
+app.use(authenticationMiddleware);
 app.use(clientRoutes);
 app.use(customizationRoute);
 app.use(imageRoute);
@@ -132,8 +135,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 app.use('/api/tickets', require('./routes/ticketRoutes'));
 
-app.use('/api/v1', authRouter);
-app.use(authenticationMiddleware );
+
 // Import routes
 // Connect to MongoDB
 mongoose

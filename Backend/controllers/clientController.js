@@ -28,7 +28,7 @@ const clientController = {
   createTicket: async (req, res) => {
     try {
         const _id = req.user.userId; 
-        const user = await userModel.findById(_id);
+        const user = await Client.findById(_id);
   
       const requestedSubIssueType = req.body.Sub_Issue_Type;
       const requestedIssueType = req.body.Issue_Type;

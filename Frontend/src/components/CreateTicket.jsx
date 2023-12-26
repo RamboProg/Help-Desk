@@ -53,13 +53,13 @@ const CreateTicket = () => {
       }));
 
       switch (value) {
-        case "Hardware":
+        case "hardware":
           setValidSubIssueTypes(['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment', 'other']);
           break;
-        case "Software":
+        case "software":
           setValidSubIssueTypes(['Operating system', 'Application software', 'Custom software', 'Integration issues', 'other']);
           break;
-        case "Network":
+        case "network":
           setValidSubIssueTypes(['Email issues', 'Internet connection problems', 'Website errors', 'other']);
           break;
         default:
@@ -93,9 +93,9 @@ const CreateTicket = () => {
                   className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
                 >
                   <option value="default">default</option>
-                  <option value="Network">Network</option>
-                  <option value="Software">Software</option>
-                  <option value="Hardware">Hardware</option>
+                  <option value="network">Network</option>
+                  <option value="software">Software</option>
+                  <option value="hardware">Hardware</option>
                 </select>
               </label>
               <label className="mb-4">
