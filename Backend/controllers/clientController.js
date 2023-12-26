@@ -27,7 +27,8 @@ const clientController = {
 
   createTicket: async (req, res) => {
     try {
-      const userId = req.user.id;
+      const _id = req.user.userId; // Use req.user.id to get the user ID from the decoded token
+      const userId = await Client.findById(_id);
       const requestedSubIssueType = req.body.Sub_Issue_Type;
       const requestedIssueType = req.body.Issue_Type;
       let priority;
@@ -118,9 +119,9 @@ const clientController = {
 
       let newChat;
       let otherTicket = false;
-      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } }); 
-      const lastChatId = lastChat ? lastChat._id : 0; 
-      const newChatId = lastChatId + 1; 
+      const lastChat = await Chat.findOne({}, {}, { sort: { _id: -1 } });
+      const lastChatId = lastChat ? lastChat._id : 0;
+      const newChatId = lastChatId + 1;
       if (requestedSubIssueType == 'other') {
         newChat = new Chat({
           _id: newChatId,
@@ -188,39 +189,39 @@ const clientController = {
         newTicket.Assigned_AgentID = assignedAgent._id;
 
         if (otherTicket) {
-          
+
           newChat.Support_AgentID = assignedAgent._id;
         }
 
-      }else{
+      } else {
         if (!newTicket.Assigned_AgentID) {
           let alternativeAgentId;
-        
+
           // Iterate through the sorted agents to find the next available agent
           for (const agentName of sortedAgents) {
             const agentIndex = agentName.split(' ')[1];
             const alternativeAgent = await Agent.findOne({ _id: agentIndex });
-        
+
             if (alternativeAgent && alternativeAgent.Active_Tickets < 5) {
               alternativeAgentId = alternativeAgent._id;
               break;
             }
           }
-        
+
           if (alternativeAgentId) {
             newTicket.Assigned_AgentID = alternativeAgentId;
-        
+
             if (otherTicket) {
               newChat.Support_AgentID = alternativeAgentId;
             }
-        
+
             try {
               const assignedAgent = await Agent.findOne({ _id: alternativeAgentId });
-        
+
               if (assignedAgent) {
                 assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
                 assignedAgent.Active_Tickets = (assignedAgent.Active_Tickets || 0) + 1;
-        
+
                 assignedAgent.save();
               }
             } catch (agentError) {
@@ -231,7 +232,7 @@ const clientController = {
             return res.status(404).json({ error: 'No available agent found' });
           }
         }
-        
+
       }
 
       if (!newTicket.Assigned_AgentID) {
@@ -242,7 +243,7 @@ const clientController = {
         if (!assignedAgent && requestedSubIssueType == 'other') {
           return res.status(404).json({ error: 'Agent not found' });
         }
-        
+
 
         assignedAgent.Ticket_Count = (assignedAgent.Ticket_Count || 0) + 1;
         assignedAgent.Active_Tickets = (assignedAgent.Active_Tickets || 0) + 1;
@@ -254,7 +255,7 @@ const clientController = {
         return res.status(500).json({ error: 'Internal server error' });
       }
       newTicket.save();
-      newChat.save();
+      // newChat.save();
 
       result = {
         ticket: newTicket,

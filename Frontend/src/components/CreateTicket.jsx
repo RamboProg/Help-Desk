@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { AiOutlineClose } from "react-icons/ai";
 import { LightOceanTheme } from "./themes";
 
 const CreateTicket = () => {
@@ -11,50 +10,39 @@ const CreateTicket = () => {
   });
 
   const [validSubIssueTypes, setValidSubIssueTypes] = useState([]);
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/tickets", formData);
+      const response = await axios.post("http://localhost:3000/api/v1/tickets", formData); // Ensure that your server endpoint is set up to handle this POST request
       console.log("Ticket created:", response.data);
-      // Handle success, e.g., show a success message or redirect to another page
+      setMessage('Ticket created successfully.');
     } catch (error) {
       console.error("Error creating ticket:", error);
-      // Handle error, e.g., show an error message to the user
+      setMessage(`Error creating ticket: ${error.message}`);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value
+    }));
 
-    // Only update the description field
-    if (name === "description") {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
-      }));
-    } else {
-      // Update validSubIssueTypes based on the selected Issue_Type
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
-        Sub_Issue_Type: "", // Reset Sub_Issue_Type when Issue_Type changes
-      }));
-
-      switch (value) {
-        case "Hardware":
-          setValidSubIssueTypes(['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment', 'other']);
-          break;
-        case "Software":
-          setValidSubIssueTypes(['Operating system', 'Application software', 'Custom software', 'Integration issues', 'other']);
-          break;
-        case "Network":
-          setValidSubIssueTypes(['Email issues', 'Internet connection problems', 'Website errors', 'other']);
-          break;
-        default:
-          setValidSubIssueTypes([]);
-      }
+    switch (value) {
+      case "Hardware":
+        setValidSubIssueTypes(['Desktops', 'Laptops', 'Printers', 'Servers', 'Networking equipment', 'other']);
+        break;
+      case "Software":
+        setValidSubIssueTypes(['Operating system', 'Application software', 'Custom software', 'Integration issues', 'other']);
+        break;
+      case "Network":
+        setValidSubIssueTypes(['Email issues', 'Internet connection problems', 'Website errors', 'other']);
+        break;
+      default:
+        setValidSubIssueTypes([]);
     }
   };
 
@@ -73,6 +61,7 @@ const CreateTicket = () => {
             <h2 className={`text-${LightOceanTheme.colors.primary} font-extrabold text-4xl mb-8 border-b-4 border-${LightOceanTheme.colors.primary} pb-4`}>
               Create a New Ticket
             </h2>
+            {message && <p className="text-red-500 mb-4">{message}</p>}
             <form onSubmit={handleSubmit} className="flex flex-col">
               <label className="mb-4">
                 Issue Type:
@@ -93,7 +82,7 @@ const CreateTicket = () => {
                 <select
                   name="Sub_Issue_Type"
                   value={formData.Sub_Issue_Type}
-                  onChange={(e) => setFormData({ ...formData, Sub_Issue_Type: e.target.value })}
+                  onChange={handleChange}
                   className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
                 >
                   <option value="">Select Sub Issue Type</option>
