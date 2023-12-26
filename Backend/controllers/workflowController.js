@@ -45,7 +45,7 @@ createWorkflow: async (req, res) => {
 
 },
 deleteWorkflow: async (req, res) => {
-  const { issuesid } = req.query; // Destructure the issuesid from req.params
+  const { issuesid } = req.params; // Use req.params to get the ID from the route parameter
   try {
     const deleted = await Workflow.deleteOne({ _id: issuesid }); // Use _id to match the ObjectId
     if (deleted.deletedCount === 0) {
@@ -53,6 +53,7 @@ deleteWorkflow: async (req, res) => {
     }
     res.status(200).json({ message: 'Workflow deleted successfully' });
   } catch (err) {
+    console.error("Error deleting workflow:", err); // Log the error details for debugging
     res.status(500).json({ message: "Internal Server Error; Try Again" });
   }
 },
