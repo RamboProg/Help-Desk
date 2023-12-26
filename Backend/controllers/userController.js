@@ -225,7 +225,8 @@ const { Types } = require('mongoose');
     // Set MFA get request
     setMFA: async (req, res) => {
       try {
-        const { id } = req.body;
+        const id = req.user.userId;
+        console.log(id);
         const user = await userModel.findOne({ _id: id });
         if (!user) {
           return res.status(404).json({ message: 'User not found' });

@@ -46,8 +46,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-      navigate("/AdminHome");
-
       console.log(response.data.message);
     } catch (error) {
       console.error("Password reset failed:", error.message);
@@ -56,17 +54,18 @@ const Settings = () => {
 
   const handleToggleMFA = async () => {
     try {
+      console.log("lol")
       const response = await axios.post(
         "http://localhost:3000/api/v1/users/setMFA",
-        {},
         { withCredentials: true }
       );
-
+      console.log("lol2")
       setMFAEnabled(!mfaEnabled);
-      console.log(response.data.message);
 
-      // Reload the page after toggling MFA
-      window.location.reload();
+      //refresh page
+      navigate("/Settings");
+
+      console.log(response.data.message);
     } catch (error) {
       console.error("Error toggling MFA:", error.message);
     }
@@ -74,36 +73,9 @@ const Settings = () => {
 
   return (
     <div className="flex">
-      <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
-        <ul className="space-y-4">
-          <li className="flex items-center">
-            <AiOutlineHome className="mr-2" />
-            <button
-              onClick={() => navigate("/AdminHome")}
-              className="hover:underline focus:outline-none">
-              Home
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineTool className="mr-2" />
-            <button
-              onClick={() => navigate("/AssignRole")}
-              className="hover:underline focus:outline-none">
-              AssignRole
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineUser className="mr-2" />
-            <button
-              onClick={() => navigate("/Profile")}
-              className="hover:underline focus:outline-none">
-              Profile
-            </button>
-          </li>
-        </ul>
-      </div>
       <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
         <h1 className="text-4xl font-bold mb-8"></h1>
+
         <div className="p-8 rounded-lg shadow-md max-w-md mx-auto">
           <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
           <div className="flex items-center justify-center bg-white rounded-full mb-4 p-2">
@@ -138,48 +110,36 @@ const Settings = () => {
             Reset Password
           </button>
         </div>
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="font-extrabold text-2xl mb-4 mt-8">MFA Settings</h2>
-          <div className={`mfa-toggle ${mfaEnabled ? "checked" : ""}`}>
-            <input
-              type="checkbox"
-              checked={mfaEnabled}
-              onChange={handleToggleMFA}
-            />
-            <span className="slider round"></span>
-            <strong>{mfaEnabled ? "Enabled" : "Disabled"}</strong>
-          </div>
+
+        <div className="checkbox-container">
+          <input
+            id="mfaToggle"
+            className="checkbox-input"
+            type="checkbox"
+            checked={mfaEnabled}
+            onChange={handleToggleMFA}
+          />
+          <label htmlFor="mfaToggle" className="checkbox-label">
+            Multi-Factor Authentication
+          </label>
         </div>
       </div>
       <style>
         {`
-    /* The MFA toggle button container */
-    .mfa-toggle {
-      display: inline-flex;
+    /* Style for the checkbox container */
+    .checkbox-container {
+      display: flex;
       align-items: center;
-      cursor: pointer;
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
-      text-transform: uppercase;
-      border: 2px solid #2196F3;
-      color: #2196F3;
-      background-color: #fff;
-      border-radius: 5px;
-      transition: background-color 0.3s, color 0.3s;
     }
 
-    /* Style for checked state */
-    .mfa-toggle.checked {
-      background-color: #2196F3;
-      color: #fff;
+    /* Style for the checkbox input */
+    .checkbox-input {
+      margin-right: 8px; /* Adjust spacing */
     }
 
-    /* Hide default HTML checkbox */
-    .mfa-toggle input {
-      display: none;
-      margin-right: 8px; /* Adjust the margin to separate checkbox and text */
+    /* Style for the checkbox label */
+    .checkbox-label {
+      user-select: none;
     }
   `}
       </style>
