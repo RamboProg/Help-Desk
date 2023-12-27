@@ -107,7 +107,7 @@ const ClientNav = () => {
           {/* Logo on the top left */}
           <div className="flex items-center h-12">
             <img
-              src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png"
+              src={logoPath}
               alt="Help Desk Logo"
               className="h-full w-auto"
               style={{ objectFit: "contain" }}
