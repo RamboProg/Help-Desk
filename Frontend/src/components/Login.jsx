@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import OTPPopup from './OTPPopup';
 import { AiOutlineClose, AiOutlineUser, AiOutlineLock } from 'react-icons/ai';
+import OTPPopup from './OTPPopup';
+import ForgotPasswordPopup from './ForgotPasswordPopup';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ theme }) => {
   const [showLogin, setShowLogin] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showOTPPopup, setShowOTPPopup] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState('');
@@ -15,6 +17,14 @@ const Login = ({ theme }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const navigate = useNavigate();
+
+  const handleForgotPasswordClick = () => {
+    setShowForgotPassword(true);
+  };
+
+  const handleForgotPasswordClose = () => {
+    setShowForgotPassword(false);
+  };
 
   const handleVerifyOTP = async (enteredOTP) => {
     try {
@@ -48,9 +58,8 @@ const Login = ({ theme }) => {
       setShowOTPPopup(false);
     }
   };
+
   const handleAction = async () => {
-    console.log('Starting handleAction...'); // <-- Add this log
-  
     setMessage('');
     if (isLogin) {
       try {
@@ -58,39 +67,30 @@ const Login = ({ theme }) => {
           setMessage('Email is required');
           return;
         }
-  
-        console.log(`Fetching MFA for email: ${email}`); // <-- Add this log
+
         const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
-  
-        console.log('MFA Response:', mfaResponse.data); // <-- Add this log
-  
+
         if (mfaResponse.data) {
-          console.log('MFA is enabled for the user.'); // <-- Add this log
           const sendOTPResponse = await axios.post(
             'http://localhost:3000/sendOTP',
             { email },
           );
-  
-          console.log('Send OTP Response:', sendOTPResponse.data); // <-- Add this log
-  
+
           if (sendOTPResponse.data.message === 'Multi-factor authentication email sent successfully') {
             setShowOTPPopup(true);
           }
         } else {
-          console.log('MFA is NOT enabled for the user.'); // <-- Add this log
           const loginResponse = await axios.post(
             'http://localhost:3000/api/v1/login',
             { email, password },
             { withCredentials: true }
           );
-  
-          console.log('Login Response:', loginResponse.data); // <-- Add this log
-  
+
           handleRoleBasedNavigation(loginResponse);
           setShowLogin(false);
         }
       } catch (error) {
-        console.error('Error in handleAction:', error); // <-- Add this log
+        console.error('Error in handleAction:', error);
         setMessage(`Login failed: ${error.message}`);
       }
     } else {
@@ -118,7 +118,6 @@ const Login = ({ theme }) => {
             setShowOTPPopup(true);
           }
         } else {
-          // Handle login without OTP for cases where MFA is not enabled
           const loginResponse = await axios.post(
             'http://localhost:3000/api/v1/login',
             {
@@ -133,10 +132,8 @@ const Login = ({ theme }) => {
           setShowLogin(false);
         }
 
-        // Handle successful signup
         console.log(response.data);
       } catch (error) {
-        // Handle signup error
         console.error('Signup failed:', error);
       }
     }
@@ -170,6 +167,10 @@ const Login = ({ theme }) => {
     <div>
       <button onClick={() => setShowLogin(!showLogin)} className={`bg-${theme.colors.primary} text-${theme.colors.text} py-2 px-4 rounded-full mt-4`}>
         {isLogin ? 'Login' : 'Sign up'}
+      </button>
+
+      <button onClick={handleForgotPasswordClick} className={`text-${theme.colors.primary} ml-4 cursor-pointer`}>
+        Forgot Password
       </button>
 
       {showLogin && (
@@ -243,10 +244,13 @@ const Login = ({ theme }) => {
                   {isLogin ? 'Signup' : 'Login'}
                 </span>
               </p>
+              <p className={`text-${theme.colors.primary} text-center`}>{message}</p>
             </div>
           </div>
         </div>
       )}
+
+      {showForgotPassword && <ForgotPasswordPopup theme={theme} onClose={handleForgotPasswordClose} />}
 
       {showOTPPopup && <OTPPopup onVerifyOTP={handleVerifyOTP} onClose={() => setShowOTPPopup(false)} />}
     </div>

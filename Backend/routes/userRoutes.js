@@ -11,7 +11,7 @@ router.post('/logout',authorizationMiddleware([1,2,3,4]), userController.logoutU
 
 
 // Other routes...
-router.post('/reset-password',authorizationMiddleware([1,2,3,4]), userController.resetPassword);
+    router.post('/reset-password',authorizationMiddleware([1,2,3,4]), userController.resetPassword);
 router.post('/setMFA',authorizationMiddleware([1,2,3,4]), userController.setMFA);
 // router.post('/sendOTP', userController.sendOTP);
 // router.post('/verifyOTP', userController.verifyOTP);
