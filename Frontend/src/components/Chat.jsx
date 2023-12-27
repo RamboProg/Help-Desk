@@ -1,8 +1,7 @@
-// ChatInterface.js
 import React, { useState, useEffect, useRef } from 'react';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import axios from 'axios';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const ChatInterface = () => {
@@ -10,7 +9,7 @@ const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('');
   const { ticketId } = useParams();
   const socketRef = useRef();
-  const navigate = useNavigate();  // Use useNavigate for version 6
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState();
@@ -63,6 +62,14 @@ const ChatInterface = () => {
     };
   }, [userId, ticketId]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const sendMessage = async () => {
     if (inputMessage.trim() !== '') {
       try {
@@ -88,6 +95,8 @@ const ChatInterface = () => {
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
   };
+
+  const messagesEndRef = useRef(null);
 
   return (
     <div className='flex flex-col h-screen' style={backgroundImageStyle}>
@@ -121,6 +130,7 @@ const ChatInterface = () => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
         <div className='border-t-2 border-gray-200 px-4 pt-4'>
           <div className='relative flex'>

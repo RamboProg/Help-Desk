@@ -58,10 +58,10 @@ const AgentNav = () => {
 
   const selectedTheme = themes[themeName];
 
-  const navStyles = {
-    backgroundColor: selectedTheme.colors.background,
-    color: selectedTheme.colors.text
-  };
+  // const navStyles = {
+  //   backgroundColor: selectedTheme.colors.background,
+  //   color: selectedTheme.colors.text
+  // };
 
   const menuItemStyles = {
     backgroundColor: selectedTheme.colors.secondary,
