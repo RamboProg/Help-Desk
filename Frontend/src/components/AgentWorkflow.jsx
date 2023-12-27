@@ -1,5 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import AppearanceContext from '../AppearanceContext';
+
+import {
+  LightOceanTheme,
+  DarkNebulaTheme,
+  EarthyForestTheme,
+  SunsetGlowTheme,
+  LavenderMistTheme,
+  CloudySkyTheme,
+} from './themes';
+
+const themes = {
+  Light: LightOceanTheme,
+  Dark: DarkNebulaTheme,
+  Forest: EarthyForestTheme,
+  Sunset: SunsetGlowTheme,
+  Lavender: LavenderMistTheme,
+  Cloudy: CloudySkyTheme,
+};
 
 function WorkflowList() {
   const [workflows, setWorkflows] = useState([]);
@@ -10,8 +29,15 @@ function WorkflowList() {
     Sub_Issue_Type: ''
   });
 
+  const {
+    themeName: contextThemeName,
+    setThemeName,
+  } = useContext(AppearanceContext);
+
+  const [themeName, setLocalThemeName] = useState(contextThemeName);
   useEffect(() => {
     fetchWorkflows();
+    fetchGlobalSettings();
   }, []);
 
   const fetchWorkflows = () => {
@@ -43,7 +69,7 @@ function WorkflowList() {
           Issue: '',
           Custom_Workflow: '',
           Sub_Issue_Type: ''
-        }); // Reset the form fields after successful creation
+        });
       })
       .catch(error => {
         alert('Failed to create workflow. Error: ' + error.message);
@@ -63,9 +89,34 @@ function WorkflowList() {
       });
   };
 
+  const fetchGlobalSettings = async () => {
+    try {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
+        withCredentials: true,
+      });
+      if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+        setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching global appearance settings:', error);
+    }
+  };
+
+  const selectedTheme = themes[themeName];
+
+  const workflowTableStyle = {
+    backgroundColor: selectedTheme.colors.background,
+    color: selectedTheme.colors.text,
+  };
+
+  const workflowButtonStyle = {
+    backgroundColor: selectedTheme.colors.primary,
+    color: selectedTheme.colors.background,
+  };
+
   return (
-    <div className="container mx-auto p-8">
-      {/* Create Workflow Form */}
+    <div className="container mx-auto p-8" style={workflowTableStyle}>
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Create Workflow</h2>
         <input
@@ -91,13 +142,13 @@ function WorkflowList() {
         />
         <button
           onClick={handleCreateWorkflow}
-          className="bg-blue-500 text-white p-2 rounded"
+          style={workflowButtonStyle}
+          className="p-2 rounded"
         >
           Create
         </button>
       </div>
 
-      {/* Workflow List Table */}
       <table className="min-w-full bg-white">
         <thead>
           <tr>
@@ -118,7 +169,8 @@ function WorkflowList() {
               <td className="px-6 py-4">
                 <button 
                   onClick={() => handleDeleteWorkflow(workflow._id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="hover:text-red-700"
+                  style={workflowButtonStyle}
                 >
                   Delete
                 </button>
