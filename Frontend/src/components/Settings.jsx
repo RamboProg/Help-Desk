@@ -35,6 +35,12 @@ const Settings = () => {
 
   const handleResetPassword = async () => {
     try {
+      // Check if new password and confirm password match
+      if (newPassword !== confirmPassword) {
+        alert("New password and confirm password do not match. Please try again.");
+        return;
+      }
+  
       const response = await axios.put(
         "http://localhost:3000/api/v1/users/reset-password",
         {
@@ -43,13 +49,14 @@ const Settings = () => {
         },
         { withCredentials: true }
       );
-
+  
       console.log(response.data.message);
       alert('Password Reset successfully!');
     } catch (error) {
       console.error("Password reset failed:", error.message);
     }
   };
+  
 
   const handleSetMFA = async () => {
     try {

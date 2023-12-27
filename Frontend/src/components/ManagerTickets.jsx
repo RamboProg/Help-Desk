@@ -11,7 +11,7 @@ const TicketList = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/reports/tickets', {withCredentials: true});
+        const response = await axios.get('http://localhost:3000/api/v1/reports/tickets', { withCredentials: true });
         setTickets(response.data);
       } catch (error) {
         console.error('Error fetching tickets:', error);
@@ -23,7 +23,7 @@ const TicketList = () => {
 
   const handleGenerateReport = async (ticketId, agentId) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/v1/reports/tickets/ticketsId/${ticketId}`,{withCredentials: true});
+      const response = await axios.get(`http://localhost:3000/api/v1/reports/tickets/ticketsId/${ticketId}`, { withCredentials: true });
       setSelectedTicket(response.data);
       setIsModalOpen(true);
     } catch (error) {
@@ -45,7 +45,7 @@ const TicketList = () => {
           margin: 'auto',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '8px',
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       >
         <thead>
@@ -65,9 +65,7 @@ const TicketList = () => {
               <td style={{ padding: '12px' }}>{ticket.Assigned_AgentID}</td>
               <td style={{ padding: '12px' }}>{ticket.Ticket_Owner}</td>
               <td style={{ padding: '12px' }}>{ticket.Issue_Type}</td>
-              <td style={{ padding: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {ticket.Description}
-              </td>
+              <td style={{ padding: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ticket.Description}</td>
               <td style={{ padding: '12px' }}>
                 <button
                   style={{
@@ -76,7 +74,7 @@ const TicketList = () => {
                     border: 'none',
                     padding: '8px 12px',
                     borderRadius: '4px',
-                    cursor: 'pointer',
+                    cursor: 'pointer'
                   }}
                   onClick={() => handleGenerateReport(ticket._id, ticket.Assigned_AgentID)}
                 >

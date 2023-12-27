@@ -9,7 +9,9 @@ const TicketDetailsModal = ({ isOpen, onClose, ticket }) => {
   useEffect(() => {
     const fetchAgentRating = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/reports/tickets/agentId/${ticket.Assigned_AgentID}`, {withCredentials: true});
+        const response = await axios.get(`http://localhost:3000/api/v1/reports/tickets/agentId/${ticket.Assigned_AgentID}`, {
+          withCredentials: true
+        });
         setAgentRating(response.data.Average_Rating);
       } catch (error) {
         console.error('Error fetching agent rating:', error);
@@ -30,15 +32,15 @@ const TicketDetailsModal = ({ isOpen, onClose, ticket }) => {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'center'
         },
         content: {
           width: '300px',
           height: '200px',
           margin: 'auto',
           borderRadius: '8px',
-          padding: '20px',
-        },
+          padding: '20px'
+        }
       }}
     >
       {ticket ? (
@@ -49,9 +51,7 @@ const TicketDetailsModal = ({ isOpen, onClose, ticket }) => {
           </p>
           <p>
             <strong>Resolution Time:</strong>{' '}
-            {ticket.End_Date && ticket.Start_Date
-              ? Math.ceil((new Date(ticket.End_Date) - new Date(ticket.Start_Date)) / (1000 * 3600 * 24))
-              : 'N/A'}
+            {ticket.End_Date && ticket.Start_Date ? Math.ceil((new Date(ticket.End_Date) - new Date(ticket.Start_Date)) / (1000 * 3600 * 24)) : 'N/A'}
             {' days'}
           </p>
           {/* Display agent performance details */}
@@ -66,7 +66,7 @@ const TicketDetailsModal = ({ isOpen, onClose, ticket }) => {
               padding: '8px 12px',
               borderRadius: '4px',
               cursor: 'pointer',
-              marginTop: '10px',
+              marginTop: '10px'
             }}
             onClick={onClose}
           >
