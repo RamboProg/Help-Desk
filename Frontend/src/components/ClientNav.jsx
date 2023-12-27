@@ -34,9 +34,8 @@ const themes = {
 };
 
 const ClientNav = () => {
-
   const { themeName: contextThemeName, logoPath: contextLogoPath, setThemeName, setLogoPath } = useContext(AppearanceContext);
-  
+
   const [themeName, setLocalThemeName] = useState(contextThemeName);
   const [logoPath, setLocalLogoPath] = useState(contextLogoPath);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -58,9 +57,8 @@ const ClientNav = () => {
   }, []);
 
   useEffect(() => {
-    fetchGlobalSettings();   
+    fetchGlobalSettings();
   }, [themeName, logoPath]);
-
 
   // Filter unread notifications
   const unreadNotifications = notifications.filter(notification => !notification.read);
@@ -79,6 +77,7 @@ const ClientNav = () => {
     // For testing purposes, log the notification ID and update the state on the server
     console.log('Marking notification as read:', notificationId);
   };
+
   const fetchGlobalSettings = async () => {
     try {
       const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
@@ -137,61 +136,73 @@ const ClientNav = () => {
         </div>
       </div>
 
-        {/* Side drawer menu */}
-        <div
-          className={
-            nav
-              ? "fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
-              : "fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
-          }
-        >
-          <AiOutlineClose
-            onClick={() => setNav(!nav)}
-            size={30}
-            className="absolute right-4 top-4 cursor-pointer"
-          />
-          <h2 className="text-2xl p-4">My Menu</h2>
-          <nav>
-            <ul className="flex flex-col p-4 text-gray-800">
-              {/* Home */}
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate("/ClientHome")}
-              >
-                <AiOutlineHome size={20} className="mr-2" />
-                Home
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate("/CreateTicket")}
-              >
-                <AiOutlinePlus size={25} className="mr-4" /> Create Ticket
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate("/ViewMyTickets")}
-              >
-                <AiOutlineCheck size={25} className="mr-4" /> View My Tickets
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate("/KnowledgeBase")}
-              >
-                <AiOutlineQuestionCircle size={25} className="mr-4" /> Knowledge
-                Base
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate("/Settings")}
-              >
-                <AiOutlineSetting size={25} className="mr-4" /> Settings
-              </li>
-              <li
-                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
-                onClick={() => navigate("/Profile")}
-              >
-                <AiOutlineUser size={25} className="mr-4" /> Profile
-                </li>
+      {/* Side drawer menu */}
+      <div
+        className={
+          nav
+            ? "fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
+            : "fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300 shadow-lg"
+        }
+      >
+        <AiOutlineClose
+          onClick={() => setNav(!nav)}
+          size={30}
+          className="absolute right-4 top-4 cursor-pointer"
+        />
+        <h2 className="text-2xl p-4">My Menu</h2>
+        <nav>
+          <ul className="flex flex-col p-4 text-gray-800">
+            {/* Home */}
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/ClientHome")}
+            >
+              <AiOutlineHome size={20} className="mr-2" />
+              Home
+            </li>
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/CreateTicket")}
+            >
+              <AiOutlinePlus size={25} className="mr-4" /> Create Ticket
+            </li>
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/ViewMyTickets")}
+            >
+              <AiOutlineCheck size={25} className="mr-4" /> View My Tickets
+            </li>
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/KnowledgeBase")}
+            >
+              <AiOutlineQuestionCircle size={25} className="mr-4" /> Knowledge
+              Base
+            </li>
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/Settings")}
+            >
+              <AiOutlineSetting size={25} className="mr-4" /> Settings
+            </li>
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => navigate("/Profile")}
+            >
+              <AiOutlineUser size={25} className="mr-4" /> Profile
+            </li>
+            
+            {/* Logout Button */}
+            <li
+              onClick={() => {
+                // Perform logout action here (e.g., clear session, remove tokens, etc.)
+                // Then, redirect to the home page
+                navigate('/');
+              }}
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+            >
+              Logout
+            </li>
           </ul>
         </nav>
       </div>

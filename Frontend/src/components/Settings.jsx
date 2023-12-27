@@ -6,7 +6,7 @@ import { AiOutlineSetting, AiOutlineUser, AiOutlineHome, AiOutlineTool } from "r
 const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [mfaEnabled, setMFAEnabled] = useState();
+  const [mfaEnabled, setMFAEnabled] = useState(false);
   const [mfaTextColor, setMFATextColor] = useState("");
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState();
@@ -27,6 +27,7 @@ const Settings = () => {
       setEmail(profileInfo.data.user.Email);
       setMFAEnabled(profileInfo.data.user.MFA_Enabled);
       setUserId(profileInfo.data.user._id);
+      setMFATextColor(profileInfo.data.user.MFA_Enabled ? "green" : "red");
     } catch (error) {
       console.error("Error fetching user profile:", error.message);
     }
@@ -70,101 +71,62 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex">
-      <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
-        <ul className="space-y-4">
-          <li className="flex items-center">
-            <AiOutlineHome className="mr-2" />
-            <button
-              onClick={() => navigate("/AdminHome")}
-              className="hover:underline focus:outline-none"
-            >
-              Home
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineTool className="mr-2" />
-            <button
-              onClick={() => navigate("/AssignRole")}
-              className="hover:underline focus:outline-none"
-            >
-              AssignRole
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineUser className="mr-2" />
-            <button
-              onClick={() => navigate("/Profile")}
-              className="hover:underline focus:outline-none"
-            >
-              Profile
-            </button>
-          </li>
-        </ul>
-      </div>
-      <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow">
-        <button
-          onClick={() => navigate(-1)} // Go back to the previous page
-          className="bg-blue-500 text-white py-2 px-4 rounded-full mt-4 ml-4"
-        >
-          Go Back
-        </button>
+    <div className="max-w-[1640px] mx-auto px-4 py-12">
+      <button
+        onClick={() => navigate(-1)} // Go back to the previous page
+        className="bg-blue-500 text-white py-2 px-4 rounded-full mt-4 ml-4"
+      >
+        Go Back
+      </button>
 
-        <h1 className="text-4xl font-bold mb-8"></h1>
-
-        <div className="p-8 rounded-lg shadow-md max-w-md mx-auto">
-          <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
-          <div className="flex items-center justify-center bg-white rounded-full mb-4 p-2">
-            <AiOutlineUser className="mr-2" />
-            <label htmlFor="email" className="bg-transparent p-2 ml-2">
-              {email}
-            </label>
-          </div>
-          <div className="flex items-center bg-white rounded-full mb-4 p-2">
-            <AiOutlineSetting className="mr-2" />
-            <input
-              className="bg-transparent p-2 w-full focus:outline-none ml-2"
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center bg-white rounded-full mb-4 p-2">
-            <AiOutlineSetting className="mr-2" />
-            <input
-              className="bg-transparent p-2 w-full focus:outline-none ml-2"
-              type="password"
-              placeholder="Confirm New Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-          <button
-            onClick={handleResetPassword}
-            className="bg-blue-500 text-white py-2 px-4 rounded-full w-full mb-4"
-          >
-            Reset Password
-          </button>
+      <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8 bg-white">
+        <h2 className="font-extrabold text-2xl mb-4">Reset Password</h2>
+        <div className="flex items-center mb-4">
+          <AiOutlineUser className="mr-2" />
+          <label htmlFor="email" className="bg-transparent p-2 ml-2">
+            {email}
+          </label>
         </div>
+        <div className="flex items-center mb-4">
+          <AiOutlineSetting className="mr-2" />
+          <input
+            className="bg-transparent p-2 w-full focus:outline-none ml-2 border-b border-gray-500"
+            type="password"
+            placeholder="New Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center mb-4">
+          <AiOutlineSetting className="mr-2" />
+          <input
+            className="bg-transparent p-2 w-full focus:outline-none ml-2 border-b border-gray-500"
+            type="password"
+            placeholder="Confirm New Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
+        <button
+          onClick={handleResetPassword}
+          className="bg-blue-500 text-white py-2 px-4 rounded-full w-full mb-4 focus:outline-none hover:bg-blue-600"
+        >
+          Reset Password
+        </button>
+      </div>
 
-        <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8">
-          <h2 className="font-extrabold text-2xl mb-4">
-            Multi-Factor Authentication
-          </h2>
-          <div
-            className={`flex items-center justify-center bg-white rounded-full mb-4 p-4`}
+      <div className="p-8 rounded-lg shadow-md max-w-md mx-auto mt-8 bg-white">
+        <h2 className="font-extrabold text-2xl mb-4">Multi-Factor Authentication</h2>
+        <div className="flex items-center mb-4">
+          <button
+            onClick={handleSetMFA}
+            className={`mfa-toggle-button bg-blue-500 text-white py-2 px-4 rounded-full mr-4 focus:outline-none`}
           >
-            <button
-              onClick={handleSetMFA}
-              className={`mfa-toggle-button focus:outline-none bg-blue-500 text-white py-2 px-4 rounded-full mr-4`}
-            >
-              {mfaEnabled ? "Disable MFA" : "Enable MFA"}
-            </button>
-            <span className={`text-lg font-semibold text-${mfaTextColor}`}>
-              {mfaEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </div>
+            {mfaEnabled ? "Disable MFA" : "Enable MFA"}
+          </button>
+          <span className={`text-lg font-semibold text-${mfaTextColor}`}>
+            {mfaEnabled ? "Enabled" : "Disabled"}
+          </span>
         </div>
       </div>
     </div>

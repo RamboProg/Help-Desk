@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineTool } from "react-icons/ai";
+import { AiOutlineTool, AiOutlineArrowLeft } from "react-icons/ai";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -12,8 +12,6 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(userId); // Log the initial state
-
     // Fetch user profile data
     const fetchUserProfile = async () => {
       try {
@@ -46,76 +44,73 @@ const Profile = () => {
         },
         { withCredentials: true }
       );
+      // Optionally, you can show a success message to the user
+      console.log("Profile updated successfully!");
     } catch (error) {
       console.error("Profile update failed:", error.message);
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
-    <div className="flex">
-      <div className="bg-gray-800 text-white h-screen w-1/6 p-5">
-        <ul className="space-y-4">
-          <li className="flex items-center">
-            <AiOutlineTool className="mr-2" />
-            <button
-              onClick={() => navigate("/AssignRole")}
-              className="hover:underline focus:outline-none">
-              AssignRole
-            </button>
-          </li>
-          <li className="flex items-center">
-            <AiOutlineTool className="mr-2" />
-            <button
-              onClick={() => navigate("/Settings")}
-              className="hover:underline focus:outline-none">
-              Settings
-            </button>
-          </li>
-        </ul>
-      </div>
-      <div className="max-w-[1640px] m-auto px-4 py-12 flex-grow ">
-        <form
-          onSubmit={handleUpdateProfile}
-          className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Email:
-            </label>
-            <input
-              type="text"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Username:
-            </label>
-            <input
-              type="text"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Phone Number:
-            </label>
-            <input
-              type="text"
-              value={newPhoneNumber}
-              onChange={(e) => setNewPhoneNumber(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded-full">
-            Update Profile
-          </button>
-        </form>
+    <div className="max-w-[800px] mx-auto p-8 bg-white rounded-lg shadow-md mt-10">
+      <h1 className="text-3xl font-bold mb-6">Update Your Profile</h1>
+      <form onSubmit={handleUpdateProfile} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-600">
+            Email:
+          </label>
+          <input
+            id="email"
+            type="text"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="username" className="block text-sm font-semibold text-gray-600">
+            Username:
+          </label>
+          <input
+            id="username"
+            type="text"
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+            className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="phoneNumber" className="block text-sm font-semibold text-gray-600">
+            Phone Number:
+          </label>
+          <input
+            id="phoneNumber"
+            type="text"
+            value={newPhoneNumber}
+            onChange={(e) => setNewPhoneNumber(e.target.value)}
+            className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white py-2 px-4 rounded-full focus:outline-none hover:bg-blue-600"
+        >
+          Update Profile
+        </button>
+      </form>
+
+      <div className="mt-6">
+        <button
+          onClick={handleGoBack}
+          className="flex items-center text-blue-500 hover:underline focus:outline-none"
+        >
+          <AiOutlineArrowLeft className="mr-2" />
+          Back to Previous Page
+        </button>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+// ManagerNavbar.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineMenu, AiOutlineClose, AiOutlineUser, AiOutlineSetting, AiOutlineHome, AiOutlineBug } from "react-icons/ai";
@@ -62,6 +63,7 @@ const ManagerNavbar = () => {
                 <AiOutlineHome size={20} className="mr-2" />
                 Home
               </li>
+              {/* Tickets */}
               <li
                 className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
                 onClick={() => navigate("/ManagerTickets")}
@@ -85,8 +87,18 @@ const ManagerNavbar = () => {
                 <AiOutlineSetting size={20} className="mr-2" />
                 Settings
               </li>
-              
-             
+
+              {/* Logout Button */}
+              <li
+                onClick={() => {
+                  // Perform logout action here (e.g., clear session, remove tokens, etc.)
+                  // Then, redirect to the home page
+                  navigate('/');
+                }}
+                className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              >
+                Logout
+              </li>
             </ul>
           </nav>
         </div>
