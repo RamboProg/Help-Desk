@@ -42,15 +42,7 @@ const AdminNav = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    fetchGlobalSettings();
-
-    // Mock notifications data for testing
-    const mockNotifications = [
-      { _id: '1', message: 'New email received', read: false },
-      { _id: '2', message: 'Meeting at 2 PM', read: true },
-      { _id: '3', message: 'Reminder: Complete tasks', read: false },
-    ];
-    setNotifications(mockNotifications);
+    fetchGlobalSettings();   
   }, [themeName, logoPath]);
 
   const fetchGlobalSettings = async () => {

@@ -1,5 +1,5 @@
 // ClientNav.js
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import {
   AiOutlineMenu,
@@ -12,13 +12,36 @@ import {
   AiOutlineHome,
   AiOutlineBell,
 } from "react-icons/ai";
-import { LightOceanTheme } from "./themes";
+import { AppearanceContext } from '../AppearanceContext';
+import axios from 'axios';
+
+import {
+  LightOceanTheme,
+  DarkNebulaTheme,
+  EarthyForestTheme,
+  SunsetGlowTheme,
+  LavenderMistTheme,
+  CloudySkyTheme,
+} from './themes';
+
+const themes = {
+  Light: LightOceanTheme,
+  Dark: DarkNebulaTheme,
+  Forest: EarthyForestTheme,
+  Sunset: SunsetGlowTheme,
+  Lavender: LavenderMistTheme,
+  Cloudy: CloudySkyTheme,
+};
 
 const ClientNav = () => {
-  const [nav, setNav] = useState(false);
+
+  const { themeName: contextThemeName, logoPath: contextLogoPath, setThemeName, setLogoPath } = useContext(AppearanceContext);
+  
+  const [themeName, setLocalThemeName] = useState(contextThemeName);
+  const [logoPath, setLocalLogoPath] = useState(contextLogoPath);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const theme = LightOceanTheme;
+  const [nav, setNav] = useState(false);
   const navigate = useNavigate();
 
   // Mock notifications data for testing
@@ -33,6 +56,11 @@ const ClientNav = () => {
   useState(() => {
     setNotifications(mockNotifications);
   }, []);
+
+  useEffect(() => {
+    fetchGlobalSettings();   
+  }, [themeName, logoPath]);
+
 
   // Filter unread notifications
   const unreadNotifications = notifications.filter(notification => !notification.read);
@@ -51,9 +79,25 @@ const ClientNav = () => {
     // For testing purposes, log the notification ID and update the state on the server
     console.log('Marking notification as read:', notificationId);
   };
+  const fetchGlobalSettings = async () => {
+    try {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
+      if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        console.log(globalSettingsResponse);
+        setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+        setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
+        setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+        setLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching global appearance settings:', error);
+    }
+  };
+
+  const selectedTheme = themes[themeName];
 
   return (
-    <div className={`bg-${theme.colors.background} text-${theme.colors.text}`}>
+    <div className={`bg-${selectedTheme.colors.background} text-${selectedTheme.colors.text}`}>
       <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
         {/* Left side */}
         <div className="flex items-center">
@@ -63,7 +107,7 @@ const ClientNav = () => {
           {/* Logo on the top left */}
           <div className="flex items-center h-12">
             <img
-              src="https://www.freepnglogos.com/uploads/company-logo-png/company-logo-transparent-png-19.png"
+              src={logoPath}
               alt="Help Desk Logo"
               className="h-full w-auto"
               style={{ objectFit: "contain" }}
