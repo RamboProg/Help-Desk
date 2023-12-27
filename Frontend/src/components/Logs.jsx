@@ -5,19 +5,17 @@ import axios from "axios";
 const LogsPage = () => {
   const theme = LightOceanTheme;
 
-  // State to store logs fetched from the backend
   const [logs, setLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const logsPerPage = 10; // Number of logs to display per page
+  const logsPerPage = 10;
 
-  // Fetch logs from the backend API
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/logs" , { withCredentials: true });
-        if (response.ok) {
-          const data = await response.json();
-          setLogs(data);
+        const response = await axios.get("http://localhost:3000/logs", { withCredentials: true });
+
+        if (response.status === 200) {
+          setLogs(response.data);
         } else {
           console.error("Failed to fetch logs");
         }
@@ -29,30 +27,28 @@ const LogsPage = () => {
     fetchLogs();
   }, []);
 
-  // Calculate current logs to display based on pagination
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
   const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
 
-  // Logic to handle page navigation
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
+  const totalPages = Math.ceil(logs.length / logsPerPage);
+
   return (
-    <div className="flex-1">
+    <div className={`flex-1 ${theme.background}`}>
       <div className="flex justify-center items-center flex-1 h-full">
         <h2
-          className={`text-${theme.colors.primary} font-extrabold text-4xl mb-8 border-b-4 border-${theme.colors.primary} pb-4`}
+          className={`text-${theme.primary} font-extrabold text-4xl mb-8 border-b-4 border-${theme.primary} pb-4`}
         >
           Logs
         </h2>
-      </div>{" "}
-      <table className="w-full border-collapse mt-5">
+      </div>
+      <table className={`w-full border-collapse mt-5 ${theme.border}`}>
         <thead>
-          <tr
-            className={`bg-${theme.colors.background} text-${theme.colors.text}`}
-          >
+          <tr className={`bg-${theme.background} text-${theme.text}`}>
             <th className="p-4 text-left border-b">Level</th>
             <th className="p-4 text-left border-b">Message</th>
             <th className="p-4 text-left border-b">Timestamp</th>
@@ -60,28 +56,28 @@ const LogsPage = () => {
         </thead>
         <tbody>
           {currentLogs.map((log, index) => (
-            <tr key={index}>
+            <tr key={index} className={`bg-${index % 2 === 0 ? "gray-200" : "white"}`}>
               <td className="p-4 border-b">{log.level}</td>
               <td className="p-4 border-b">{log.message}</td>
-              <td className="p-4 border-b">{log.timestamp}</td>
+              <td className="p-4 border-b">{new Date(log.timestamp).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* Pagination */}
       <div className="text-center mt-8">
-        {Array.from(
-          { length: Math.ceil(logs.length / logsPerPage) },
-          (_, i) => (
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className="m-2 px-4 py-2 bg-blue-300 text-white rounded hover:bg-blue-600"
-            >
-              {i + 1}
-            </button>
-          )
-        )}
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => handlePageChange(i + 1)}
+            className={`m-2 px-4 py-2 ${
+              currentPage === i + 1
+                ? `bg-blue-500 text-white hover:bg-blue-400`
+                : `bg-${theme.secondary} text-${theme.primary} hover:bg-${theme.secondary} hover:text-white hover:bg-blue-400`
+            } rounded`}
+          >
+            {i + 1}
+          </button>
+        ))}
       </div>
     </div>
   );

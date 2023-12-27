@@ -25,7 +25,7 @@ const agentController = {
         return res.status(400).json({ message: 'Invalid request body' });
       }
       const {ticketId} = req.query;
-      console.log(ticketId);
+      // console.log(ticketId);
       const resolutionDetails = req.body.resolutionDetails;
       const tempTicket= await ticket.findOne({ _id: ticketId });
       const ticketOwner = tempTicket.Ticket_Owner;
