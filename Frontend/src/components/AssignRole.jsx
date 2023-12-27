@@ -1,25 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import RoleUpdatePopup from './RoleUpdatePopup';
+import AppearanceContext from '../AppearanceContext';
+import {
+  LightOceanTheme,
+  DarkNebulaTheme,
+  EarthyForestTheme,
+  SunsetGlowTheme,
+  LavenderMistTheme,
+  CloudySkyTheme,
+} from './themes';
+
+const themes = {
+  Light: LightOceanTheme,
+  Dark: DarkNebulaTheme,
+  Forest: EarthyForestTheme,
+  Sunset: SunsetGlowTheme,
+  Lavender: LavenderMistTheme,
+  Cloudy: CloudySkyTheme,
+};
 
 const AssignRole = () => {
+  const {
+    themeName: contextThemeName,
+    setThemeName,
+  } = useContext(AppearanceContext);
+
+  const [themeName, setLocalThemeName] = useState(contextThemeName);
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]); // New state for filtered users
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newRoleId, setNewRoleId] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Fetch users on component mount
+    fetchGlobalSettings();
     getUsers();
   }, []);
-
   const getUsers = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/v1/admin/getUsers', { withCredentials: true });
       setUsers(response.data.users);
-      setFilteredUsers(response.data.users); // Set filtered users initially to all users
+      setFilteredUsers(response.data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -37,7 +60,6 @@ const AssignRole = () => {
 
   const handleRoleChange = async () => {
     try {
-      // Make API call to update user role
       const response = await axios.post('http://localhost:3000/api/v1/admin/assignRole', {
         userID: parseInt(selectedUser._id),
         roleID: parseInt(newRoleId)
@@ -51,9 +73,7 @@ const AssignRole = () => {
         alert('Failed to update user role');
       }
 
-      // Refresh the user list
       getUsers();
-      // Close the pop-up
       setShowPopup(false);
     } catch (error) {
       console.error('Error updating user role:', error);
@@ -61,22 +81,36 @@ const AssignRole = () => {
   };
 
   const handleSearch = () => {
-    // Filter users based on the search term
     const filtered = users.filter((user) => user.Username.toLowerCase().includes(searchTerm.toLowerCase()));
     setFilteredUsers(filtered);
   };
 
   const resetSearch = () => {
-    // Reset the search term and revert to the original list of users
     setSearchTerm('');
     setFilteredUsers(users);
   };
 
+  const fetchGlobalSettings = async () => {
+    try {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
+        withCredentials: true,
+      });
+      if (globalSettingsResponse.data.uniqueThemes.length > 0) {
+        setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+        setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching global appearance settings:', error);
+    }
+  };
+
+  const selectedTheme = themes[themeName];
+
   return (
-    <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f4f4f4' }}>
-      <h1 style={{ color: '#333' }}>User Management</h1>
+    <div style={{ textAlign: 'center', padding: '20px', backgroundColor: selectedTheme.backgroundColor }}>
+      <h1 style={{ color: selectedTheme.textColor }}>User Management</h1>
       <div style={{ marginBottom: '20px' }}>
-        <label htmlFor='search' style={{ marginRight: '10px', color: '#555' }}>
+        <label htmlFor='search' style={{ marginRight: '10px', color: selectedTheme.textColorSecondary }}>
           Search Username:
         </label>
         <input
@@ -89,12 +123,12 @@ const AssignRole = () => {
               handleSearch();
             }
           }}
-          style={{ marginRight: '10px', padding: '8px', border: '1px solid #ccc' }}
+          style={{ marginRight: '10px', padding: '8px', border: `1px solid ${selectedTheme.borderColor}` }}
         />
-        <button onClick={handleSearch} style={{ marginRight: '10px', padding: '8px', backgroundColor: '#4caf50', color: '#fff', border: 'none' }}>
+        <button onClick={handleSearch} style={{ marginRight: '10px', padding: '8px', backgroundColor: selectedTheme.buttonColor, color: selectedTheme.buttonTextColor, border: `1px solid ${selectedTheme.buttonBorderColor}` }}>
           Search
         </button>
-        <button onClick={resetSearch} style={{ padding: '8px', backgroundColor: '#ddd', color: '#333', border: 'none' }}>
+        <button onClick={resetSearch} style={{ padding: '8px', backgroundColor: selectedTheme.buttonSecondaryColor, color: selectedTheme.buttonSecondaryTextColor, border: `1px solid ${selectedTheme.buttonSecondaryBorderColor}` }}>
           Reset
         </button>
       </div>
@@ -121,7 +155,7 @@ const AssignRole = () => {
                     setSelectedUser(user);
                     setShowPopup(true);
                   }}
-                  style={{ backgroundColor: '#2196F3', color: '#fff', padding: '8px', border: 'none' }}
+                  style={{ backgroundColor: selectedTheme.actionButtonColor, color: selectedTheme.actionButtonTextColor, padding: '8px', border: `1px solid ${selectedTheme.actionButtonBorderColor}` }}
                 >
                   Change Role
                 </button>
@@ -137,7 +171,7 @@ const AssignRole = () => {
           onUpdate={(value) => setNewRoleId(value)}
           onClose={() => setShowPopup(false)}
           onRoleChange={handleRoleChange}
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+          style={{ backgroundColor: selectedTheme.popupBackgroundColor }}
         />
       )}
     </div>

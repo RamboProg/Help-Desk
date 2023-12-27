@@ -33,14 +33,14 @@ const themes = {
 
 const AdminNav = () => {
   const { themeName: contextThemeName, logoPath: contextLogoPath, setThemeName, setLogoPath } = useContext(AppearanceContext);
-  
+
   const [themeName, setLocalThemeName] = useState(contextThemeName);
   const [logoPath, setLocalLogoPath] = useState(contextLogoPath);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [nav, setNav] = useState(false);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     fetchGlobalSettings();
 
@@ -57,7 +57,6 @@ const AdminNav = () => {
     try {
       const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
-        console.log(globalSettingsResponse);
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);
         setLocalLogoPath(globalSettingsResponse.data.uniqueLogoPaths[0]);
         setThemeName(globalSettingsResponse.data.uniqueThemes[0]);
@@ -195,6 +194,17 @@ const AdminNav = () => {
             >
               <AiOutlineSetting size={20} className="mr-2" />
               Settings
+            </li>
+            <li
+              className="text-xl py-4 flex items-center transition ease-in-out duration-300 hover:bg-blue-50 hover:shadow-md cursor-pointer"
+              onClick={() => {
+                // Perform logout action here (e.g., clear session, remove tokens, etc.)
+                // Then, redirect to the home page
+                navigate('/');
+              }}
+              style={menuItemStyles}
+            >
+              Logout
             </li>
           </ul>
         </nav>

@@ -49,11 +49,12 @@ let transporter = nodemailer.createTransport({
 const userController = {
   registerUser: async (req, res) => {
     const { username, email, password, phoneNumber } = req.body;
-
+    console.log(1);
     if (!username || !email || !password || !phoneNumber) {
       res.status(400);
       throw new Error('Please add your name, email, phone number, and password');
     }
+    console.log(2);
 
     const userExists = await userModel.findOne({ Email: email });
 

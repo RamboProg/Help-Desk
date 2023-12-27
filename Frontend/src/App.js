@@ -26,6 +26,8 @@ import Chat from './components/Chat';
 import AgentWorkflow from './components/AgentWorkflow';
 import AgentIssuesCharts from './components/AgentIssuesCharts'
 import ManagerTickets from './components/ManagerTickets'
+import { inject } from '@vercel/analytics';
+inject();
 
 
 function App() {
