@@ -50,6 +50,7 @@ const managerRoutes = require('./routes/managerRoutes');
 const userRouter = require('./routes/userRoutes');
 const logsRouter = require('./routes/logsRoutes');
 const logger = require('./controllers/loggerController');
+const FAQ = require('./models/FAQModel');
 
 // Use the routes
 app.use(ticketRoutes);
@@ -65,6 +66,15 @@ app.use("/api/v1/users", userRouter);
 app.use(authRouter);
 app.use(logsRouter)
 app.use('/api/tickets', ticketRoutes);
+
+app.get('/api/faqs', async (req, res) => {
+  try {
+    const faqs = await FAQ.find();
+    res.json(faqs);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching FAQs', error });
+  }
+});
 
 // Connect to MongoDB
 mongoose
