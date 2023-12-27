@@ -7,7 +7,7 @@ const authorizationMiddleware = require('../middleware/authorizationMiddleware')
 // 1: Admin, 2: Manager, 3: Support Agent, 4: Client
 router.get('/profile', authorizationMiddleware([1, 2, 3, 4]), userController.viewUserProfile);
 router.put('/:userId',authorizationMiddleware([1,2,3,4]), userController.updateUserProfile);
-
+router.post('/logout',authorizationMiddleware([1,2,3,4]), userController.logoutUser);
 
 
 // Other routes...
