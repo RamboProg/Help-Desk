@@ -505,24 +505,24 @@ const seedData = async () => {
     }
 
 
-    // Seed customization data for Tailwind themes
-    const customizations = [];
-    const tailwindThemes = ['light', 'dark', 'cyan', 'purple', 'green']; // Add your desired Tailwind themes
+    // // Seed customization data for Tailwind themes
+    // const customizations = [];
+    // const tailwindThemes = ['light', 'dark', 'cyan', 'purple', 'green']; // Add your desired Tailwind themes
 
-    for (let i = 1; i <= 30; i++) { // Assuming 30 users have been created
-      const theme = tailwindThemes[i % tailwindThemes.length];
-      const logoPath = `https://placekitten.com/200/200?random=${i}`; // Placeholder image with unique path
+    // for (let i = 1; i <= 30; i++) { // Assuming 30 users have been created
+    //   const theme = tailwindThemes[i % tailwindThemes.length];
+    //   const logoPath = `https://placekitten.com/200/200?random=${i}`; // Placeholder image with unique path
 
-      const customization = new CustomizationModel({
-        userId: i,
-        theme,
-        logoPath,
-      });
+    //   const customization = new CustomizationModel({
+    //     userId: i,
+    //     theme,
+    //     logoPath,
+    //   });
 
-      customizations.push(customization.save());
-    }
+    //   customizations.push(customization.save());
+    // }
 
-    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats, ...customizations]);
+    await Promise.all([...users, ...faqs, ...issuesData, ...logs, ...tickets, ...chats]);
 
     console.log('Database seeded successfully!');
   } catch (error) {

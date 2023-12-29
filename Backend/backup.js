@@ -33,7 +33,7 @@ const performRestore = () => {
   const mongoUriRestore = process.env.MONGODB_URI_RESTORE;
 
   console.log("Restoring backup");
-  const backUpPath = "C:\\Users\\Elnour Tech\\OneDrive\\Desktop\\Software Project\\Help-Desk\\Backend"; // Adjust this path
+  const backUpPath = "/Backend"; // Adjust this path
   console.log(backUpPath);
   console.log(mongoUriRestore);
   const mongorestoreCommand = "mongorestore";
