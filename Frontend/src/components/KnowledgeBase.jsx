@@ -10,7 +10,7 @@ const KnowledgeBase = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/faqs", { withCredentials: true })
+      .get("http://localhost:3000/api/faqs")
       .then((response) => {
         const sortedFaqs = response.data.sort(
           (a, b) =>
@@ -23,7 +23,6 @@ const KnowledgeBase = () => {
         console.error("Error fetching FAQs:", error);
       });
   }, []);
-  
 
   // Filter FAQs based on the search term
   const filteredFaqs = faqs.filter((faq) =>
