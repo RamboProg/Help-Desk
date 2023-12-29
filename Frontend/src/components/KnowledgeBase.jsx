@@ -10,7 +10,7 @@ const KnowledgeBase = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/faqs", { withCredentials: true })
+      .get("https://help-desk-ruddy.vercel.app/api/faqs", { withCredentials: true })
       .then((response) => {
         const sortedFaqs = response.data.sort(
           (a, b) =>

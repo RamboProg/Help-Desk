@@ -32,7 +32,7 @@ const AdminHome = () => {
   }, []); // Empty dependency array to run the effect only once
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
+      const globalSettingsResponse = await axios.get('http://localhost:300https://help-desk-ruddy.vercel.app/Appearance/', {
         withCredentials: true,
       });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {

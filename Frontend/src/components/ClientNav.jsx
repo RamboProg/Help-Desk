@@ -80,7 +80,7 @@ const ClientNav = () => {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance', { withCredentials: true });
+      const globalSettingsResponse = await axios.get('https://help-desk-ruddy.vercel.app/Appearance', { withCredentials: true });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {
         console.log(globalSettingsResponse);
         setLocalThemeName(globalSettingsResponse.data.uniqueThemes[0]);

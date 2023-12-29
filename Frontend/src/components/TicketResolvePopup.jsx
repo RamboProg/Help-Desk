@@ -7,7 +7,7 @@ const TicketResolvePopup = ({ isOpen, onClose, ticketId, onResolve }) => {
 
   const handleResolveSave = async () => {
     try {
-      const response = await axios.post(`http://localhost:3000/api/v1/agent/tickets/close?ticketId=${ticketId}`, {
+      const response = await axios.post(`https://help-desk-ruddy.vercel.app/api/v1/agent/tickets/close?ticketId=${ticketId}`, {
         status: "Closed",
         resolutionDetails: resolutionDetails,
       },{withCredentials: true});

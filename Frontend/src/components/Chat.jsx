@@ -17,7 +17,7 @@ const ChatInterface = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/users/profile', { withCredentials: true });
+        const response = await axios.get('https://help-desk-ruddy.vercel.app/api/v1/users/profile', { withCredentials: true });
 
         setUser(response.data.user);
         setUserId(response.data.user._id);
@@ -32,7 +32,7 @@ const ChatInterface = () => {
   useEffect(() => {
     const initializeChat = async () => {
       try {
-        const existingChatResponse = await axios.get(`http://localhost:3000/chat?ticketId=${ticketId}`, { withCredentials: true });
+        const existingChatResponse = await axios.get(`https://help-desk-ruddy.vercel.app/chat?ticketId=${ticketId}`, { withCredentials: true });
         if (existingChatResponse.data.length > 0) {
           setMessages(existingChatResponse.data);
         } else {
@@ -73,7 +73,7 @@ const ChatInterface = () => {
   const sendMessage = async () => {
     if (inputMessage.trim() !== '') {
       try {
-        await axios.put(`http://localhost:3000/chat?ticketId=${ticketId}`, { message: inputMessage }, { withCredentials: true });
+        await axios.put(`https://help-desk-ruddy.vercel.app/chat?ticketId=${ticketId}`, { message: inputMessage }, { withCredentials: true });
 
         const newMessage = {
           SenderID: userId,

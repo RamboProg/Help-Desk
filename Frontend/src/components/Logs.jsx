@@ -12,7 +12,7 @@ const LogsPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/logs", { withCredentials: true });
+        const response = await axios.get("https://help-desk-ruddy.vercel.app/logs", { withCredentials: true });
 
         if (response.status === 200) {
           setLogs(response.data);

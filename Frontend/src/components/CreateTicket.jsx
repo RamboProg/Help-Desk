@@ -27,7 +27,7 @@ const CreateTicket = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/tickets",
+        "https://help-desk-ruddy.vercel.app/api/v1/tickets",
         formData,
         {
           withCredentials: true,
@@ -98,7 +98,7 @@ const CreateTicket = () => {
     const fetchWorkflow = async () => {
       if (formData.Issue_Type !== "default") {
         try {
-          const response = await axios.get(`http://localhost:3000/workflows/${formData.Issue_Type}` , { withCredentials: true });
+          const response = await axios.get(`https://help-desk-ruddy.vercel.app/workflows/${formData.Issue_Type}` , { withCredentials: true });
           setWorkflowResponse(response.data.Custom_Workflow);
         } catch (error) {
           console.error("Error fetching workflow:", error);

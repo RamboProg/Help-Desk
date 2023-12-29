@@ -13,7 +13,7 @@ const ViewMyTickets = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/tickets', { withCredentials: true });
+        const response = await axios.get('https://help-desk-ruddy.vercel.app/tickets', { withCredentials: true });
         setTickets(response.data);
         const closed = response.data.filter((ticket) => ticket.Status.toLowerCase() === 'closed');
         setClosedTickets(closed);
@@ -39,7 +39,7 @@ const ViewMyTickets = () => {
   const handleRateAgent = async (ticketId, rating) => {
     try {
       const response = await axios.put(
-        'http://localhost:3000/api/v1/rateAgent',
+        'https://help-desk-ruddy.vercel.app/api/v1/rateAgent',
         {
           ticketId,
           Rating: rating,
