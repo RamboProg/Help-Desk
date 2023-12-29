@@ -16,7 +16,7 @@ const Profile = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          "https://help-desk-ruddy.vercel.app/api/v1/users/profile",
+          "http://localhost:3000/api/v1/users/profile",
           { withCredentials: true }
         );
 
@@ -36,7 +36,7 @@ const Profile = () => {
   const handleUpdateProfile = async () => {
     try {
       await axios.put(
-        `https://help-desk-ruddy.vercel.app/api/v1/users/${userId}`,
+        `http://localhost:3000/api/v1/users/${userId}`,
         {
           newEmail,
           newUsername,

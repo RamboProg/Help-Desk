@@ -40,7 +40,7 @@ const AssignRole = () => {
   }, []);
   const getUsers = async () => {
     try {
-      const response = await axios.get('https://help-desk-ruddy.vercel.app/api/v1/admin/getUsers', { withCredentials: true });
+      const response = await axios.get('http://localhost:3000/api/v1/admin/getUsers', { withCredentials: true });
       setUsers(response.data.users);
       setFilteredUsers(response.data.users);
     } catch (error) {
@@ -60,7 +60,7 @@ const AssignRole = () => {
 
   const handleRoleChange = async () => {
     try {
-      const response = await axios.post('https://help-desk-ruddy.vercel.app/api/v1/admin/assignRole', {
+      const response = await axios.post('http://localhost:3000/api/v1/admin/assignRole', {
         userID: parseInt(selectedUser._id),
         roleID: parseInt(newRoleId)
       }, { withCredentials: true });
@@ -92,7 +92,7 @@ const AssignRole = () => {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('https://help-desk-ruddy.vercel.app/Appearance/', {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
         withCredentials: true,
       });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {

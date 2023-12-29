@@ -29,7 +29,7 @@ const Login = ({ theme }) => {
   const handleVerifyOTP = async (enteredOTP) => {
     try {
       const verifyOTPResponse = await axios.post(
-        'https://help-desk-ruddy.vercel.app/verifyOTP',
+        'http://localhost:3000/verifyOTP',
         {
           email,
           code: enteredOTP
@@ -39,7 +39,7 @@ const Login = ({ theme }) => {
 
       if (verifyOTPResponse.data.message === 'Multi-factor authentication email sent successfully') {
         const loginResponse = await axios.post(
-          'https://help-desk-ruddy.vercel.app/api/v1/login',
+          'http://localhost:3000/api/v1/login',
           {
             email,
             password
@@ -68,11 +68,11 @@ const Login = ({ theme }) => {
           return;
         }
 
-        const mfaResponse = await axios.get(`https://help-desk-ruddy.vercel.app/getMFA?email=${email}`);
+        const mfaResponse = await axios.get(`http://localhost:3000/getMFA?email=${email}`);
 
         if (mfaResponse.data) {
           const sendOTPResponse = await axios.post(
-            'https://help-desk-ruddy.vercel.app/sendOTP',
+            'http://localhost:3000/sendOTP',
             { email },
           );
 
@@ -81,7 +81,7 @@ const Login = ({ theme }) => {
           }
         } else {
           const loginResponse = await axios.post(
-            'https://help-desk-ruddy.vercel.app/api/v1/login',
+            'http://localhost:3000/api/v1/login',
             { email, password },
             { withCredentials: true }
           );
@@ -96,18 +96,18 @@ const Login = ({ theme }) => {
     } else {
       try {
         const response = await axios.post(
-          'https://help-desk-ruddy.vercel.app/api/v1/register',
+          'http://localhost:3000/api/v1/register',
           { email, password, username, phoneNumber },
           {
             withCredentials: true
           }
         );
 
-        const mfaResponse = await axios.get(`https://help-desk-ruddy.vercel.app/api/v1/users/getMFA?email=${email}`, { withCredentials: true });
+        const mfaResponse = await axios.get(`http://localhost:3000/api/v1/users/getMFA?email=${email}`, { withCredentials: true });
 
         if (mfaResponse.data) {
           const sendOTPResponse = await axios.post(
-            'https://help-desk-ruddy.vercel.app/api/v1/users/sendOTP',
+            'http://localhost:3000/api/v1/users/sendOTP',
             {
               email
             },
@@ -119,7 +119,7 @@ const Login = ({ theme }) => {
           }
         } else {
           const loginResponse = await axios.post(
-            'https://help-desk-ruddy.vercel.app/api/v1/login',
+            'http://localhost:3000/api/v1/login',
             {
               email,
               password

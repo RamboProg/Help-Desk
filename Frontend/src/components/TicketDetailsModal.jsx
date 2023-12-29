@@ -9,7 +9,7 @@ const TicketDetailsModal = ({ isOpen, onClose, ticket }) => {
   useEffect(() => {
     const fetchAgentRating = async () => {
       try {
-        const response = await axios.get(`https://help-desk-ruddy.vercel.app/api/v1/reports/tickets/agentId/${ticket.Assigned_AgentID}`, {
+        const response = await axios.get(`http://localhost:3000/api/v1/reports/tickets/agentId/${ticket.Assigned_AgentID}`, {
           withCredentials: true
         });
         setAgentRating(response.data.Average_Rating);

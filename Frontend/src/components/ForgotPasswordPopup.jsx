@@ -10,7 +10,7 @@ const ForgotPasswordPopup = ({ theme, onClose }) => {
   const handleForgotPassword = async () => {
     try {
       const resetPasswordResponse = await axios.post(
-        'https://help-desk-ruddy.vercel.app/api/v1/users/reset-password',
+        'http://localhost:3000/api/v1/users/reset-password',
         { email, password },
         { withCredentials: true }
       );

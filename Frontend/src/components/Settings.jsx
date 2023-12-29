@@ -20,7 +20,7 @@ const Settings = () => {
   const fetchUserInfo = async () => {
     try {
       const profileInfo = await axios.get(
-        "https://help-desk-ruddy.vercel.app/api/v1/users/profile",
+        "http://localhost:3000/api/v1/users/profile",
         { withCredentials: true }
       );
 
@@ -42,7 +42,7 @@ const Settings = () => {
       }
   
       const response = await axios.put(
-        "https://help-desk-ruddy.vercel.app/api/v1/users/reset-password",
+        "http://localhost:3000/api/v1/users/reset-password",
         {
           email: email,
           password: newPassword,
@@ -61,7 +61,7 @@ const Settings = () => {
   const handleSetMFA = async () => {
     try {
       const response = await axios.post(
-        "https://help-desk-ruddy.vercel.app/api/v1/users/setMFA",
+        "http://localhost:3000/api/v1/users/setMFA",
         {
           id: userId, // Replace with the user's ID
         },

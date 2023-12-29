@@ -11,7 +11,7 @@ const TicketList = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('https://help-desk-ruddy.vercel.app/api/v1/reports/tickets', { withCredentials: true });
+        const response = await axios.get('http://localhost:3000/api/v1/reports/tickets', { withCredentials: true });
         setTickets(response.data);
       } catch (error) {
         console.error('Error fetching tickets:', error);
@@ -23,7 +23,7 @@ const TicketList = () => {
 
   const handleGenerateReport = async (ticketId, agentId) => {
     try {
-      const response = await axios.get(`https://help-desk-ruddy.vercel.app/api/v1/reports/tickets/ticketsId/${ticketId}`, { withCredentials: true });
+      const response = await axios.get(`http://localhost:3000/api/v1/reports/tickets/ticketsId/${ticketId}`, { withCredentials: true });
       setSelectedTicket(response.data);
       setIsModalOpen(true);
     } catch (error) {

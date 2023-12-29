@@ -38,7 +38,7 @@ const Appearance = () => {
   const handleThemeChange = async () => {
     try {
       await axios.post(
-        'https://help-desk-ruddy.vercel.app/editAppearance/',
+        'http://localhost:3000/editAppearance/',
         { theme: themeName, logoPath },
         { withCredentials: true }
       );
@@ -54,7 +54,7 @@ const Appearance = () => {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('https://help-desk-ruddy.vercel.app/Appearance/', {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
         withCredentials: true,
       });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {

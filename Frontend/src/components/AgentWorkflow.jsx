@@ -41,7 +41,7 @@ function WorkflowList() {
   }, []);
 
   const fetchWorkflows = () => {
-    axios.get('https://help-desk-ruddy.vercel.app/getWorkflows', { withCredentials: true })
+    axios.get('http://localhost:3000/getWorkflows', { withCredentials: true })
       .then(response => {
         if (response.status !== 200) {
           throw new Error('Network response was not ok');
@@ -61,7 +61,7 @@ function WorkflowList() {
   };
 
   const handleCreateWorkflow = () => {
-    axios.post('https://help-desk-ruddy.vercel.app/workflows', newWorkflow , { withCredentials: true })
+    axios.post('http://localhost:3000/workflows', newWorkflow , { withCredentials: true })
       .then(() => {
         alert('Workflow created successfully!');
         fetchWorkflows();
@@ -78,7 +78,7 @@ function WorkflowList() {
   };
 
   const handleDeleteWorkflow = (issuesid) => {
-    axios.delete(`https://help-desk-ruddy.vercel.app/workflows/${issuesid}` , { withCredentials: true })
+    axios.delete(`http://localhost:3000/workflows/${issuesid}` , { withCredentials: true })
       .then(() => {
         alert('Workflow deleted successfully!');
         fetchWorkflows();
@@ -91,7 +91,7 @@ function WorkflowList() {
 
   const fetchGlobalSettings = async () => {
     try {
-      const globalSettingsResponse = await axios.get('https://help-desk-ruddy.vercel.app/Appearance/', {
+      const globalSettingsResponse = await axios.get('http://localhost:3000/Appearance/', {
         withCredentials: true,
       });
       if (globalSettingsResponse.data.uniqueThemes.length > 0) {

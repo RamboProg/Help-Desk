@@ -15,7 +15,7 @@ const assignTicket = async () => {
     }
 
     try {
-        const response = await axios.post(process.env.REACT_APP_API_BASE_URL + 'predict', {
+        const response = await axios.post('http://localhost:3000/predict', {
             Priority: ticket.Priority,
             Type: ticket.Issue_Type
         });
