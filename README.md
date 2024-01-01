@@ -96,7 +96,7 @@ Follow these steps to set up and run the project on your local machine.
 
 ## Acknowledgments
 
-- ECS - Energy and Contracting Solutions for the opportunity to work on this impactful project.
+- ECS for the opportunity to work on this impactful project.
 - Open source community for providing invaluable tools and resources.
 
 Feel free to reach out for any questions or issues. Happy coding! 🚀
